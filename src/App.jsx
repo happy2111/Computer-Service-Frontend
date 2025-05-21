@@ -12,12 +12,15 @@ import NavLayout from "./pages/NavLayout.jsx";
 import ContactUs from './pages/ContactUs.jsx'
 import Profile from './pages/Profile.jsx'
 import Service from './pages/Service.jsx'
+import ScrollTop from './components/ScrollTop.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <BrowserRouter>
+      <ScrollTop />
+
       <Routes>
         {/* <Route path="/" element={<Home />} /> */}
 
@@ -29,11 +32,10 @@ function App() {
 
         <Route path="/" element={<NavLayout />}>
           <Route path="" element={<Home />} />
-          <Route path="contact-us" element={<ContactUs/> } />
-          <Route path="profile" element={<Profile/>}/>
-          <Route path="/services" element={<Service/> } />
+          <Route path="contact-us" element={<ContactUs />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="/services" element={<Service />} />
         </Route>
-
 
         <Route path="*" element={<NotFound />} />
       </Routes>
