@@ -189,7 +189,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className=" flex min-h-screen items-center justify-center bg-white">
         <div className="flex flex-col items-center">
           <svg
             className="animate-spin h-10 w-10 text-blue-600 mb-4"
@@ -218,7 +218,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-white max-sm:pt-9  ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-12 md:py-20">
           {/* Page Header */}

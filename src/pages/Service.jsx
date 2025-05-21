@@ -1,6 +1,5 @@
-
-import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   Smartphone,
   Laptop,
@@ -16,68 +15,123 @@ import {
   Send,
   CheckCircle,
   AlertCircle,
-} from "lucide-react"
-import { useNavigate } from "react-router-dom"
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Define service types
 const serviceTypes = [
   {
     id: "phone-repair",
     title: "Phone Repair",
-    description: "Screen replacement, battery service, water damage recovery, and more for all smartphone brands.",
+    description:
+      "Screen replacement, battery service, water damage recovery, and more for all smartphone brands.",
     icon: <Smartphone className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["Cracked Screen", "Battery Replacement", "Water Damage", "Charging Port", "Speaker Issues"],
+    commonIssues: [
+      "Cracked Screen",
+      "Battery Replacement",
+      "Water Damage",
+      "Charging Port",
+      "Speaker Issues",
+    ],
   },
   {
     id: "computer-repair",
     title: "Computer Repair",
-    description: "Hardware upgrades, virus removal, data recovery, and performance optimization for PCs and Macs.",
+    description:
+      "Hardware upgrades, virus removal, data recovery, and performance optimization for PCs and Macs.",
     icon: <Laptop className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["Slow Performance", "Virus Removal", "Hardware Upgrade", "Data Recovery", "Blue Screen"],
+    commonIssues: [
+      "Slow Performance",
+      "Virus Removal",
+      "Hardware Upgrade",
+      "Data Recovery",
+      "Blue Screen",
+    ],
   },
   {
     id: "tablet-repair",
     title: "Tablet Repair",
-    description: "Expert repair services for iPads, Samsung tablets, and other tablet devices.",
+    description:
+      "Expert repair services for iPads, Samsung tablets, and other tablet devices.",
     icon: <Tablet className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["Broken Screen", "Battery Issues", "Software Problems", "Charging Issues", "Button Repair"],
+    commonIssues: [
+      "Broken Screen",
+      "Battery Issues",
+      "Software Problems",
+      "Charging Issues",
+      "Button Repair",
+    ],
   },
   {
     id: "monitor-repair",
     title: "Monitor & TV Repair",
-    description: "Repair services for monitors, TVs, and other display devices.",
+    description:
+      "Repair services for monitors, TVs, and other display devices.",
     icon: <Monitor className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["No Display", "Flickering Screen", "Dead Pixels", "Power Issues", "HDMI Port Repair"],
+    commonIssues: [
+      "No Display",
+      "Flickering Screen",
+      "Dead Pixels",
+      "Power Issues",
+      "HDMI Port Repair",
+    ],
   },
   {
     id: "data-recovery",
     title: "Data Recovery",
-    description: "Professional data recovery services for all types of storage devices.",
+    description:
+      "Professional data recovery services for all types of storage devices.",
     icon: <HardDrive className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["Accidental Deletion", "Corrupted Drive", "Physical Damage", "Virus Attack", "Formatted Drive"],
+    commonIssues: [
+      "Accidental Deletion",
+      "Corrupted Drive",
+      "Physical Damage",
+      "Virus Attack",
+      "Formatted Drive",
+    ],
   },
   {
     id: "network-setup",
     title: "Network Setup",
     description: "Setup and troubleshooting for home and business networks.",
     icon: <Wifi className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["Slow Connection", "WiFi Setup", "Router Configuration", "Network Security", "Range Extension"],
+    commonIssues: [
+      "Slow Connection",
+      "WiFi Setup",
+      "Router Configuration",
+      "Network Security",
+      "Range Extension",
+    ],
   },
   {
     id: "software-support",
     title: "Software Support",
-    description: "Installation, updates, and troubleshooting for operating systems and applications.",
+    description:
+      "Installation, updates, and troubleshooting for operating systems and applications.",
     icon: <Settings className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["OS Installation", "Software Updates", "Driver Issues", "Application Errors", "System Optimization"],
+    commonIssues: [
+      "OS Installation",
+      "Software Updates",
+      "Driver Issues",
+      "Application Errors",
+      "System Optimization",
+    ],
   },
   {
     id: "maintenance",
     title: "Preventative Maintenance",
-    description: "Regular maintenance to keep your devices running smoothly and prevent future issues.",
+    description:
+      "Regular maintenance to keep your devices running smoothly and prevent future issues.",
     icon: <Shield className="h-10 w-10 text-blue-600" />,
-    commonIssues: ["System Cleanup", "Hardware Inspection", "Software Updates", "Dust Removal", "Performance Tuning"],
+    commonIssues: [
+      "System Cleanup",
+      "Hardware Inspection",
+      "Software Updates",
+      "Dust Removal",
+      "Performance Tuning",
+    ],
   },
-]
+];
 
 // Define device types
 const deviceTypes = [
@@ -94,16 +148,16 @@ const deviceTypes = [
   "Gaming Console",
   "Smart TV",
   "Other",
-]
+];
 
 // Define form input types
 
 export default function Service() {
   const navigate = useNavigate();
-  const [selectedService, setSelectedService] = useState(null)
-  const [showForm, setShowForm] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState("idle")
+  const [selectedService, setSelectedService] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("idle");
 
   const {
     register,
@@ -123,66 +177,67 @@ export default function Service() {
       preferredDate: "",
       additionalInfo: "",
     },
-  })
+  });
 
   const handleServiceSelect = (serviceId) => {
-    setSelectedService(serviceId)
-    setValue("serviceType", serviceId) // Pre-populate the service type field
-    setShowForm(true)
+    setSelectedService(serviceId);
+    setValue("serviceType", serviceId); // Pre-populate the service type field
+    setShowForm(true);
     // Scroll to form
     setTimeout(() => {
-      document.getElementById("service-form")?.scrollIntoView({ behavior: "smooth" })
-    }, 100)
-  }
+      document
+        .getElementById("service-form")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
 
   const handleBackToServices = () => {
-    setShowForm(false)
-    setSubmitStatus("idle")
-  }
+    setShowForm(false);
+    setSubmitStatus("idle");
+  };
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true)
-    setSubmitStatus("idle")
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Form submitted with:", data)
-
-      // Here you would typically make an actual API call:
       const response = await fetch(
         "https://computer-service-backend.onrender.com/api/services",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json", 
-            "Authorization": `Bearer ${localStorage.getItem("token")}` 
-           },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
           body: JSON.stringify(data),
         }
       );
-      if (!response.ok) throw new Error('Failed to submit form')
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/auth/login");
+        return;
+      }
+      if (!response.ok) throw response;
 
-      setSubmitStatus("success")
+      setSubmitStatus("success");
       // Don't reset the form immediately so the user can see their submitted data
       setTimeout(() => {
-        reset()
-        setShowForm(false)
-        setSelectedService(null)
-      }, 3000)
+        reset();
+        setShowForm(false);
+        setSelectedService(null);
+      }, 3000);
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        localStorage.removeItem("token")
-        navigate("/auth/login")
-      }
-      console.error("Submission error:", error)
-      setSubmitStatus("error")
+      console.error("Submission error:", error);
+      setSubmitStatus("error");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Find the selected service object
-  const selectedServiceObj = serviceTypes.find((service) => service.id === selectedService)
+  const selectedServiceObj = serviceTypes.find(
+    (service) => service.id === selectedService
+  );
 
   return (
     <div className="bg-white ">
@@ -193,7 +248,7 @@ export default function Service() {
             <span
               id="header"
               className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 mb-4"
-            > 
+            >
               Our Services
             </span>
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
@@ -609,7 +664,6 @@ export default function Service() {
   );
 }
 
-
 function ServiceCard({ id, title, description, icon, onSelect }) {
   return (
     <div
@@ -623,13 +677,13 @@ function ServiceCard({ id, title, description, icon, onSelect }) {
         </h3>
         <p className="text-sm text-gray-600 mb-4">{description}</p>
         <div className="flex items-center text-blue-600 text-sm font-medium">
-          Request Service <ChevronRight className="h-4 w-4 ml-1 group-hover:ml-2 transition-all" />
+          Request Service{" "}
+          <ChevronRight className="h-4 w-4 ml-1 group-hover:ml-2 transition-all" />
         </div>
       </div>
     </div>
-  )
+  );
 }
-
 
 function FeatureCard({ icon, title, description }) {
   return (
@@ -638,5 +692,5 @@ function FeatureCard({ icon, title, description }) {
       <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
       <p className="text-sm text-gray-600">{description}</p>
     </div>
-  )
+  );
 }

@@ -6,7 +6,7 @@ import About from "../components/About"
 const Home = () => {
   return (
     <div className="bg-white min-h-screen flex flex-col">
-      <Navbar />
+      {/* <Navbar /> */}
       <main className="flex-1 flex items-center justify-center">
         <Hero />
       </main>
