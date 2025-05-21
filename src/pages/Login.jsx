@@ -31,7 +31,7 @@ export default function Login() {
       if (res.status >= 200 && res.status < 300) {
         localStorage.setItem("token", res.data.token);
         if (res.data.user.role === "admin") {
-          window.location.href = "https://app.forestadmin.com/Computer-Support";
+          window.location.href = "https://app.forestadmin.com/SeviceHY/";
         } else {
           navigate("/", { replace: true });
         }
