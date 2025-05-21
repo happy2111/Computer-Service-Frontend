@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState(""); // новое состояние для ошибки
   const navigate = useNavigate();
   const {
     register,
@@ -21,6 +22,7 @@ export default function Login() {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
+    setServerError(""); // сброс ошибки при новом сабмите
     try {
       const res = await axios.post(
         "https://computer-service-backend.onrender.com/api/auth/login",
@@ -30,13 +32,19 @@ export default function Login() {
         localStorage.setItem("token", res.data.token);
         if (res.data.user.role === "admin") {
           window.location.href = "https://app.forestadmin.com/Computer-Support";
-        }else {
+        } else {
           navigate("/", { replace: true });
         }
 
         console.log("Login successful", res);
       }
     } catch (err) {
+      // обработка ошибки от сервера
+      setServerError(
+        err.response?.data?.message ||
+          err.response?.data?.msg ||
+          "Ошибка входа. Попробуйте еще раз."
+      );
       console.log(err.response?.data || err.message);
     } finally {
       setIsLoading(false);
@@ -53,6 +61,36 @@ export default function Login() {
           Enter your email and password to login
         </p>
       </div>
+
+      {/* Ошибка сервера */}
+      {serverError && (
+        <div className="mx-6 sm:mx-8 mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start">
+          <svg
+            className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 8v4m0 4h.01"
+            />
+          </svg>
+          <div className="ml-3">
+            <p className="text-sm text-red-700">{serverError}</p>
+          </div>
+        </div>
+      )}
 
       <form
         onSubmit={handleSubmit(onSubmit)}

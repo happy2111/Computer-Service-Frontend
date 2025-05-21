@@ -36,7 +36,7 @@ export default function Navbar() {
       }
     };
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   // Закрытие модалки при клике вне её
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-md fixed w-full z-20 top-0 left-0">
+    <nav className="bg-white shadow-md fixed w-full z-20 top-0 left-0 !max-sm:mb-9">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
@@ -236,27 +236,53 @@ export default function Navbar() {
           >
             Home
           </Link>
-          <Link
-            to="/about"
+          <HashLink
+            smooth
+            to="/#about"
             className="text-gray-700 hover:text-blue-600 transition py-2"
             onClick={() => setMenuOpen(false)}
           >
             About
-          </Link>
-          <Link
-            to="/contact-us"
+          </HashLink>
+          <HashLink
+            smooth
+            to="/contact-us/"
             className="text-gray-700 hover:text-blue-600 transition py-2"
             onClick={() => setMenuOpen(false)}
           >
             Contact Us
-          </Link>
-          <Link
-            to="/login"
-            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
-            onClick={() => setMenuOpen(false)}
-          >
-            Войти
-          </Link>
+          </HashLink>
+          {!localStorage.getItem("token") ? (
+            <Link
+              to="/login"
+              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
+              onClick={() => setMenuOpen(false)}
+            >
+              Sign In
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/profile"
+                className="flex items-center text-gray-700 hover:text-blue-600 transition py-2"
+                onClick={() => setMenuOpen(false)}
+              >
+                <User className="w-5 h-5 mr-2" />
+                Profile
+              </Link>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  setMenuOpen(false);
+                  navigate("/auth/login");
+                }}
+                className="flex items-center text-gray-700 hover:text-blue-600 transition py-2"
+              >
+                <LogOut className="w-5 h-5 mr-2" />
+                Log Out
+              </button>
+            </>
+          )}
         </div>
       </div>
     </nav>

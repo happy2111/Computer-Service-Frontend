@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function RepairServiceHero() {
   return (
-    <div className="bg-white">
+    <div className="bg-white  max-sm:pt-9">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-12 md:py-20">
           {/* Hero Content */}

@@ -45,6 +45,7 @@ export default function Profile() {
         if (res.status >= 200 && res.status < 300) {
           setUser(res.data);
           setAvatar(res.data.avatar || "");
+          console.log(res.data.avatar)
         }
       } catch (error) {
         console.error("Error fetching user data", error);
@@ -210,7 +211,7 @@ export default function Profile() {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <span className="text-gray-600 text-lg">Загрузка профиля...</span>
+          <span className="text-gray-600 text-lg">Loading Profile...</span>
         </div>
       </div>
     );
