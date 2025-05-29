@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "react-hook-form";
 import {
   Mail,
@@ -30,19 +31,35 @@ export default function ContactUs() {
       // phone: "",
     },
   });
+  const [captchaValue, setCaptchaValue] = useState(null);
+  const [captchaError, setCaptchaError] = useState("");
+
+  function onCaptchaChange(value) {
+    setCaptchaValue(value);
+    setCaptchaError("");
+  }
 
   const onSubmit = async (data) => {
+    if (!captchaValue) {
+      setCaptchaError("Please complete the captcha.");
+      return;
+    }
     setIsSubmitting(true);
     setSubmitStatus("idle");
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log("Form submitted with:", data);
-      
+
       const res = await axios.post(
-        "https://computer-service-backend.onrender.com/api/contact", data
+        "http://localhost:5000/api/contact",
+        // "https://computer-service-backend.onrender.com/api/contact",
+        {
+          ...data,
+          captcha: captchaValue, // добавляем значение капчи в тело запроса
+        }
       );
-      if (res.status >= 200 && res.status < 300) { 
+      if (res.status >= 200 && res.status < 300) {
         console.log("successful", res);
         setSubmitStatus("success");
         reset();
@@ -139,7 +156,6 @@ export default function ContactUs() {
                     </p>
                   )}
                 </div>
-
                 {/* Email Field */}
                 <div>
                   <label
@@ -170,7 +186,6 @@ export default function ContactUs() {
                     </p>
                   )}
                 </div>
-
                 {/* Phone Field (Optional)
                 <div>
                   <label
@@ -187,7 +202,6 @@ export default function ContactUs() {
                     {...register("phone")}
                   />
                 </div> */}
-
                 {/* Message Field */}
                 <div>
                   <label
@@ -218,6 +232,14 @@ export default function ContactUs() {
                     </p>
                   )}
                 </div>
+
+                <ReCAPTCHA
+                  sitekey="6LeA404rAAAAAOQOr0lMf80yss6ZNgy4RviNg1_E"
+                  onChange={onCaptchaChange}
+                />
+                {captchaError && (
+                  <p className="mt-1 text-sm text-red-500">{captchaError}</p>
+                )}
 
                 {/* Submit Button */}
                 <button
