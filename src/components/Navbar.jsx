@@ -7,6 +7,7 @@ import { User, LogOut } from "lucide-react";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [isLogged, setIsLogget] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const modalRef = useRef(null);
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ export default function Navbar() {
         if (res.status >= 200 && res.status < 300) {
           setUser(res.data);
           console.log("User data fetched successfully", res);
+          setIsLogget(true);
         }
       } catch (error) {
         console.error("Error fetching user data", error);
@@ -118,7 +120,7 @@ export default function Navbar() {
                   onClick={() => setShowProfileModal((v) => !v)}
                   aria-label="Open profile menu"
                 >
-                  {!user ? (
+                  {!isLogged ? (
                     // Иконка загрузки
                     <svg
                       className="animate-spin w-7 h-7 text-blue-400 mx-auto my-auto"
@@ -142,7 +144,10 @@ export default function Navbar() {
                     </svg>
                   ) : (
                     <img
-                      src={`https://computer-service-backend.onrender.com${user?.avatar}`}
+                      src={
+                        user.avatar &&
+                        `https://computer-service-backend.onrender.com${user.avatar}`
+                      }
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />

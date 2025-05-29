@@ -44,24 +44,27 @@ export default function ContactUs() {
       setCaptchaError("Please complete the captcha.");
       return;
     }
+
     setIsSubmitting(true);
     setSubmitStatus("idle");
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log("Form submitted with:", data);
-
+      console.log("Captcha value:", captchaValue);
       const res = await axios.post(
         "https://computer-service-backend.onrender.com/api/contact",
         {
           ...data,
-          captcha: captchaValue, // добавляем значение капчи в тело запроса
+          captcha: captchaValue, 
         }
       );
       if (res.status >= 200 && res.status < 300) {
         console.log("successful", res);
         setSubmitStatus("success");
         reset();
+        setCaptchaError("");
+        setCaptchaValue(null);
       }
     } catch (error) {
       console.error("Submission error:", error);
@@ -185,8 +188,8 @@ export default function ContactUs() {
                     </p>
                   )}
                 </div>
-                {/* Phone Field (Optional)
-                <div>
+                {/* Phone Field (Optional) */}
+                {/* <div>
                   <label
                     htmlFor="phone"
                     className="block text-sm font-medium text-gray-700 mb-1"

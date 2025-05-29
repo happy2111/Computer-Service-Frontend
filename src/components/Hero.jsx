@@ -44,16 +44,19 @@ export default function RepairServiceHero() {
                 icon={<Smartphone className="h-8 w-8 text-blue-600" />}
                 title="Phone Repair"
                 description="Screen replacement, battery service, water damage recovery"
+                href="/services"
               />
               <ServiceCard
                 icon={<Laptop className="h-8 w-8 text-blue-600" />}
                 title="Computer Repair"
                 description="Hardware upgrades, virus removal, data recovery"
+                href="/services"
               />
               <ServiceCard
                 icon={<Wrench className="h-8 w-8 text-blue-600" />}
                 title="Software Fixes"
                 description="System optimization, software installation, troubleshooting"
+                href="/services"
               />
               <ServiceCard
                 icon={
@@ -63,6 +66,7 @@ export default function RepairServiceHero() {
                 }
                 title="24/7 Support"
                 description="Emergency repairs and technical assistance anytime"
+                href="/contact-us"
               />
             </div>
           </div>
@@ -104,9 +108,12 @@ export default function RepairServiceHero() {
   );
 }
 
-function ServiceCard({ icon, title, description }) {
+function ServiceCard({ icon, title, description, href}) {
   return (
-    <div className="group relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+    <Link
+      to={href}
+      className="group relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+    >
       <div className="flex flex-col gap-4">
         <div>{icon}</div>
         <div>
@@ -117,6 +124,6 @@ function ServiceCard({ icon, title, description }) {
       <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
         <ChevronRight className="h-5 w-5 text-blue-600" />
       </div>
-    </div>
+    </Link>
   );
 }
