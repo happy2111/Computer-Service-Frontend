@@ -52,8 +52,7 @@ export default function ContactUs() {
       console.log("Form submitted with:", data);
 
       const res = await axios.post(
-        "http://localhost:5000/api/contact",
-        // "https://computer-service-backend.onrender.com/api/contact",
+        "https://computer-service-backend.onrender.com/api/contact",
         {
           ...data,
           captcha: captchaValue, // добавляем значение капчи в тело запроса
