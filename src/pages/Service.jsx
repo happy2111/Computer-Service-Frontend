@@ -199,6 +199,7 @@ export default function Service() {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setSubmitStatus("idle");
+    data.status = "Pending"
 
     try {
       const response = await fetch(

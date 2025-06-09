@@ -13,6 +13,7 @@ import ContactUs from './pages/ContactUs.jsx'
 import Profile from './pages/Profile.jsx'
 import Service from './pages/Service.jsx'
 import ScrollTop from './components/ScrollTop.jsx'
+import  AdminPanel from './pages/AdminPanel/AdminPanel.jsx'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -36,6 +37,8 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="/services" element={<Service />} />
         </Route>
+
+        <Route path="a" element={<AdminPanel/>} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
