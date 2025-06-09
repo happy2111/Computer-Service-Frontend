@@ -17,7 +17,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { Helmet } from "react-helmet";
 // Define service types
 const serviceTypes = [
   {
@@ -242,6 +242,9 @@ export default function Service() {
 
   return (
     <div className="bg-white ">
+      <Helmet>
+        <title>Services</title>
+      </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="header">
         <div className="py-12 md:py-20">
           {/* Page Header */}

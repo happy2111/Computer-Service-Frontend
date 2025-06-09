@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+
 import {
   Users,
   MessageSquare,
@@ -24,7 +26,7 @@ import {
 } from 'lucide-react';
 
 // Конфигурация API
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Axios instance для API запросов
 const createApiInstance = () => {
@@ -883,6 +885,9 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      <Helmet>
+        <title>Admin</title>
+      </Helmet>
       <NotificationComponent />
 
       {/* Sidebar */}

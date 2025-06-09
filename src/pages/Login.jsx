@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { EyeIcon, EyeOffIcon, MailIcon, LockIcon } from "lucide-react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-
+import { Helmet } from "react-helmet";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +51,11 @@ export default function Login() {
   };
 
   return (
+
     <div className="w-full min-h-screen flex items-center justify-center bg-gray-50 px-2 py-6">
+      <Helmet>
+        <title>Login</title>
+      </Helmet>
       <div className="w-full mx-auto max-w-md sm:max-w-lg overflow-hidden rounded-lg bg-white shadow-xl">
         <div className="px-4 sm:px-8 pt-6 pb-4">
           <h2 className="text-center text-lg sm:text-2xl font-bold text-gray-800">

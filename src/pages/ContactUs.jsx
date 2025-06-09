@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useForm } from "react-hook-form";
 import {
@@ -13,6 +13,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import axios from "axios";
+import {Helmet} from "react-helmet";
 
 export default function ContactUs() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,6 +77,9 @@ export default function ContactUs() {
 
   return (
     <div className="bg-white max-sm:pt-9">
+      <Helmet>
+        <title>Contact Us</title>
+      </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="header">
         <div className="py-12 md:py-20">
           {/* Page Header */}

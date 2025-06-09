@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-
+import { Helmet } from "react-helmet";
 export default function Register() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -63,6 +63,9 @@ export default function Register() {
 
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-gray-50 px-2 py-6">
+      <Helmet>
+        <title>Registration</title>
+      </Helmet>
       <div className="w-full mx-auto max-w-md sm:max-w-lg overflow-hidden rounded-lg bg-white shadow-xl">
         <div className="px-4 sm:px-8 pt-6 pb-4">
           <h2 className="text-center text-lg sm:text-2xl font-bold text-gray-800">

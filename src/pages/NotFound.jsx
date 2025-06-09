@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      <Helmet>
+        <title>Not Found - 404</title>
+      </Helmet>
       <div className="text-blue-600 mb-4">
         <svg
           className="w-20 h-20 mx-auto"

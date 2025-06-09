@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { Helmet } from "react-helmet";
 export default function Profile() {
   // State for avatar
   const [avatar, setAvatar] = useState("");
@@ -190,6 +190,9 @@ export default function Profile() {
   if (loading) {
     return (
       <div className=" flex min-h-screen items-center justify-center bg-white">
+        <Helmet>
+          <title>Profile</title>
+        </Helmet>
         <div className="flex flex-col items-center">
           <svg
             className="animate-spin h-10 w-10 text-blue-600 mb-4"
