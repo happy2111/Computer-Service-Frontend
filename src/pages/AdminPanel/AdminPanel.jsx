@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 
 // Конфигурация API
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api';
 
 // Axios instance для API запросов
 const createApiInstance = () => {
@@ -140,6 +140,7 @@ const AdminPanel = () => {
       setLoading(prev => ({ ...prev, users: false }));
     }
   };
+
 
   const fetchContactMessages = async () => {
     try {
@@ -265,7 +266,7 @@ const AdminPanel = () => {
 
   const updateServiceRequestStatus = async (requestId, newStatus) => {
     try {
-      await api.put(`/service-requests/${requestId}/status`, { status: newStatus });
+      await api.put(`/services/${requestId}/status`, { status: newStatus });
       setServiceRequests(serviceRequests.map(req =>
         req.id === requestId ? { ...req, status: newStatus } : req
       ));
@@ -273,6 +274,8 @@ const AdminPanel = () => {
     } catch (error) {
       console.error('Error updating service request status:', error);
       showNotification('Ошибка обновления статуса', 'error');
+    }finally {
+      console.log(newStatus)
     }
   };
 
@@ -280,7 +283,7 @@ const AdminPanel = () => {
     if (!window.confirm('Вы уверены, что хотите удалить эту заявку?')) return;
 
     try {
-      await api.delete(`/service-requests/${requestId}`);
+      await api.delete(`/services/${requestId}`);
       setServiceRequests(serviceRequests.filter(req => req.id !== requestId));
       showNotification('Заявка успешно удалена');
     } catch (error) {
@@ -331,9 +334,13 @@ const AdminPanel = () => {
       inactive: 'bg-gray-100 text-gray-800',
       pending: 'bg-yellow-100 text-yellow-800',
       'in-progress': 'bg-blue-100 text-blue-800',
-      completed: 'bg-green-100 text-green-800'
+      completed: 'bg-green-100 text-green-800',
+      admin: 'bg-green-100 text-green-800',
+      personal: 'bg-yellow-100 text-yellow-800',
+
+
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-yellow-100 text-yellow-800';
   };
 
   // Фильтрация данных
@@ -454,7 +461,7 @@ const AdminPanel = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Service Requests</h3>
               <div className="space-y-3">
                 {serviceRequests.slice(0, 3).map((request) => (
-                  <div key={request.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={request._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
                       <p className="font-medium text-gray-900">{request.name}</p>
                       <p className="text-sm text-gray-600">{request.deviceModel}</p>
@@ -535,7 +542,7 @@ const AdminPanel = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -560,8 +567,8 @@ const AdminPanel = () => {
                     {formatDate(user.joinedAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(user.status)}`}>
-                      {user.status}
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(user.role)}`}>
+                      {user.role}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -692,7 +699,7 @@ const AdminPanel = () => {
         <div className="p-6">
           <div className="space-y-6">
             {filteredServiceRequests.map((request) => (
-              <div key={request.id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50">
+              <div key={request._id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">{request.serviceType}</h3>
@@ -701,7 +708,7 @@ const AdminPanel = () => {
                   <div className="flex items-center space-x-2">
                     <select
                       value={request.status}
-                      onChange={(e) => updateServiceRequestStatus(request.id, e.target.value)}
+                      onChange={(e) => updateServiceRequestStatus(request._id, e.target.value)}
                       className={`px-3 py-1 text-sm font-medium rounded-full border-0 ${getStatusBadge(request.status)}`}
                     >
                       <option value="pending">Pending</option>
@@ -760,7 +767,7 @@ const AdminPanel = () => {
                     onClick={() => {
                       const newStatus = request.status === 'pending' ? 'in-progress' :
                         request.status === 'in-progress' ? 'completed' : 'pending';
-                      updateServiceRequestStatus(request.id, newStatus);
+                      updateServiceRequestStatus(request._id, newStatus);
                     }}
                     className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
                   >
@@ -773,7 +780,7 @@ const AdminPanel = () => {
                     Contact Customer
                   </button>
                   <button
-                    onClick={() => deleteServiceRequest(request.id)}
+                    onClick={() => deleteServiceRequest(request._id)}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                   >
                     <Trash2 className="h-4 w-4" />
