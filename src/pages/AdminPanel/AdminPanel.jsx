@@ -575,9 +575,9 @@ const AdminPanel = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-3">
-                      <button className="text-blue-600 hover:text-blue-900">
-                        <Eye className="h-4 w-4" />
-                      </button>
+                      {/*<button className="text-blue-600 hover:text-blue-900">*/}
+                      {/*  <Eye className="h-4 w-4" />*/}
+                      {/*</button>*/}
                       <button
                         onClick={() => deleteUser(user._id)}
                         className="text-red-600 hover:text-red-900"
@@ -634,14 +634,24 @@ const AdminPanel = () => {
                       </span>
                       <span className="flex items-center">
                         <span className="h-2 w-2 bg-green-400 rounded-full mr-1"></span>
-                        Captcha: {message.captcha}
+                        Captcha:
+                        <textarea
+                          className="resize-x"
+
+                          name=""
+                          id=""
+                          cols="30"
+                          rows="1"
+                          readonly
+                          value={message.captcha}
+                        ></textarea>
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                      <Eye className="h-4 w-4" />
-                    </button>
+                    {/*<button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">*/}
+                    {/*  <Eye className="h-4 w-4" />*/}
+                    {/*</button>*/}
                     <button
                       onClick={() => deleteContactMessage(message._id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
