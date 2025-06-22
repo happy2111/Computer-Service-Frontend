@@ -25,7 +25,7 @@ export default function Login() {
     setServerError("");
     try {
       const res = await axios.post(
-        "https://computer-service-backend.onrender.com/api/auth/login",
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
         data
       );
       if (res.status >= 200 && res.status < 300) {

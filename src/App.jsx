@@ -17,8 +17,6 @@ import AdminPanel from './pages/AdminPanel/AdminPanel.jsx'
 import AdminRoute from "./pages/AdminPanel/AdminRoute.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <BrowserRouter>
       <ScrollTop />

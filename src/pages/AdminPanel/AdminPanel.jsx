@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
+import AddServiceModal from "../../components/AddServiceModal.jsx";
 
 import {
   Users,
@@ -22,7 +23,8 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle,
-  RefreshCw
+  RefreshCw,
+  Plus
 } from 'lucide-react';
 
 // Конфигурация API
@@ -116,6 +118,7 @@ const AdminPanel = () => {
   // Поисковые и фильтр состояния
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showAddServiceModal, setShowAddServiceModal] = useState(false);
 
   // Показать уведомление
   const showNotification = (message, type = 'success') => {
@@ -179,8 +182,9 @@ const AdminPanel = () => {
   const fetchServiceRequests = async () => {
     try {
       setLoading(prev => ({ ...prev, services: true }));
-      const response = await api.get('/services');
+      const response = await api.get('/services/all');
       setServiceRequests(response.data);
+      console.log(response.data)
     } catch (error) {
       console.error('Error fetching service requests:', error);
       showNotification('Ошибка загрузки заявок на сервис', 'error');
@@ -259,7 +263,7 @@ const AdminPanel = () => {
     try {
       await api.delete(`/contact/${messageId}`);
       setContactMessages(contactMessages.filter(msg => msg.id !== messageId));
-      showNotification('Сообщение успешно удалено');
+      showNotification('Сообщение успешно удален��');
     } catch (error) {
       console.error('Error deleting message:', error);
       showNotification('Ошибка удаления сообщения', 'error');
@@ -353,9 +357,13 @@ const AdminPanel = () => {
     return matchesSearch && matchesStatus;
   });
 
+  // Фильтрация заявок с учётом новых полей
   const filteredServiceRequests = serviceRequests.filter(request => {
-    const matchesSearch = request.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.deviceModel.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = request.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.deviceModel?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.deviceType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.imei?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -465,8 +473,10 @@ const AdminPanel = () => {
                 {serviceRequests.slice(0, 3).map((request) => (
                   <div key={request._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
-                      <p className="font-medium text-gray-900">{request.name}</p>
-                      <p className="text-sm text-gray-600">{request.deviceModel}</p>
+                      <p className="font-medium text-gray-900">{request.userName}</p>
+                      <p className="text-sm text-gray-600">{request.deviceType} {request.deviceModel}</p>
+                      <p className="text-xs text-gray-500">IMEI: {request.imei}</p>
+                      <p className="text-xs text-gray-500">Телефон: {request.phone}</p>
                     </div>
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(request.status)}`}>
                       {request.status}
@@ -674,6 +684,13 @@ const AdminPanel = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">Service Requests</h2>
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setShowAddServiceModal(true)}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add
+            </button>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
@@ -714,34 +731,42 @@ const AdminPanel = () => {
               <div key={request._id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{request.serviceType}</h3>
-                    <p className="text-blue-600 font-medium">{request.deviceType} - {request.deviceModel}</p>
+                    <h3 className="text-lg font-semibold text-gray-900">{request.deviceType} {request.deviceModel}</h3>
+                    <p className="text-blue-600 font-medium">Клиент: {request.userName}</p>
+                    <p className="text-gray-600 text-sm">Проблема: {request.issueDescription}</p>
+                    <p className="text-gray-600 text-sm">Телефон: {request.phone}</p>
+                    <p className="text-gray-600 text-sm">IMEI: {request.imei}</p>
+                    <p className="text-gray-600 text-sm">Доп. информация: {request.additionalInfo}</p>
+                    <p className="text-gray-600 text-sm">Мастер: {request.master}</p>
+                    <p className="text-gray-600 text-sm">Стоимость: {request.cost} сум</p>
+                    <p className="text-gray-600 text-sm">Статус: {request.status}</p>
+                    {/*<p className="text-gray-600 text-sm">Создано: {formatDate(request.createdAt)}</p>*/}
                   </div>
                   <div className="flex items-center space-x-2">
                     <select
                       value={request.status}
-                      onChange={(e) => updateServiceRequestStatus(request._id, e.target.value)}
+                      onChange={e => updateServiceRequestStatus(request._id, e.target.value)}
                       className={`px-3 py-1 text-sm font-medium rounded-full border-0 ${getStatusBadge(request.status)}`}
                     >
-                      <option value="pending">Pending</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="completed">Completed</option>
+                      <option value="pending">В ожидании</option>
+                      <option value="in-progress">В работе</option>
+                      <option value="completed">Завершено</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">Customer:</span>
-                      <span className="text-sm font-medium text-gray-900">{request.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">Email:</span>
-                      <span className="text-sm font-medium text-gray-900">{request.email}</span>
-                    </div>
+                    {/*<div className="flex items-center space-x-2">*/}
+                    {/*  <Users className="h-4 w-4 text-gray-400" />*/}
+                    {/*  <span className="text-sm text-gray-600">Customer:</span>*/}
+                    {/*  <span className="text-sm font-medium text-gray-900">{request.name}</span>*/}
+                    {/*</div>*/}
+                    {/*<div className="flex items-center space-x-2">*/}
+                    {/*  <Mail className="h-4 w-4 text-gray-400" />*/}
+                    {/*  <span className="text-sm text-gray-600">Email:</span>*/}
+                    {/*  <span className="text-sm font-medium text-gray-900">{request.email}</span>*/}
+                    {/*</div>*/}
                     <div className="flex items-center space-x-2">
                       <Phone className="h-4 w-4 text-gray-400" />
                       <span className="text-sm text-gray-600">Phone:</span>
@@ -749,11 +774,11 @@ const AdminPanel = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">Preferred Date:</span>
-                      <span className="text-sm font-medium text-gray-900">{formatDate(request.preferredDate)}</span>
-                    </div>
+                    {/*<div className="flex items-center space-x-2">*/}
+                    {/*  <Calendar className="h-4 w-4 text-gray-400" />*/}
+                    {/*  <span className="text-sm text-gray-600">Preferred Date:</span>*/}
+                    {/*  <span className="text-sm font-medium text-gray-900">{formatDate(request.preferredDate)}</span>*/}
+                    {/*</div>*/}
                     <div className="flex items-center space-x-2">
                       <Clock className="h-4 w-4 text-gray-400" />
                       <span className="text-sm text-gray-600">Created:</span>
@@ -762,17 +787,17 @@ const AdminPanel = () => {
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">Issue Description:</h4>
-                  <p className="text-gray-600 text-sm">{request.issueDescription}</p>
-                </div>
+                {/*<div className="mb-4">*/}
+                {/*  <h4 className="text-sm font-medium text-gray-700 mb-1">Issue Description:</h4>*/}
+                {/*  <p className="text-gray-600 text-sm">{request.issueDescription}</p>*/}
+                {/*</div>*/}
 
-                {request.additionalInfo && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-1">Additional Information:</h4>
-                    <p className="text-gray-600 text-sm">{request.additionalInfo}</p>
-                  </div>
-                )}
+                {/*{request.additionalInfo && (*/}
+                {/*  <div className="mb-4">*/}
+                {/*    <h4 className="text-sm font-medium text-gray-700 mb-1">Additional Information:</h4>*/}
+                {/*    <p className="text-gray-600 text-sm">{request.additionalInfo}</p>*/}
+                {/*  </div>*/}
+                {/*)}*/}
 
                 <div className="flex items-center space-x-3">
                   <button
@@ -786,7 +811,9 @@ const AdminPanel = () => {
                     Update Status
                   </button>
                   <button
-                    onClick={() => window.open(`mailto:${request.email}?subject=Service Request Update&body=Hello ${request.name},%0D%0A%0D%0ARegarding your ${request.serviceType} request...`)}
+                    onClick={() => window.open(`tel:${request.phone}`)}
+
+                    // onClick={() => window.open(`mailto:${request.email}?subject=Service Request Update&body=Hello ${request.name},%0D%0A%0D%0ARegarding your ${request.serviceType} request...`)}
                     className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
                   >
                     Contact Customer
@@ -986,8 +1013,13 @@ const AdminPanel = () => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {showAddServiceModal && (
+        <AddServiceModal isOpen={showAddServiceModal} onClose={() => setShowAddServiceModal(false)} />
+      )}
     </div>
   );
 };
 
 export default AdminPanel;
+
