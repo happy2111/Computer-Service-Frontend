@@ -525,7 +525,7 @@ export default function Profile() {
                           </span>
                           {d.cost !== undefined && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                              Стоимость: {d.cost} ₽
+                              Стоимость: {d.cost} сум
                             </span>
                           )}
                           {d.master && (
