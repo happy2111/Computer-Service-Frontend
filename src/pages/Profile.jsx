@@ -35,7 +35,7 @@ export default function Profile() {
         const token = localStorage.getItem("token");
         if (!token) return navigate("/auth/login");
         const res = await axios.get(
-          "https://computer-service-backend.onrender.com/api/user/me",
+          `${import.meta.env.VITE_API_BASE_URL}/user/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -44,6 +44,7 @@ export default function Profile() {
         );
         if (res.status >= 200 && res.status < 300) {
           setUser(res.data);
+          console.log(res.data);
           setAvatar(res.data.avatar || "");
           console.log(res.data.avatar)
         }
@@ -95,7 +96,7 @@ export default function Profile() {
       }
 
       const res = await axios.put(
-        "https://computer-service-backend.onrender.com/api/user/profile",
+        `${import.meta.env.VITE_API_BASE_URL}/user/profile`,
         formData,
         {
           headers: {
@@ -475,9 +476,78 @@ export default function Profile() {
                 </div>
               </form>
             </div>
+
+            {/*  devices */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                  <Info className="h-5 w-5 text-blue-500" /> Устройства
+                </h2>
+              </div>
+              {userData && userData.device && userData.device.length > 0 ? (
+                <div className="grid gap-6">
+                  {userData.device.map((d, idx) => (
+                    <div key={idx} className="border border-gray-100 rounded-lg shadow-sm p-5 flex flex-col sm:flex-row gap-4 bg-gray-50 hover:shadow-md transition">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-lg font-semibold text-gray-900">{d.deviceType}</span>
+                          <span className="ml-2 text-gray-500 text-sm">{d.deviceModel}</span>
+                        </div>
+                        <div className="text-gray-700 mb-1 flex items-center gap-2">
+                          <Info className="h-4 w-4 text-gray-400" />
+                          <span className="font-medium">Описание проблемы:</span> {d.issueDescription}
+                        </div>
+                        <div className="text-gray-700 mb-1 flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-gray-400" />
+                          <span className="font-medium">Телефон:</span> {d.phone}
+                        </div>
+                        {d.additionalInfo && (
+                          <div className="text-gray-700 mb-1 flex items-center gap-2">
+                            <Info className="h-4 w-4 text-gray-400" />
+                            <span className="font-medium">Доп. информация:</span> {d.additionalInfo}
+                          </div>
+                        )}
+                        {d.imei && (
+                          <div className="text-gray-700 mb-1 flex items-center gap-2">
+                            <span className="inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono">IMEI: {d.imei}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            d.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            d.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                            'bg-green-100 text-green-800'
+                          }`}>
+                            {d.status === 'pending' && <Info className="h-3 w-3 mr-1" />}
+                            {d.status === 'in-progress' && <Camera className="h-3 w-3 mr-1" />}
+                            {d.status === 'completed' && <CheckCircle className="h-3 w-3 mr-1" />}
+                            {d.status === 'pending' ? 'В ожидании' : d.status === 'in-progress' ? 'В работе' : 'Завершено'}
+                          </span>
+                          {d.cost !== undefined && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                              Стоимость: {d.cost} ₽
+                            </span>
+                          )}
+                          {d.master && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                              Мастер: {d.master}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm">Нет добавленных устройств.</div>
+              )}
+            </div>
+
+
           </div>
         </div>
       </div>
     </div>
   );
 }
+
