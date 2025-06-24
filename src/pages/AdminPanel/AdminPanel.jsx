@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import AddServiceModal from "../../components/AddServiceModal.jsx";
+import UsersContent from './UsersContent.jsx';
+import ServicesContent from './ServicesContent.jsx';
 
 import {
   Users,
@@ -270,11 +272,11 @@ const AdminPanel = () => {
     }
   };
 
-  const updateServiceRequestStatus = async (requestId, newStatus) => {
+  const updateServiceRequestStatus = async (requestId, newStatus, userId) => {
     try {
-      await api.put(`/services/${requestId}/status`, { status: newStatus });
+      await api.put(`/services/${requestId}/status?userId=${userId}`, { status: newStatus });
       setServiceRequests(serviceRequests.map(req =>
-        req.id === requestId ? { ...req, status: newStatus } : req
+        (req.id === requestId || req._id === requestId) ? { ...req, status: newStatus } : req
       ));
       showNotification('Статус заявки обновлен');
     } catch (error) {
@@ -285,11 +287,11 @@ const AdminPanel = () => {
     }
   };
 
-  const deleteServiceRequest = async (requestId) => {
+  const deleteServiceRequest = async (requestId, userId) => {
     if (!window.confirm('Вы уверены, что хотите удалить эту заявку?')) return;
 
     try {
-      await api.delete(`/services/${requestId}`);
+      await api.delete(`/services/${requestId}?userId=${userId}`);
       setServiceRequests(serviceRequests.filter(req => req.id !== requestId));
       showNotification('Заявка успешно удалена');
     } catch (error) {
@@ -297,6 +299,20 @@ const AdminPanel = () => {
       showNotification('Ошибка удаления заявки', 'error');
     }
   };
+
+  // Получение статуса заявки по deviceId и userId (для админа)
+  const getServiceRequestStatus = async (deviceId, userId) => {
+    try {
+      const response = await api.get(`/services/${deviceId}/status?userId=${userId}`);
+      return response.data.status;
+    } catch (error) {
+      showNotification('Ошибка получения статуса заявки', 'error');
+      return null;
+    }
+  };
+
+  // Пример использования:
+  // const status = await getServiceRequestStatus(request._id, request.userId);
 
   // Загрузка данных при инициализации
   useEffect(() => {
@@ -350,12 +366,14 @@ const AdminPanel = () => {
   };
 
   // Фильтрация данных
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [users, searchTerm, statusFilter]);
 
   // Фильтрация заявок с учётом новых полей
   const filteredServiceRequests = serviceRequests.filter(request => {
@@ -508,103 +526,6 @@ const AdminPanel = () => {
     </div>
   );
 
-  const UsersContent = () => (
-    <div className="bg-white rounded-lg shadow-sm border">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Registered Users</h2>
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            <button
-              onClick={fetchUsers}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Обновить
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {loading.users ? (
-        <LoadingSpinner />
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-medium text-sm">{user.name.charAt(0)}</span>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.email}</div>
-                    <div className="text-sm text-gray-500">{user.phone}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(user.joinedAt)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(user.role)}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-3">
-                      {/*<button className="text-blue-600 hover:text-blue-900">*/}
-                      {/*  <Eye className="h-4 w-4" />*/}
-                      {/*</button>*/}
-                      <button
-                        onClick={() => deleteUser(user._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-
   const ContactsContent = () => (
     <div className="bg-white rounded-lg shadow-sm border">
       <div className="p-6 border-b border-gray-200">
@@ -677,161 +598,7 @@ const AdminPanel = () => {
       )}
     </div>
   );
-
-  const ServicesContent = () => (
-    <div className="bg-white rounded-lg shadow-sm border">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Service Requests</h2>
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setShowAddServiceModal(true)}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add
-            </button>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search requests..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select>
-            <button
-              onClick={fetchServiceRequests}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Обновить
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {loading.services ? (
-        <LoadingSpinner />
-      ) : (
-        <div className="p-6">
-          <div className="space-y-6">
-            {filteredServiceRequests.map((request) => (
-              <div key={request._id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">{request.deviceType} {request.deviceModel}</h3>
-                    <p className="text-blue-600 font-medium">Клиент: {request.userName}</p>
-                    <p className="text-gray-600 text-sm">Проблема: {request.issueDescription}</p>
-                    <p className="text-gray-600 text-sm">Телефон: {request.phone}</p>
-                    <p className="text-gray-600 text-sm">IMEI: {request.imei}</p>
-                    <p className="text-gray-600 text-sm">Доп. информация: {request.additionalInfo}</p>
-                    <p className="text-gray-600 text-sm">Мастер: {request.master}</p>
-                    <p className="text-gray-600 text-sm">Стоимость: {request.cost} сум</p>
-                    <p className="text-gray-600 text-sm">Статус: {request.status}</p>
-                    {/*<p className="text-gray-600 text-sm">Создано: {formatDate(request.createdAt)}</p>*/}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <select
-                      value={request.status}
-                      onChange={e => updateServiceRequestStatus(request._id, e.target.value)}
-                      className={`px-3 py-1 text-sm font-medium rounded-full border-0 ${getStatusBadge(request.status)}`}
-                    >
-                      <option value="pending">В ожидании</option>
-                      <option value="in-progress">В работе</option>
-                      <option value="completed">Завершено</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div className="space-y-2">
-                    {/*<div className="flex items-center space-x-2">*/}
-                    {/*  <Users className="h-4 w-4 text-gray-400" />*/}
-                    {/*  <span className="text-sm text-gray-600">Customer:</span>*/}
-                    {/*  <span className="text-sm font-medium text-gray-900">{request.name}</span>*/}
-                    {/*</div>*/}
-                    {/*<div className="flex items-center space-x-2">*/}
-                    {/*  <Mail className="h-4 w-4 text-gray-400" />*/}
-                    {/*  <span className="text-sm text-gray-600">Email:</span>*/}
-                    {/*  <span className="text-sm font-medium text-gray-900">{request.email}</span>*/}
-                    {/*</div>*/}
-                    <div className="flex items-center space-x-2">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">Phone:</span>
-                      <span className="text-sm font-medium text-gray-900">{request.phone}</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {/*<div className="flex items-center space-x-2">*/}
-                    {/*  <Calendar className="h-4 w-4 text-gray-400" />*/}
-                    {/*  <span className="text-sm text-gray-600">Preferred Date:</span>*/}
-                    {/*  <span className="text-sm font-medium text-gray-900">{formatDate(request.preferredDate)}</span>*/}
-                    {/*</div>*/}
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">Created:</span>
-                      <span className="text-sm font-medium text-gray-900">{formatDate(request.createdAt)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/*<div className="mb-4">*/}
-                {/*  <h4 className="text-sm font-medium text-gray-700 mb-1">Issue Description:</h4>*/}
-                {/*  <p className="text-gray-600 text-sm">{request.issueDescription}</p>*/}
-                {/*</div>*/}
-
-                {/*{request.additionalInfo && (*/}
-                {/*  <div className="mb-4">*/}
-                {/*    <h4 className="text-sm font-medium text-gray-700 mb-1">Additional Information:</h4>*/}
-                {/*    <p className="text-gray-600 text-sm">{request.additionalInfo}</p>*/}
-                {/*  </div>*/}
-                {/*)}*/}
-
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => {
-                      const newStatus = request.status === 'pending' ? 'in-progress' :
-                        request.status === 'in-progress' ? 'completed' : 'pending';
-                      updateServiceRequestStatus(request._id, newStatus);
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
-                  >
-                    Update Status
-                  </button>
-                  <button
-                    onClick={() => window.open(`tel:${request.phone}`)}
-
-                    // onClick={() => window.open(`mailto:${request.email}?subject=Service Request Update&body=Hello ${request.name},%0D%0A%0D%0ARegarding your ${request.serviceType} request...`)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
-                  >
-                    Contact Customer
-                  </button>
-                  <button
-                    onClick={() => deleteServiceRequest(request._id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  
 
   const SettingsContent = () => (
     <div className="space-y-6">
@@ -908,17 +675,49 @@ const AdminPanel = () => {
       case 'dashboard':
         return <DashboardContent />;
       case 'users':
-        return <UsersContent />;
+        return (
+          <UsersContent
+            filteredUsers={filteredUsers}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            loading={loading}
+            fetchUsers={fetchUsers}
+            deleteUser={deleteUser}
+            formatDate={formatDate}
+            getStatusBadge={getStatusBadge}
+            LoadingSpinner={LoadingSpinner}
+          />
+        );
       case 'contacts':
         return <ContactsContent />;
       case 'services':
-        return <ServicesContent />;
+        return (
+          <ServicesContent
+            filteredServiceRequests={filteredServiceRequests}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            loading={loading}
+            fetchServiceRequests={fetchServiceRequests}
+            updateServiceRequestStatus={updateServiceRequestStatus}
+            deleteServiceRequest={deleteServiceRequest}
+            formatDate={formatDate}
+            getStatusBadge={getStatusBadge}
+            setShowAddServiceModal={setShowAddServiceModal}
+            LoadingSpinner={LoadingSpinner}
+          />
+        );
       case 'settings':
         return <SettingsContent />;
       default:
         return <DashboardContent />;
     }
   };
+
+  console.log('[AdminPanel render]', { searchTerm, statusFilter, usersLength: users.length });
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -954,7 +753,6 @@ const AdminPanel = () => {
                   key={item.id}
                   onClick={() => {
                     setActiveTab(item.id);
-                    setSearchTerm('');
                     setStatusFilter('all');
                   }}
                   className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
@@ -988,10 +786,10 @@ const AdminPanel = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
               </div>
               <div className="flex items-center space-x-4">
-                <button className="relative p-2 text-gray-400 hover:text-gray-600">
-                  <Bell className="h-6 w-6" />
-                  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-                </button>
+                {/*<button className="relative p-2 text-gray-400 hover:text-gray-600">*/}
+                {/*  <Bell className="h-6 w-6" />*/}
+                {/*  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>*/}
+                {/*</button>*/}
                 <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white font-medium text-sm">A</span>
                 </div>

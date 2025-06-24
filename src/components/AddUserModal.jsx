@@ -80,7 +80,7 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated , handleUs
               value={form.phone}
               onChange={handleChange}
               required
-              placeholder="998901234567"
+              placeholder="+998901234567"
             />
           </div>
           {error && <div className="text-red-600 text-sm">{error}</div>}

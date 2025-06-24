@@ -3,6 +3,7 @@ import AddUserModal from "./AddUserModal";
 
 export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
   const [userName, setUserName] = useState("");
+  const [userPhone, setUserPhone] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false);
   const [userList, setUserList] = useState([]);
   const [form, setForm] = useState({
@@ -29,7 +30,7 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
         }
       });
       const data = await res.json();
-      setUserList(data.map(u => ({ id: u._id, name: u.name })));
+      setUserList(data.map(u => ({ id: u._id, name: u.name , phone: u.phone})));
     } catch (e) {
       setUserList([]);
     }
@@ -65,6 +66,8 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
     setUserName(name);
     const user = userList.find(u => u.name === name);
     setSelectedUserId(user ? user.id : "");
+    setUserPhone(user ? user.phone : "");
+    setForm({ ...form, phone: user ? user.phone : "" }); // обновляем phone в форме
     setShowDropdown(false);
   };
 
@@ -131,6 +134,9 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
                   ))}
               </ul>
             )}
+            <p>
+              {userPhone}
+            </p>
           </div>
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r ml-0"
