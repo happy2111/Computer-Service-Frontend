@@ -1,5 +1,5 @@
 import {Search, RefreshCw, Plus, Trash2, Printer} from 'lucide-react';
-import React, { useRef } from "react";
+import React, { useRef , useState} from "react";
 import { useReactToPrint } from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
 
@@ -19,18 +19,16 @@ const ServicesContent = React.memo(({
   LoadingSpinner
 }) => {
 
-  const printRef = useRef();
-  const currentPrintData = useRef(null);
-
+  const componentRef = useRef(null);
+  const [printData, setPrintData] = useState(null);
   const handlePrint = useReactToPrint({
-    content: () => printRef.current,
-    documentTitle: "Ремонт-карточка",
-    removeAfterPrint: true
+    contentRef: componentRef,
+    documentTitle: "Ремонт"
   });
 
   const triggerPrint = (request) => {
-    currentPrintData.current = request;
-    setTimeout(handlePrint, 100); // небольшая задержка
+    setPrintData(request);
+    setTimeout(handlePrint, 100);
   };
 
 
@@ -141,12 +139,15 @@ const ServicesContent = React.memo(({
                   >
                     Contact Customer
                   </button>
-                  {/*<button*/}
-                  {/*  onClick={() => triggerPrint(request)}*/}
-                  {/*  className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"*/}
-                  {/*>*/}
-                  {/*  Печать*/}
-                  {/*</button>*/}
+                  <button
+                    onClick={() =>
+                      triggerPrint(request)
+                    }
+                    className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                  >
+                    Печать
+                  </button>
+
                   <button
                     onClick={() => deleteServiceRequest(request._id, request.userId)}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
@@ -157,7 +158,11 @@ const ServicesContent = React.memo(({
               </div>
             ))}
           </div>
-
+          <div style={{ display: "none" }}>
+            {printData && (
+              <PrintableCard ref={componentRef} request={printData} />
+            )}
+          </div>
         </div>
 
       )}
