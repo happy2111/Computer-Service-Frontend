@@ -4,6 +4,9 @@ import AddServiceModal from "../../components/AddServiceModal.jsx";
 import UsersContent from './UsersContent.jsx';
 import ServicesContent from './ServicesContent.jsx';
 
+import MastersStatsTable from "../../components/MastersStatsTable";
+import { useNavigate, Outlet } from "react-router-dom";
+
 import {
   Users,
   MessageSquare,
@@ -26,8 +29,10 @@ import {
   AlertCircle,
   CheckCircle,
   RefreshCw,
-  Plus
+  Plus,
+  User
 } from 'lucide-react';
+import Profile from '../Profile.jsx';
 
 // Конфигурация API
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -314,7 +319,7 @@ const AdminPanel = () => {
   // Пример использования:
   // const status = await getServiceRequestStatus(request._id, request.userId);
 
-  // Загрузка данных при инициализации
+  // Загр��зка данных при инициализации
   useEffect(() => {
     fetchDashboardStats();
     fetchUsers();
@@ -337,6 +342,7 @@ const AdminPanel = () => {
     { id: 'users', label: 'Users', icon: Users },
     { id: 'contacts', label: 'Contact Messages', icon: MessageSquare },
     { id: 'services', label: 'Service Requests', icon: Wrench },
+    { id: 'profile', label: 'Profile', icon: User }, // добавлен профиль
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
@@ -521,6 +527,10 @@ const AdminPanel = () => {
               </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <MastersStatsTable />
+          </div>
         </>
       )}
     </div>
@@ -550,7 +560,7 @@ const AdminPanel = () => {
               <div key={message.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
+                    <div className="sm:flex items-center space-x-3 mb-2">
                       <h3 className="text-lg font-medium text-gray-900">{message.name}</h3>
                       <span className="text-sm text-gray-500 flex items-center">
                         <Mail className="h-4 w-4 mr-1" />
@@ -558,7 +568,7 @@ const AdminPanel = () => {
                       </span>
                     </div>
                     <p className="text-gray-700 mb-3">{message.message}</p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="sm:flex items-center space-x-4 text-sm text-gray-500">
                       <span className="flex items-center">
                         <Clock className="h-4 w-4 mr-1" />
                         {formatDate(message.createdAt)}
@@ -568,10 +578,9 @@ const AdminPanel = () => {
                         Captcha:
                         <textarea
                           className="resize-x"
-
                           name=""
                           id=""
-                          cols="30"
+                          cols="15"
                           rows="1"
                           readonly
                           value={message.captcha}
@@ -710,6 +719,8 @@ const AdminPanel = () => {
             LoadingSpinner={LoadingSpinner}
           />
         );
+      case 'profile':
+        return <Profile />;
       case 'settings':
         return <SettingsContent />;
       default:
@@ -717,7 +728,8 @@ const AdminPanel = () => {
     }
   };
 
-  console.log('[AdminPanel render]', { searchTerm, statusFilter, usersLength: users.length });
+  // console.log('[AdminPanel render]', { searchTerm, statusFilter, usersLength: users.length });
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -790,9 +802,15 @@ const AdminPanel = () => {
                 {/*  <Bell className="h-6 w-6" />*/}
                 {/*  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>*/}
                 {/*</button>*/}
-                <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-sm">A</span>
-                </div>
+                {/*<button*/}
+                {/*  type="button"*/}
+                {/*  className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-400"*/}
+                {/*  onClick={() => {*/}
+                {/*  }}*/}
+                {/*  title="Профиль"*/}
+                {/*>*/}
+                {/*  <span className="text-white font-medium text-sm">A</span>*/}
+                {/*</button>*/}
               </div>
             </div>
           </div>
@@ -801,6 +819,7 @@ const AdminPanel = () => {
         {/* Content */}
         <main className="p-6">
           {renderContent()}
+          {/*<Outlet />*/}
         </main>
       </div>
 

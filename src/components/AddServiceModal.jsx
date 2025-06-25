@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import AddUserModal from "./AddUserModal";
+import axios from "axios";
+import AddMasterModal from "./AddMasterModal.jsx";
 
-export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
+export default function AddServiceModal({isOpen, onClose, onAddUser}) {
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false);
@@ -14,10 +16,12 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
     additionalInfo: "",
     imei: "",
     cost: "",
+    costOr: "",
     master: ""
   });
   const [selectedUserId, setSelectedUserId] = useState("");
   const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [showAddMasterModal, setShowAddMasterModal] = useState(false)
 
   const dropdownRef = React.useRef(null);
 
@@ -30,7 +34,7 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
         }
       });
       const data = await res.json();
-      setUserList(data.map(u => ({ id: u._id, name: u.name , phone: u.phone})));
+      setUserList(data.map(u => ({id: u._id, name: u.name, phone: u.phone})));
     } catch (e) {
       setUserList([]);
     }
@@ -38,6 +42,7 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
 
   useEffect(() => {
     fetchUsers();
+    fetchMaster()
   }, []);
 
   useEffect(() => {
@@ -47,11 +52,13 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
 
   useEffect(() => {
     if (!showDropdown) return;
+
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -59,7 +66,7 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
   }, [showDropdown]);
 
   const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({...form, [e.target.name]: e.target.value});
   };
 
   const handleUserSelect = (name) => {
@@ -67,7 +74,7 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
     const user = userList.find(u => u.name === name);
     setSelectedUserId(user ? user.id : "");
     setUserPhone(user ? user.phone : "");
-    setForm({ ...form, phone: user ? user.phone : "" }); // обновляем phone в форме
+    setForm({...form, phone: user ? user.phone : ""}); // обновляем phone в форме
     setShowDropdown(false);
   };
 
@@ -84,9 +91,11 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
         },
-        body: JSON.stringify({ userId: selectedUserId, ...form })
+        body: JSON.stringify({userId: selectedUserId, ...form})
       });
+      // console.log({userId: selectedUserId, ...form})
       if (!res.ok) throw new Error("Ошибка при добавлении устройства");
+
       onClose();
     } catch (err) {
       alert("Ошибка при добавлении устройства: " + err.message);
@@ -95,19 +104,48 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
 
   const handleUserCreated = (user) => {
     setShowAddUserModal(false);
+
     fetchUsers(); // обновить список пользователей после добавления
+  };
+
+
+  const [masters, setMasters] = useState([])
+  const fetchMaster = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/dashboard/masters`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+          },
+        }
+      );
+      if (response.statusText !== "OK") {
+        throw new Error('Failed to fetch masters');
+      }
+      setMasters(response.data);
+    } catch (error) {
+      console.error('Error fetching masters:', error);
+    }
+  }
+
+  const handleMasterCreated = () => {
+    setShowAddMasterModal(false);
+    fetchMaster(); // обновить список мастеров
   };
 
   if (!isOpen) return null;
 
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center ">
       <div className="bg-white z-20 rounded-lg shadow-lg p-8 w-full max-w-lg">
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-6 gap-3">
           <div className="relative w-full">
             <input
               type="text"
-              className="border border-blue-400 rounded-l px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-3/4"
+              className="border border-blue-400 rounded-l px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
               placeholder="User Name"
               value={userName}
               onChange={(e) => {
@@ -118,7 +156,10 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
               autoComplete="off"
             />
             {showDropdown && userList.length > 0 && (
-              <ul ref={dropdownRef} className="absolute left-0 w-3/4 bg-white border border-blue-300 rounded-b shadow max-h-32 overflow-y-auto z-10">
+              <ul
+                ref={dropdownRef}
+                className="absolute left-0 w-3/4 bg-white border border-blue-300 rounded-b shadow max-h-32 overflow-y-auto z-10"
+              >
                 {userList
                   .filter((user) =>
                     user.name.toLowerCase().includes(userName.toLowerCase())
@@ -143,10 +184,14 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
             onClick={() => setShowAddUserModal(true)}
             type="button"
           >
-            Add User
+            +
           </button>
         </div>
-        <form className="space-y-4" id="addSevice" onSubmit={handleSubmit}>
+        <form
+          className="space-y-4"
+          id="addSevice"
+          onSubmit={handleSubmit}
+        >
           <div>
             <label className="block text-neutral-900 text-sm font-bold mb-1">
               Device Type
@@ -229,27 +274,71 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
             <label className="block text-neutral-900 text-sm font-bold mb-1">
               Cost
             </label>
-            <input
-              type="number"
-              name="cost"
-              className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={form.cost}
-              onChange={handleInputChange}
-              placeholder="900000"
-            />
+            <div className={"flex gap-3.5 items-center"}>
+              <input
+                type="number"
+                name="cost"
+                className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={form.cost}
+                onChange={handleInputChange}
+                placeholder="sum"
+              />
+              yoki
+              <input
+                type="number"
+                name="costOr"
+                className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={form.costOr}
+                onChange={handleInputChange}
+                placeholder="sum"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-neutral-900 text-sm font-bold mb-1">
               Master
             </label>
-            <input
-              type="text"
-              name="master"
-              className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              value={form.master}
-              onChange={handleInputChange}
-              placeholder="Master Name"
-            />
+            <div className={"flex items-center gap-3"}>
+              <select
+                className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                name="master"
+                id="master"
+                onChange={handleInputChange}
+              >
+                <option
+                  disabled
+                  selected
+                  hidden
+                  className={"text-gray-500"}
+                >Select Master
+                </option>
+                {masters.map((master, index) => (
+                  <option
+                    key={index}
+                    value={master.name}
+                  >
+                    {master.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type={"button"}
+                onClick={() => setShowAddMasterModal(true)}
+                className={
+                  "bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r ml-0"
+                }
+              >
+                +
+              </button>
+            </div>
+            {/*<input*/}
+            {/*  type="text"*/}
+            {/*  name="master"*/}
+            {/*  className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"*/}
+            {/*  value={form.master}*/}
+            {/*  onChange={handleInputChange}*/}
+            {/*  placeholder="Master Name"*/}
+            {/*/>*/}
           </div>
         </form>
         <div className="flex justify-end space-x-2 mt-8">
@@ -269,9 +358,24 @@ export default function AddServiceModal({ isOpen, onClose, onAddUser }) {
           </button>
         </div>
       </div>
-      <div className="absolute inset-0 z-10 bg-neutral-700/70" onClick={onClose}></div>
+      <div
+        className="absolute inset-0 z-10 bg-neutral-700/70"
+        onClick={onClose}
+      ></div>
       {showAddUserModal && (
-        <AddUserModal isOpen={showAddUserModal} onClose={() => setShowAddUserModal(false)} onUserCreated={handleUserCreated} />
+        <AddUserModal
+          isOpen={showAddUserModal}
+          onClose={() => setShowAddUserModal(false)}
+          onUserCreated={handleUserCreated}
+        />
+      )}
+
+      {showAddMasterModal && (
+        <AddMasterModal
+          isOpen={showAddMasterModal}
+          onClose={() => setShowAddMasterModal(false)}
+          onMasterCreated={handleMasterCreated}
+        />
       )}
     </div>
   );

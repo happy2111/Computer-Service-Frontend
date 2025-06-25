@@ -44,12 +44,9 @@ export default function Profile() {
         );
         if (res.status >= 200 && res.status < 300) {
           setUser(res.data);
-          console.log(res.data);
           setAvatar(res.data.avatar || "");
-          console.log(res.data.avatar)
         }
       } catch (error) {
-        console.error("Error fetching user data", error);
         if (error.response && error.response.status === 401) {
           localStorage.removeItem("token");
           navigate("/auth/login");
@@ -60,6 +57,15 @@ export default function Profile() {
     };
     fetchUser();
   }, [navigate]);
+
+  // Проверка прав доступа
+  if (!loading && userData && userData.role !== 'admin') {
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <div className="bg-red-100 text-red-700 px-6 py-4 rounded-lg text-lg font-semibold">Нет доступа</div>
+      </div>
+    );
+  }
 
   // Profile form
   const {
@@ -550,4 +556,3 @@ export default function Profile() {
     </div>
   );
 }
-

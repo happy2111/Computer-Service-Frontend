@@ -36,17 +36,17 @@ const ServicesContent = React.memo(({
   return (
     <div className="bg-white rounded-lg shadow-sm border">
       <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Service Requests</h2>
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2 md:mb-0">Service Requests</h2>
+          <div className="flex flex-col md:flex-row flex-wrap gap-2 md:gap-3 w-full md:w-auto">
             <button
               onClick={() => setShowAddServiceModal(true)}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add
             </button>
-            <div className="relative">
+            <div className="relative w-full md:w-56">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
@@ -55,13 +55,13 @@ const ServicesContent = React.memo(({
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setStatusFilter('all')}
                 onBlur={() => setStatusFilter('all')}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -70,7 +70,7 @@ const ServicesContent = React.memo(({
             </select>
             <button
               onClick={fetchServiceRequests}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Обновить
@@ -89,12 +89,12 @@ const ServicesContent = React.memo(({
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">{request.deviceType} {request.deviceModel}</h3>
-                    <p className="text-blue-600 font-medium">Клиент: {request.userName}</p>
-                    <p className="text-gray-600 text-sm">Проблема: {request.issueDescription}</p>
+                    <p className="text-blue-600 font-medium">Mijoz: {request.userName}</p>
+                    <p className="text-gray-600 text-sm">Muammo: {request.issueDescription}</p>
                     <p className="text-gray-600 text-sm">IMEI: {request.imei}</p>
-                    <p className="text-gray-600 text-sm">Доп. информация: {request.additionalInfo}</p>
-                    <p className="text-gray-600 text-sm">Мастер: {request.master}</p>
-                    <p className="text-gray-600 text-sm">Стоимость: {request.cost} сум</p>
+                    <p className="text-gray-600 text-sm">Qo'shimcha ma'lumotlar: {request.additionalInfo}</p>
+                    <p className="text-gray-600 text-sm">Javobgar: {request.master}</p>
+                    <p className="text-gray-600 text-sm">Narx: {request.cost} sum {request.costOr && `- ${request.costOr} sum`}</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <select
@@ -171,4 +171,3 @@ const ServicesContent = React.memo(({
 });
 
 export default ServicesContent;
-

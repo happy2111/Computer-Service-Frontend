@@ -73,7 +73,9 @@ function App() {
             <AdminRoute>
               <AdminPanel />
             </AdminRoute>
-          } />
+          } >
+        </Route>
+
 
         <Route
           path="*"

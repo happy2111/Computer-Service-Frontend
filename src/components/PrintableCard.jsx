@@ -10,11 +10,11 @@ const PrintableCard = React.forwardRef(({request}, ref) => (
   bg-white text-black border
   "
   >
-    <p>Клиент: {request.userName}</p>
-    <p>Телефон: {request.phone}</p>
-    <p>Мастер: {request.master}</p>
-    <p>Доп. инфо: {request.additionalInfo}</p>
-    <p>Стоимость: {request.cost} сум</p>
+    <p><b>Mijoz:</b> {request.userName}</p>
+    <p><b>Telefon:</b> {request.phone}</p>
+    <p><b>Доп. инфо:</b> {request.additionalInfo}</p>
+    <p><b>Narxi:</b> {request.cost} so'm - {request.costOr} so'm</p>
+    <p><b>Javobgar Shaxs:</b> {request.master}</p>
   </div>
 ));
 export default PrintableCard;
