@@ -27,9 +27,9 @@ export default function MastersStatsTable() {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border p-6">
+    <div className="bg-white rounded-lg shadow-sm p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <Wrench className="h-5 w-5 text-blue-600" /> Мастера и их устройства
+        <Wrench className="h-5 w-5 text-blue-600" /> Ustalar va ularning qurilmalari
       </h3>
       {loading ? (
         <div className="flex items-center justify-center p-8">
@@ -42,15 +42,15 @@ export default function MastersStatsTable() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Мастер</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Телефон</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Устройств</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usta</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefon</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qurilmalar</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
               {masterStats.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-4 text-center text-gray-400">Нет данных</td>
+                  <td colSpan={3} className="px-4 py-4 text-center text-gray-400">Ma'lumot yo'q</td>
                 </tr>
               )}
               {masterStats.map((m, idx) => (

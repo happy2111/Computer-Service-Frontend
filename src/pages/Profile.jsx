@@ -12,6 +12,7 @@ import {
   Upload,
   X,
   Info,
+  Hammer
 } from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
@@ -202,7 +203,7 @@ export default function Profile() {
     return (
       <div className=" flex min-h-screen items-center justify-center bg-white">
         <Helmet>
-          <title>Profile</title>
+          <title>Profil</title>
         </Helmet>
         <div className="flex flex-col items-center">
           <svg
@@ -225,7 +226,7 @@ export default function Profile() {
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             ></path>
           </svg>
-          <span className="text-gray-600 text-lg">Loading Profile...</span>
+          <span className="text-gray-600 text-lg">Profil yuklanmoqda...</span>
         </div>
       </div>
     );
@@ -238,10 +239,10 @@ export default function Profile() {
           {/* Page Header */}
           <div className="max-w-3xl mx-auto mb-12">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-              Your Profile
+              Profilingiz
             </h1>
             <p className="text-lg text-gray-600">
-              Manage your account settings and change your personal information.
+              Hisob sozlamalaringizni boshqaring va shaxsiy ma'lumotlaringizni o'zgartiring.
             </p>
           </div>
 
@@ -249,7 +250,7 @@ export default function Profile() {
             {/* Avatar Section */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Profile Picture
+                Profil rasmi
               </h2>
 
               {errorMessage && (
@@ -290,7 +291,7 @@ export default function Profile() {
                     ) : (
                       <img
                         src={getAvatarUrl() || "/placeholder.svg"}
-                        alt="Profile avatar"
+                        alt="Profil rasmi"
                         className="h-full w-full object-cover"
                       />
                     )}
@@ -299,7 +300,7 @@ export default function Profile() {
                     type="button"
                     onClick={triggerFileInput}
                     className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    aria-label="Change profile picture"
+                    aria-label="Profil rasmini o'zgartirish"
                   >
                     <Camera className="h-4 w-4" />
                   </button>
@@ -307,10 +308,10 @@ export default function Profile() {
 
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Change your profile picture
+                    Profil rasmini o'zgartirish
                   </h3>
                   <p className="text-sm text-gray-600 mb-4">
-                    Upload a new avatar. Recommended size: 400x400px.
+                    Yangi avatar yuklang. Tavsiya etilgan o'lcham: 400x400px.
                   </p>
                   <div className="flex gap-3">
                     <button
@@ -319,7 +320,7 @@ export default function Profile() {
                       className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
                       <Upload className="h-4 w-4 mr-2" />
-                      Upload
+                      Yuklash
                     </button>
                     {avatar && (
                       <button
@@ -328,7 +329,7 @@ export default function Profile() {
                         className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       >
                         <X className="h-4 w-4 mr-2" />
-                        Remove
+                        O'chirish
                       </button>
                     )}
                   </div>
@@ -338,7 +339,7 @@ export default function Profile() {
                     onChange={handleAvatarChange}
                     accept="image/*"
                     className="hidden"
-                    aria-label="Upload profile picture"
+                    aria-label="Profil rasmini yuklash"
                   />
                 </div>
               </div>
@@ -348,11 +349,11 @@ export default function Profile() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
               <div className="flex justify-between items-start mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Personal Information
+                  Shaxsiy ma'lumotlar
                 </h2>
                 <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium flex items-center">
                   <Info className="h-3 w-3 mr-1" />
-                  Only name can be edited
+                  Faqat ismni tahrirlash mumkin
                 </div>
               </div>
 
@@ -361,7 +362,7 @@ export default function Profile() {
                   <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div className="ml-3">
                     <p className="text-sm text-green-700">
-                      Your profile information has been updated successfully.
+                      Profil ma'lumotlaringiz muvaffaqiyatli yangilandi.
                     </p>
                   </div>
                 </div>
@@ -373,7 +374,7 @@ export default function Profile() {
                   <div className="ml-3">
                     <p className="text-sm text-red-700">
                       {errorMessage ||
-                        "There was an error updating your profile. Please try again."}
+                        "Profilni yangilashda xatolik yuz berdi. Iltimos, qayta urinib ko'ring."}
                     </p>
                   </div>
                 </div>
@@ -389,7 +390,7 @@ export default function Profile() {
                     htmlFor="name"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Full Name
+                    To'liq ism
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -398,17 +399,17 @@ export default function Profile() {
                     <input
                       id="name"
                       type="text"
-                      placeholder="John Doe"
+                      placeholder="Ismingiz"
                       className={`w-full rounded-md border px-3 py-2 pl-10 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                         profileErrors.name
                           ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                           : "border-gray-300"
                       }`}
                       {...registerProfile("name", {
-                        required: "Name is required",
+                        required: "Ism majburiy",
                         minLength: {
                           value: 2,
-                          message: "Name must be at least 2 characters",
+                          message: "Ism kamida 2 ta belgidan iborat bo'lishi kerak",
                         },
                       })}
                     />
@@ -426,7 +427,7 @@ export default function Profile() {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-500 mb-1"
                   >
-                    Email Address
+                    Email manzili
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -441,7 +442,7 @@ export default function Profile() {
                     />
                   </div>
                   <p className="mt-1 text-xs text-gray-500">
-                    Email address cannot be changed at this time.
+                    Email manzilini hozircha o'zgartirib bo'lmaydi.
                   </p>
                 </div>
 
@@ -474,12 +475,12 @@ export default function Profile() {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        Saving...
+                        Saqlanmoqda...
                       </>
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        Save Changes
+                        O'zgarishlarni saqlash
                       </>
                     )}
                   </button>
@@ -491,7 +492,7 @@ export default function Profile() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
               <div className="flex justify-between items-start mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                  <Info className="h-5 w-5 text-blue-500" /> Устройства
+                  <Info className="h-5 w-5 text-blue-500" /> Qurilmalar
                 </h2>
               </div>
               {userData && userData.device && userData.device.length > 0 ? (
@@ -508,16 +509,16 @@ export default function Profile() {
                         </div>
                         <div className="text-gray-700 mb-1 flex items-center gap-2">
                           <Info className="h-4 w-4 text-gray-400" />
-                          <span className="font-medium">Описание проблемы:</span> {d.issueDescription}
+                          <span className="font-medium">Muammo tavsifi:</span> {d.issueDescription}
                         </div>
                         <div className="text-gray-700 mb-1 flex items-center gap-2">
                           <Mail className="h-4 w-4 text-gray-400" />
-                          <span className="font-medium">Телефон:</span> {d.phone}
+                          <span className="font-medium">Telefon:</span> {d.phone}
                         </div>
                         {d.additionalInfo && (
                           <div className="text-gray-700 mb-1 flex items-center gap-2">
                             <Info className="h-4 w-4 text-gray-400" />
-                            <span className="font-medium">Доп. информация:</span> {d.additionalInfo}
+                            <span className="font-medium">Qo'shimcha ma'lumot:</span> {d.additionalInfo}
                           </div>
                         )}
                         {d.imei && (
@@ -536,19 +537,19 @@ export default function Profile() {
                             {d.status === 'pending' &&
                               <Info className="h-3 w-3 mr-1" />}
                             {d.status === 'in-progress' &&
-                              <Camera className="h-3 w-3 mr-1" />}
+                              <Hammer className="h-3 w-3 mr-1" />}
                             {d.status === 'completed' &&
                               <CheckCircle className="h-3 w-3 mr-1" />}
-                            {d.status === 'pending' ? 'В ожидании' : d.status === 'in-progress' ? 'В работе' : 'Завершено'}
+                            {d.status === 'pending' ? 'Kutilmoqda' : d.status === 'in-progress' ? 'Jarayonda' : 'Bajarildi'}
                           </span>
                           {d.cost !== undefined && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                              Стоимость: {d.cost} сум
+                              Narxi: {d.cost} so'm
                             </span>
                           )}
                           {d.master && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                              Мастер: {d.master}
+                              Usta: {d.master}
                             </span>
                           )}
                         </div>
@@ -557,7 +558,7 @@ export default function Profile() {
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-500 text-sm">Нет добавленных устройств.</div>
+                <div className="text-gray-500 text-sm">Qo'shilgan qurilmalar yo'q.</div>
               )}
             </div>
 

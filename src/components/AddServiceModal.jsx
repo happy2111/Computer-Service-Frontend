@@ -3,7 +3,7 @@ import AddUserModal from "./AddUserModal";
 import axios from "axios";
 import AddMasterModal from "./AddMasterModal.jsx";
 
-export default function AddServiceModal({isOpen, onClose, onAddUser}) {
+export default function AddServiceModal({isOpen, onClose}) {
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false);
@@ -102,7 +102,7 @@ export default function AddServiceModal({isOpen, onClose, onAddUser}) {
     }
   };
 
-  const handleUserCreated = (user) => {
+  const handleUserCreated = () => {
     setShowAddUserModal(false);
 
     fetchUsers(); // обновить список пользователей после добавления

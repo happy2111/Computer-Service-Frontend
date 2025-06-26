@@ -140,7 +140,6 @@ const AdminPanel = () => {
       const response = await api.get('/user');
       setUsers(response.data);
     } catch (error) {
-      console.error('Error fetching users:', error);
       showNotification('Ошибка загрузки пользователей', 'error');
       // Fallback data for demo
       // setUsers([
@@ -160,7 +159,6 @@ const AdminPanel = () => {
       const response = await api.get('/contact');
       setContactMessages(response.data);
     } catch (error) {
-      console.error('Error fetching contact messages:', error);
       showNotification('Ошибка загрузки сообщений', 'error');
       // Fallback data for demo
       setContactMessages([
@@ -191,9 +189,8 @@ const AdminPanel = () => {
       setLoading(prev => ({ ...prev, services: true }));
       const response = await api.get('/services/all');
       setServiceRequests(response.data);
-      console.log(response.data)
+      // console.log(response.data) // Удалено для предотвращения утечки данных
     } catch (error) {
-      console.error('Error fetching service requests:', error);
       showNotification('Ошибка загрузки заявок на сервис', 'error');
       // Fallback data for demo
       // setServiceRequests([
@@ -237,7 +234,6 @@ const AdminPanel = () => {
       const response = await api.get('/dashboard/stats');
       setDashboardStats(response.data);
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
       showNotification('Ошибка загрузки статистики', 'error');
       // Fallback data for demo
       // setDashboardStats({
@@ -259,7 +255,6 @@ const AdminPanel = () => {
       setUsers(users.filter(user => user.id !== userId));
       showNotification('Пользователь успешно удален');
     } catch (error) {
-      console.error('Error deleting user:', error);
       showNotification('Ошибка удаления пользователя', 'error');
     }
   };
@@ -272,7 +267,6 @@ const AdminPanel = () => {
       setContactMessages(contactMessages.filter(msg => msg.id !== messageId));
       showNotification('Сообщение успешно удален��');
     } catch (error) {
-      console.error('Error deleting message:', error);
       showNotification('Ошибка удаления сообщения', 'error');
     }
   };
@@ -285,7 +279,6 @@ const AdminPanel = () => {
       ));
       showNotification('Статус заявки обновлен');
     } catch (error) {
-      console.error('Error updating service request status:', error);
       showNotification('Ошибка обновления статуса', 'error');
     }finally {
       console.log(newStatus)
@@ -300,7 +293,6 @@ const AdminPanel = () => {
       setServiceRequests(serviceRequests.filter(req => req.id !== requestId));
       showNotification('Заявка успешно удалена');
     } catch (error) {
-      console.error('Error deleting service request:', error);
       showNotification('Ошибка удаления заявки', 'error');
     }
   };
@@ -424,7 +416,7 @@ const AdminPanel = () => {
   const DashboardContent = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Boshqaruv paneli</h2>
         <button
           onClick={() => {
             fetchDashboardStats();
@@ -435,7 +427,7 @@ const AdminPanel = () => {
           className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <RefreshCw className="h-4 w-4 mr-2" />
-          Обновить
+          Yangilash
         </button>
       </div>
 
@@ -444,10 +436,10 @@ const AdminPanel = () => {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg shadow-sm  p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
+                  <p className="text-sm font-medium text-gray-600">Jami foydalanuvchilar</p>
                   <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalUsers}</p>
                 </div>
                 <div className="p-3 bg-blue-100 rounded-full">
@@ -455,10 +447,10 @@ const AdminPanel = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg shadow-sm  p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Contact Messages</p>
+                  <p className="text-sm font-medium text-gray-600">Aloqa xabarlari</p>
                   <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalMessages}</p>
                 </div>
                 <div className="p-3 bg-green-100 rounded-full">
@@ -466,10 +458,10 @@ const AdminPanel = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg shadow-sm  p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Service Requests</p>
+                  <p className="text-sm font-medium text-gray-600">Xizmat so'rovlari</p>
                   <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalRequests}</p>
                 </div>
                 <div className="p-3 bg-purple-100 rounded-full">
@@ -477,10 +469,10 @@ const AdminPanel = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg shadow-sm  p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Rating</p>
+                  <p className="text-sm font-medium text-gray-600">Reyting</p>
                   <p className="text-2xl font-bold text-gray-900">{dashboardStats.rating}</p>
                 </div>
                 <div className="p-3 bg-yellow-100 rounded-full">
@@ -491,8 +483,8 @@ const AdminPanel = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Service Requests</h3>
+            <div className="bg-white rounded-lg shadow-sm  p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">So'nggi xizmat so'rovlari</h3>
               <div className="space-y-3">
                 {serviceRequests.slice(0, 3).map((request) => (
                   <div key={request._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -510,8 +502,8 @@ const AdminPanel = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Messages</h3>
+            <div className="bg-white rounded-lg shadow-sm  p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">So'nggi xabarlar</h3>
               <div className="space-y-3">
                 {contactMessages.slice(0, 3).map((message) => (
                   <div key={message.id} className="p-3 bg-gray-50 rounded-lg">
@@ -537,16 +529,16 @@ const AdminPanel = () => {
   );
 
   const ContactsContent = () => (
-    <div className="bg-white rounded-lg shadow-sm border">
+    <div className="bg-white rounded-lg shadow-sm">
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Contact Messages</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Aloqa xabarlari</h2>
           <button
             onClick={fetchContactMessages}
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
-            Обновить
+            Yangilash
           </button>
         </div>
       </div>
@@ -582,16 +574,13 @@ const AdminPanel = () => {
                           id=""
                           cols="15"
                           rows="1"
-                          readonly
+                          readOnly
                           value={message.captcha}
                         ></textarea>
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    {/*<button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">*/}
-                    {/*  <Eye className="h-4 w-4" />*/}
-                    {/*</button>*/}
                     <button
                       onClick={() => deleteContactMessage(message._id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg"

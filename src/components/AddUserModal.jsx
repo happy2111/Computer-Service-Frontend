@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function AddUserModal({ isOpen, onClose, onUserCreated , handleUserCreated}) {
+export default function AddUserModal({ isOpen, onClose, onUserCreated }) {
   const [form, setForm] = useState({
     name: "",
     surname: "",
@@ -108,4 +108,3 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated , handleUs
     </div>
   );
 }
-
