@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import {useState, useRef, useEffect} from "react";
+import {useForm} from "react-hook-form";
 import {
   User,
   Mail,
@@ -13,9 +13,10 @@ import {
   X,
   Info,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import axios from "axios";
-import { Helmet } from "react-helmet";
+import {Helmet} from "react-helmet";
+
 export default function Profile() {
   // State for avatar
   const [avatar, setAvatar] = useState("");
@@ -33,7 +34,10 @@ export default function Profile() {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return navigate("/auth/login");
+        if (!token) {
+          navigate("/auth/login");
+          return;
+        }
         const res = await axios.get(
           `${import.meta.env.VITE_API_BASE_URL}/user/me`,
           {
@@ -58,20 +62,20 @@ export default function Profile() {
     fetchUser();
   }, [navigate]);
 
-  // Проверка прав доступа
-  if (!loading && userData && userData.role !== 'admin') {
-    return (
-      <div className="flex items-center justify-center min-h-[40vh]">
-        <div className="bg-red-100 text-red-700 px-6 py-4 rounded-lg text-lg font-semibold">Нет доступа</div>
-      </div>
-    );
-  }
+  // // Проверка прав доступа
+  // if (!loading && userData && userData.role !== 'admin') {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-[40vh]">
+  //       <div className="bg-red-100 text-red-700 px-6 py-4 rounded-lg text-lg font-semibold">Нет доступа</div>
+  //     </div>
+  //   );
+  // }
 
   // Profile form
   const {
     register: registerProfile,
     handleSubmit: handleSubmitProfile,
-    formState: { errors: profileErrors, isSubmitting: isSubmittingProfile },
+    formState: {errors: profileErrors, isSubmitting: isSubmittingProfile},
     reset,
   } = useForm({
     defaultValues: {
@@ -81,7 +85,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (userData) {
-      reset({ name: userData.name || "" });
+      reset({name: userData.name || ""});
     }
   }, [userData, reset]);
 
@@ -128,7 +132,7 @@ export default function Profile() {
       setProfileStatus("error");
       setErrorMessage(
         error.response?.data?.msg ||
-          "Failed to update profile. Please try again."
+        "Failed to update profile. Please try again."
       );
     } finally {
       setIsUploading(false);
@@ -493,7 +497,10 @@ export default function Profile() {
               {userData && userData.device && userData.device.length > 0 ? (
                 <div className="grid gap-6">
                   {userData.device.map((d, idx) => (
-                    <div key={idx} className="border border-gray-100 rounded-lg shadow-sm p-5 flex flex-col sm:flex-row gap-4 bg-gray-50 hover:shadow-md transition">
+                    <div
+                      key={idx}
+                      className="border border-gray-100 rounded-lg shadow-sm p-5 flex flex-col sm:flex-row gap-4 bg-gray-50 hover:shadow-md transition"
+                    >
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-lg font-semibold text-gray-900">{d.deviceType}</span>
@@ -519,14 +526,19 @@ export default function Profile() {
                           </div>
                         )}
                         <div className="flex items-center gap-3 mt-2">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                            d.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            d.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                            'bg-green-100 text-green-800'
-                          }`}>
-                            {d.status === 'pending' && <Info className="h-3 w-3 mr-1" />}
-                            {d.status === 'in-progress' && <Camera className="h-3 w-3 mr-1" />}
-                            {d.status === 'completed' && <CheckCircle className="h-3 w-3 mr-1" />}
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                              d.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                d.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                                  'bg-green-100 text-green-800'
+                            }`}
+                          >
+                            {d.status === 'pending' &&
+                              <Info className="h-3 w-3 mr-1" />}
+                            {d.status === 'in-progress' &&
+                              <Camera className="h-3 w-3 mr-1" />}
+                            {d.status === 'completed' &&
+                              <CheckCircle className="h-3 w-3 mr-1" />}
                             {d.status === 'pending' ? 'В ожидании' : d.status === 'in-progress' ? 'В работе' : 'Завершено'}
                           </span>
                           {d.cost !== undefined && (
