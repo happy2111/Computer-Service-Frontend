@@ -26,93 +26,105 @@ export default function Footer() {
                   <Wrench className="h-6 w-6 text-white" />
                 </div>
                 <h2 className="ml-2 text-xl font-bold text-gray-900">
-                  ServiceHY
+                  ApplePark
                 </h2>
               </div>
               <p className="text-sm text-gray-600">
-                Professional repair services for all your digital devices. Fast,
-                reliable, and guaranteed quality.
+                Barcha raqamli qurilmalaringiz uchun professional ta'mirlash
+                xizmati. Tez, ishonchli va sifat kafolati bilan.
               </p>
-              <div className="flex space-x-4">
-                <SocialLink href="https://facebook.com" ariaLabel="Facebook">
+              <div className="flex space-x-4 mt-4">
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="text-gray-400 hover:text-blue-600"
+                >
                   <Facebook className="h-5 w-5" />
-                </SocialLink>
-                <SocialLink href="https://twitter.com" ariaLabel="Twitter">
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Twitter"
+                  className="text-gray-400 hover:text-blue-600"
+                >
                   <Twitter className="h-5 w-5" />
-                </SocialLink>
-                <SocialLink href="https://instagram.com" ariaLabel="Instagram">
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="text-gray-400 hover:text-blue-600"
+                >
                   <Instagram className="h-5 w-5" />
-                </SocialLink>
-                <SocialLink href="https://linkedin.com" ariaLabel="LinkedIn">
+                </a>
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Linkedin"
+                  className="text-gray-400 hover:text-blue-600"
+                >
                   <Linkedin className="h-5 w-5" />
-                </SocialLink>
+                </a>
               </div>
             </div>
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
-                Services
+                Xizmatlar
               </h3>
               <ul className="space-y-2">
-                <FooterLink href="#phone-repair">Phone Repair</FooterLink>
-                <FooterLink href="#computer-repair">Computer Repair</FooterLink>
-                <FooterLink href="#software-fixes">Software Fixes</FooterLink>
-                <FooterLink href="#data-recovery">Data Recovery</FooterLink>
-                <FooterLink href="#screen-replacement">
-                  Screen Replacement
+                <FooterLink href="#phone-repair">Telefonni ta'mirlash</FooterLink>
+                <FooterLink href="#computer-repair">
+                  Kompyuterni ta'mirlash
                 </FooterLink>
-                <FooterLink href="#battery-service">Battery Service</FooterLink>
+                <FooterLink href="#software-fixes">Dasturiy ta'mirlash</FooterLink>
+                <FooterLink href="#data-recovery">Ma'lumotlarni tiklash</FooterLink>
+                <FooterLink href="#screen-replacement">
+                  Ekranini almashtirish
+                </FooterLink>
+                <FooterLink href="#battery-service">Akku xizmatlari</FooterLink>
               </ul>
             </div>
 
             <div className="space-y-4">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
-                Company
+                Kompaniya
               </h3>
               <ul className="space-y-2">
-                <FooterLink href="#about">About Us</FooterLink>
-                <FooterLink href="#team">Our Team</FooterLink>
-                <FooterLink href="#careers">Careers</FooterLink>
+                <FooterLink href="#about">Biz haqimizda</FooterLink>
+                <FooterLink href="#team">Jamoamiz</FooterLink>
+                <FooterLink href="#careers">Karyera</FooterLink>
                 <FooterLink href="#blog">Blog</FooterLink>
-                <FooterLink href="#privacy">Privacy Policy</FooterLink>
-                <FooterLink href="#terms">Terms of Service</FooterLink>
+                <FooterLink href="#privacy">Maxfiylik siyosati</FooterLink>
+                <FooterLink href="#terms">Xizmat shartlari</FooterLink>
               </ul>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
-                Contact Us
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Biz bilan bog'laning
               </h3>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <MapPin className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                  <span className="ml-2 text-sm text-gray-600">Tashken</span>
-                </li>
-                <li className="flex items-center">
-                  <Phone className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                  <a
-                    href="tel:+998934474009"
-                    className="ml-2 text-sm text-gray-600 hover:text-blue-600"
-                  >
-                    +998 (93) 447-40-09
-                  </a>
-                </li>
-                <li className="flex items-center">
-                  <Mail className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                  <a
-                    href="mailto:me@info.com"
-                    className="ml-2 text-sm text-gray-600 hover:text-blue-600"
-                  >
-                    me@info.com
-                  </a>
-                </li>
-                <li className="flex items-center">
-                  <Clock className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                  <span className="ml-2 text-sm text-gray-600">
-                    Mon-Fri: 9AM-7PM, Sat: 10AM-5PM
-                  </span>
-                </li>
-              </ul>
+              <div className="flex items-center text-gray-600 text-sm">
+                <Mail className="h-5 w-5 mr-2" />
+                <span>example@email.com</span>
+              </div>
+              <div className="flex items-center text-gray-600 text-sm">
+                <Phone className="h-5 w-5 mr-2" />
+                <span>+998 90 000 00 00</span>
+              </div>
+              <div className="flex items-center text-gray-600 text-sm">
+                <MapPin className="h-5 w-5 mr-2" />
+                <span>Toshkent, O'zbekiston</span>
+              </div>
+              <div className="flex items-center text-gray-600 text-sm">
+                <Clock className="h-5 w-5 mr-2" />
+                <span>Du-Yak: 09:00-21:00</span>
+              </div>
             </div>
           </div>
 
@@ -120,17 +132,17 @@ export default function Footer() {
             <div className="md:flex md:items-center md:justify-between">
               <div>
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900">
-                  Subscribe to our newsletter
+                  Yangiliklar uchun obuna bo'ling
                 </h3>
                 <p className="mt-2 text-sm text-gray-600">
-                  Get the latest news, updates and special offers delivered
-                  directly to your inbox.
+                  Eng so'nggi yangiliklar, yangilanishlar va maxsus takliflar
+                  to'g'ridan-to'g'ri pochta qutingizga.
                 </p>
               </div>
               <div className="mt-4 md:mt-0">
                 <form className="flex sm:max-w-md">
                   <label htmlFor="email-address" className="sr-only">
-                    Email address
+                    Email manzili
                   </label>
                   <input
                     type="email"
@@ -139,14 +151,14 @@ export default function Footer() {
                     autoComplete="email"
                     required
                     className="w-full min-w-0 rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter your email"
+                    placeholder="Emailingizni kiriting"
                   />
                   <div className="ml-3 flex-shrink-0">
                     <button
                       type="submit"
                       className="flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
-                      Subscribe
+                      Obuna bo'lish
                     </button>
                   </div>
                 </form>
@@ -156,10 +168,11 @@ export default function Footer() {
 
           <div className="mt-8 border-t border-gray-200 pt-8">
             <p className="text-center text-sm text-gray-600">
-              &copy; {currentYear} RepairPro. All rights reserved.
+              &copy; {currentYear} ApplePark Barcha huquqlar himoyalangan.
             </p>
             <p className="mt-2 text-center text-xs text-gray-500">
-              Designed and developed with ❤️ for quality repair services.
+              Sifatli ta'mirlash xizmatlari uchun ❤️ bilan ishlab chiqilgan va
+              rivojlantirilgan.
             </p>
           </div>
         </div>

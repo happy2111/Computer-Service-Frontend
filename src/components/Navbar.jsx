@@ -90,28 +90,28 @@ export default function Navbar() {
               to="/#"
               className="text-gray-700 hover:text-blue-600 transition"
             >
-              Home
+              Bosh sahifa
             </HashLink>
             <HashLink
               smooth
               to="/#about"
               className="text-gray-700 hover:text-blue-600 transition"
             >
-              About
+              Biz haqimizda
             </HashLink>
             <HashLink
               smooth
               to="/contact-us/#header"
               className="text-gray-700 hover:text-blue-600 transition"
             >
-              Contact Us
+              Biz bilan bog'lanish
             </HashLink>
             {!localStorage.getItem("token") ? (
               <Link
                 to="/auth/login"
                 className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
               >
-                Sign In
+                Kirish
               </Link>
             ) : (
               <div className="relative">
@@ -168,14 +168,14 @@ export default function Navbar() {
                         onClick={() => setShowProfileModal(false)}
                       >
                         <User className="w-5 h-5 mr-2" />
-                        Profile
+                        Profil
                       </Link>
                       <button
                         onClick={handleLogout}
                         className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition w-full"
                       >
                         <LogOut className="w-5 h-5 mr-2" />
-                        Log Out
+                        Chiqish
                       </button>
                     </div>
                   </>
@@ -239,7 +239,7 @@ export default function Navbar() {
             className="text-gray-700 hover:text-blue-600 transition py-2"
             onClick={() => setMenuOpen(false)}
           >
-            Home
+            Bosh sahifa
           </Link>
           <HashLink
             smooth
@@ -247,7 +247,7 @@ export default function Navbar() {
             className="text-gray-700 hover:text-blue-600 transition py-2"
             onClick={() => setMenuOpen(false)}
           >
-            About
+            Biz haqimizda
           </HashLink>
           <HashLink
             smooth
@@ -255,7 +255,7 @@ export default function Navbar() {
             className="text-gray-700 hover:text-blue-600 transition py-2"
             onClick={() => setMenuOpen(false)}
           >
-            Contact Us
+            Biz bilan bog'lanish
           </HashLink>
           {!localStorage.getItem("token") ? (
             <Link
@@ -263,7 +263,7 @@ export default function Navbar() {
               className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
               onClick={() => setMenuOpen(false)}
             >
-              Sign In
+              Kirish
             </Link>
           ) : (
             <>
@@ -273,7 +273,7 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
               >
                 <User className="w-5 h-5 mr-2" />
-                Profile
+                Profil
               </Link>
               <button
                 onClick={() => {
@@ -284,7 +284,7 @@ export default function Navbar() {
                 className="flex items-center text-gray-700 hover:text-blue-600 transition py-2"
               >
                 <LogOut className="w-5 h-5 mr-2" />
-                Log Out
+                Chiqish
               </button>
             </>
           )}

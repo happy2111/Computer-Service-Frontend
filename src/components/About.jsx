@@ -17,16 +17,16 @@ export default function AboutUsSection() {
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 mb-4">
-              About ServiceHY
+              ApplePark haqida
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Your Trusted Partner for{" "}
-              <span className="text-blue-600">Quality Repairs</span>
+              Ishonchli hamkoringiz —{" "}
+              <span className="text-blue-600">Sifatli ta'mirlash</span>
             </h2>
             <p className="text-lg text-gray-600">
-              With over 10 years of experience, we've built our reputation on
-              expert service, quality parts, and customer satisfaction. Learn
-              more about our journey and the team behind ServiceHY.
+              10 yildan ortiq tajribaga ega bo'lgan jamoamiz sifatli xizmat,
+              original ehtiyot qismlar va mijozlar roziligi asosida obro' qozongan.
+              Bizning tariximiz va ApplePark jamoasi haqida ko'proq bilib oling.
             </p>
           </div>
 
@@ -35,30 +35,31 @@ export default function AboutUsSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Our Story
+                  Bizning tariximiz
                 </h3>
                 <div className="space-y-4 text-gray-600">
                   <p>
-                    Founded in 2013, RepairPro began as a small smartphone
-                    repair shop with a simple mission: to provide high-quality
-                    repairs at fair prices with exceptional customer service.
+                    2013-yilda tashkil etilgan ApplePark kichik smartfonlarni
+                    ta'mirlash ustaxonasidan boshlangan. Maqsadimiz: yuqori
+                    sifatli ta'mirlashni adolatli narxlarda va a'lo mijozlarga
+                    xizmat ko'rsatish bilan ta'minlash.
                   </p>
                   <p>
-                    What started as a one-person operation has grown into a team
-                    of certified technicians specializing in repairs for all
-                    types of digital devices—from smartphones and tablets to
-                    laptops and desktop computers.
+                    Bir kishilik ish sifatida boshlangan kompaniyamiz hozirda
+                    barcha turdagi raqamli qurilmalarni—smartfon, planshet, noutbuk
+                    va kompyuterlarni ta'mirlashga ixtisoslashgan sertifikatlangan
+                    mutaxassislar jamoasiga aylandi.
                   </p>
                   <p>
-                    Over the years, we've expanded our services to include
-                    software troubleshooting, data recovery, and preventative
-                    maintenance, becoming a one-stop solution for all your
-                    technology repair needs.
+                    Yillar davomida xizmatlarimiz dasturiy ta'minotni tiklash,
+                    ma'lumotlarni tiklash va profilaktik xizmatlarni ham o'z
+                    ichiga oldi. Endi biz texnologiya ta'mirlash bo'yicha yagona
+                    yechim taklif qilamiz.
                   </p>
                   <p>
-                    Today, RepairPro is proud to serve thousands of satisfied
-                    customers, with multiple locations across the region and a
-                    reputation for excellence in the repair industry.
+                    Bugungi kunda ApplePark minglab mamnun mijozlarga xizmat
+                    ko'rsatadi, mintaqada bir nechta filiallari va ta'mirlash
+                    sohasida yuqori obro'ga ega.
                   </p>
                 </div>
               </div>
@@ -66,17 +67,17 @@ export default function AboutUsSection() {
                 <div className="aspect-[4/3] bg-gray-200 rounded-lg overflow-hidden">
                   <img
                     src="https://www.pcgeeksusa.com/wp-content/uploads/2024/03/Computer-Repair.jpeg"
-                    alt="ServiceHY store interior"
+                    alt="ApplePark store interior"
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-lg border border-gray-200">
                   <div className="flex items-center space-x-2">
                     <Clock className="h-5 w-5 text-blue-600" />
-                    <span className="font-bold text-gray-900">10+ Years</span>
+                    <span className="font-bold text-gray-900">10+ yil</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
-                    of trusted service
+                    ishonchli xizmat
                   </p>
                 </div>
               </div>
@@ -86,38 +87,38 @@ export default function AboutUsSection() {
           {/* Mission & Values */}
           <div className="mb-20">
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-10">
-              Our Mission & Values
+              Bizning maqsad va qadriyatlarimiz
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               <ValueCard
                 icon={<Star className="h-6 w-6 text-blue-600" />}
-                title="Excellence"
-                description="We strive for excellence in every repair, using only the highest quality parts and following industry best practices."
+                title="Mukammallik"
+                description="Har bir ta'mirlashda eng yuqori sifatli ehtiyot qismlar va eng yaxshi amaliyotlardan foydalanamiz."
               />
               <ValueCard
                 icon={<Shield className="h-6 w-6 text-blue-600" />}
-                title="Integrity"
-                description="We operate with complete transparency, providing honest assessments and fair pricing for all our services."
+                title="Halollik"
+                description="Biz to'liq ochiqlik bilan ishlaymiz, barcha xizmatlarimiz uchun adolatli narx va halol baho beramiz."
               />
               <ValueCard
                 icon={<Tool className="h-6 w-6 text-blue-600" />}
-                title="Expertise"
-                description="Our technicians are certified professionals who regularly update their skills to stay current with the latest technologies."
+                title="Mutaxassislik"
+                description="Bizning texniklarimiz sertifikatlangan va zamonaviy texnologiyalar bo'yicha doimiy bilimlarini oshirib boradilar."
               />
               <ValueCard
                 icon={<CheckCircle className="h-6 w-6 text-blue-600" />}
-                title="Reliability"
-                description="We stand behind our work with industry-leading warranties and guarantee your satisfaction with every repair."
+                title="Ishonchlilik"
+                description="Har bir ta'mirlash uchun kafolat beramiz va mijozlarimiz roziligi biz uchun muhim."
               />
               <ValueCard
                 icon={<Users className="h-6 w-6 text-blue-600" />}
-                title="Customer Focus"
-                description="We put our customers first, providing clear communication, convenient service options, and responsive support."
+                title="Mijozlarga e'tibor"
+                description="Mijozlarimizni birinchi o'ringa qo'yamiz: aniq muloqot, qulay xizmat va tezkor yordam ko'rsatamiz."
               />
               <ValueCard
                 icon={<Award className="h-6 w-6 text-blue-600" />}
-                title="Innovation"
-                description="We continuously improve our processes and services to deliver the best possible repair experience."
+                title="Innovatsiya"
+                description="Xizmatlarimiz va jarayonlarimizni doimiy takomillashtirib boramiz."
               />
             </div>
           </div>
@@ -125,32 +126,32 @@ export default function AboutUsSection() {
           {/* Team Section */}
           <div className="mb-20">
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-10">
-              Meet Our Expert Team
+              Mutaxassislarimiz bilan tanishing
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               <TeamMember
                 image="https://i.natgeofe.com/k/5e4ea67e-2219-4de4-9240-2992faef0cb6/trump-portrait.jpg"
                 name="Donald Trump"
-                position="Founder & Lead Technician"
-                description="With over 15 years of experience in electronics repair, Alex founded RepairPro with a vision to provide expert repair services with a customer-first approach."
+                position="Asoschi va bosh texnik"
+                description="15 yildan ortiq elektronika ta'mirlash tajribasiga ega. Alex RepairPro'ni mijozlarga yo'naltirilgan xizmat ko'rsatish maqsadida tashkil qilgan."
               />
               <TeamMember
                 image="https://upload.wikimedia.org/wikipedia/commons/5/5e/Shavkat_Mirziyoyev.jpg"
                 name="Shavkat Mirziyoyev"
-                position="Senior Phone Repair Specialist"
-                description="Sarah specializes in smartphone repairs and has fixed over 5,000 devices in her career. She's known for her precision work and attention to detail."
+                position="Katta telefonlarni ta'mirlash bo'yicha mutaxassis"
+                description="Sarah smartfonlarni ta'mirlash bo'yicha ixtisoslashgan va faoliyati davomida 5000 dan ortiq qurilmani ta'mirladi. U aniqligi va e'tiborli ishlari bilan mashhur."
               />
               <TeamMember
                 image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5eV1vHS5fERvuyJt1oIDGZ6Yb-m3oSA3LgEauSMXDIBQcQeP8d_gfEYzyqEL6LjaK958&usqp=CAU"
                 name="Kim Jong-un"
-                position="Computer Systems Expert"
-                description="Michael brings 10 years of IT experience to our team, specializing in laptop and desktop repairs, data recovery, and system optimization."
+                position="Kompyuter tizimlari bo'yicha mutaxassis"
+                description="Michael 10 yillik IT tajribasiga ega, noutbuk va kompyuterlarni ta'mirlash, ma'lumotlarni tiklash va tizimlarni optimallashtirish bo'yicha mutaxassis."
               />
               <TeamMember
                 image="https://hips.hearstapps.com/hmg-prod/images/queen-elizabeth-ii-watches-from-the-balcony-of-buckingham-news-photo-1662662018.jpg?crop=0.668xw:1.00xh;0.167xw,0&resize=1200:*"
                 name="Queen Elizabeth II's"
-                position="Customer Service Manager"
-                description="Priya ensures every customer receives exceptional service from the moment they contact us until their repaired device is back in their hands."
+                position="Mijozlarga xizmat ko'rsatish bo'limi boshlig'i"
+                description="Priya har bir mijozga mukammal xizmat ko'rsatilishini ta'minlaydi va ta'mirlangan qurilmani qaytarib olguniga qadar ularni kuzatib boradi."
               />
             </div>
           </div>
@@ -158,38 +159,38 @@ export default function AboutUsSection() {
           {/* Why Choose Us */}
           <div className="bg-gray-50 rounded-2xl p-8 md:p-12">
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-10">
-              Why Choose ServiceHY
+              Nima uchun ApplePark?
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <ReasonCard
                 number="01"
-                title="Certified Technicians"
-                description="Our repair specialists are certified professionals with years of experience and ongoing training."
+                title="Sertifikatlangan mutaxassislar"
+                description="Bizning ustalarimiz ko'p yillik tajribaga ega va doimiy ravishda bilimlarini oshirib boradilar."
               />
               <ReasonCard
                 number="02"
-                title="Quality Parts"
-                description="We use only high-quality, manufacturer-grade components for all our repairs."
+                title="Sifatli ehtiyot qismlar"
+                description="Barcha ta'mirlashlar uchun faqat yuqori sifatli, ishlab chiqaruvchi tomonidan tavsiya etilgan qismlardan foydalanamiz."
               />
               <ReasonCard
                 number="03"
-                title="90-Day Warranty"
-                description="All repairs come with our industry-leading 90-day warranty on both parts and labor."
+                title="90 kunlik kafolat"
+                description="Barcha ta'mirlashlar uchun 90 kunlik kafolat beriladi (ehtiyot qismlar va ish uchun)."
               />
               <ReasonCard
                 number="04"
-                title="Fast Turnaround"
-                description="Most repairs are completed the same day, often while you wait."
+                title="Tezkor xizmat"
+                description="Ko'pchilik ta'mirlash ishlari bir kunda, ba'zida esa kutayotganingizda ham bajariladi."
               />
               <ReasonCard
                 number="05"
-                title="Transparent Pricing"
-                description="No hidden fees or surprises. We provide upfront quotes before beginning any work."
+                title="Shaffof narxlar"
+                description="Hech qanday yashirin to'lovlar yo'q. Ish boshlanishidan oldin aniq narx aytiladi."
               />
               <ReasonCard
                 number="06"
-                title="Satisfaction Guarantee"
-                description="If you're not completely satisfied with our service, we'll make it right."
+                title="Kafolatlangan mamnunlik"
+                description="Agar xizmatimizdan to'liq mamnun bo'lmasangiz, muammoni hal qilamiz."
               />
             </div>
           </div>
@@ -197,37 +198,37 @@ export default function AboutUsSection() {
           {/* Achievements */}
           <div className="mt-20">
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-10">
-              Our Achievements
+              Yutuqlarimiz
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <AchievementStat number="10+" label="Years in Business" />
-              <AchievementStat number="50,000+" label="Devices Repaired" />
-              <AchievementStat number="98%" label="Customer Satisfaction" />
-              <AchievementStat number="5" label="Service Locations" />
+              <AchievementStat number="10+" label="Biznesdagi yillar" />
+              <AchievementStat number="50,000+" label="Ta'mirlangan qurilmalar" />
+              <AchievementStat number="98%" label="Mijozlar roziligi" />
+              <AchievementStat number="5" label="Xizmat ko'rsatish nuqtalari" />
             </div>
           </div>
 
           {/* Call to Action */}
           <div className="mt-20 text-center">
             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Ready to Get Your Device Fixed?
+              Qurilmangizni ta'mirlashga tayyormisiz?
             </h3>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Experience the RepairPro difference today. Contact us for a free
-              diagnostic or bring your device to one of our locations.
+              Bugunoq ApplePark farqini his eting. Bepul diagnostika uchun biz bilan
+              bog'laning yoki qurilmangizni filiallarimizdan biriga olib keling.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/contact-us"
                 className="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 transition-colors"
               >
-                Contact Us
+                Biz bilan bog'laning
               </Link>
               <Link
                 to="/services"
                 className="inline-flex items-center justify-center rounded-md border border-blue-600 bg-white px-6 py-3 text-base font-medium text-blue-600 shadow-sm hover:bg-blue-50 focus:ring-2 focus:ring-blue-500 transition-colors"
               >
-                Our Services
+                Bizning xizmatlarimiz
               </Link>
             </div>
           </div>

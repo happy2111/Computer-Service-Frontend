@@ -176,12 +176,41 @@ export default function Profile() {
   };
 
   // Handle avatar removal
-  const handleRemoveAvatar = () => {
-    setAvatar("");
-    setAvatarFile(null);
-    setAvatarPreview(null);
-    // You might want to add API call to remove avatar on the server
-    // or handle this during the profile update
+  const handleRemoveAvatar = async () => {
+    try {
+      setIsUploading(true);
+      const token = localStorage.getItem("token");
+      if (!token) return navigate("/auth/login");
+      // Отправляем запрос на обновление профиля с флагом removeAvatar
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/user/profile`,
+        { removeAvatar: true },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.data) {
+        setUser(res.data);
+        setAvatar(res.data.avatar || "/uploads/empty-profile.jpg");
+      } else {
+        setAvatar("/uploads/empty-profile.jpg");
+      }
+      setAvatarFile(null);
+      setAvatarPreview(null);
+      setProfileStatus("success");
+      setTimeout(() => setProfileStatus("idle"), 3000);
+    } catch (error) {
+      setProfileStatus("error");
+      setErrorMessage(
+        error.response?.data?.msg ||
+        "Avatarni o'chirishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring."
+      );
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Get the correct avatar display URL

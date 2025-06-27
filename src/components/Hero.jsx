@@ -1,5 +1,5 @@
 import React from "react";
-import { Smartphone, Laptop, Wrench, ChevronRight } from "lucide-react";
+import { Smartphone, Laptop, Cloud, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function RepairServiceHero() {
@@ -12,13 +12,11 @@ export default function RepairServiceHero() {
             {/* Left Column - Text Content */}
             <div className="space-y-6 md:space-y-8">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
-                Expert Repair Solutions for Your{" "}
-                <span className="text-blue-600">Digital Devices</span>
+                Raqamli qurilmalaringiz uchun{" "}
+                <span className="text-blue-600">mutaxassis ta'mirlash yechimlari</span>
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl">
-                Fast, reliable repairs for smartphones, computers, and software
-                issues. Our certified technicians provide quality service with a
-                satisfaction guarantee.
+                Smartfonlar, kompyuterlar va dasturiy ta'minot muammolari uchun tez va ishonchli ta'mirlash. Bizning sertifikatlangan mutaxassislarimiz sifatli xizmat va kafolat beradi.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
@@ -26,14 +24,14 @@ export default function RepairServiceHero() {
                   to="/services/#header"
                   className="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                 >
-                  Our Services
+                  Bizning xizmatlarimiz
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
                   to="/contact-us"
                   className="inline-flex items-center justify-center rounded-md border border-blue-600 bg-white px-6 py-3 text-base font-medium text-blue-600 shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
                 >
-                  Contact Us
+                  Biz bilan bog'laning
                 </Link>
               </div>
             </div>
@@ -42,20 +40,20 @@ export default function RepairServiceHero() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <ServiceCard
                 icon={<Smartphone className="h-8 w-8 text-blue-600" />}
-                title="Phone Repair"
-                description="Screen replacement, battery service, water damage recovery"
+                title="iPhone ta'mirlash"
+                description="Ekran almashtirish, batareya muammolari, suvdan zarar ko'rgan qurilmalar"
                 href="/services"
               />
               <ServiceCard
                 icon={<Laptop className="h-8 w-8 text-blue-600" />}
-                title="Computer Repair"
-                description="Hardware upgrades, virus removal, data recovery"
+                title="MacBook ta'mirlash"
+                description="Dasturiy ta'minotni tiklash, apparatni yangilash, ma'lumotlarni tiklash"
                 href="/services"
               />
               <ServiceCard
-                icon={<Wrench className="h-8 w-8 text-blue-600" />}
-                title="Software Fixes"
-                description="System optimization, software installation, troubleshooting"
+                icon={<Cloud className="h-8 w-8 text-blue-600" />}
+                title="iCloud blokdan chiqarish"
+                description="iCloud akkauntingizni mutaxassislar yordamida oching"
                 href="/services"
               />
               <ServiceCard
@@ -64,8 +62,8 @@ export default function RepairServiceHero() {
                     24
                   </div>
                 }
-                title="24/7 Support"
-                description="Emergency repairs and technical assistance anytime"
+                title="24/7 Qo'llab-quvvatlash"
+                description="Istalgan vaqtda favqulodda ta'mirlash va texnik yordam"
                 href="/contact-us"
               />
             </div>
@@ -75,7 +73,7 @@ export default function RepairServiceHero() {
           <div className="mt-16 pt-8 border-t border-gray-200">
             <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 items-center text-gray-500">
               <p className="text-sm font-medium text-gray-600">
-                Trusted by thousands of customers
+                Minglab mijozlar ishonch bildirgan
               </p>
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -89,16 +87,16 @@ export default function RepairServiceHero() {
                   </svg>
                 ))}
                 <span className="ml-2 text-sm font-medium">
-                  4.9/5 (500+ reviews)
+                  4.9/5 (500+ sharh)
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-                <span className="text-sm">Certified Technicians</span>
+                <span className="text-sm">Sertifikatlangan mutaxassislar</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-                <span className="text-sm">90-Day Warranty</span>
+                <span className="text-sm">90 kunlik kafolat</span>
               </div>
             </div>
           </div>

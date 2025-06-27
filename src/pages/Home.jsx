@@ -9,7 +9,6 @@ const Home = () => {
       <Helmet>
         <title>Home</title>
       </Helmet>
-      {/* <Navbar /> */}
       <main className="flex-1 flex items-center justify-center">
         <Hero />
       </main>
