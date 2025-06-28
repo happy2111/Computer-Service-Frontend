@@ -119,21 +119,17 @@ const AdminPanel = () => {
     dashboard: false
   });
 
-  // Состояние уведомлений
   const [notification, setNotification] = useState(null);
 
-  // Поисковые и фильтр состояния
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
 
-  // Показать уведомление
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 5000);
   };
 
-  // API функции
   const fetchUsers = async () => {
     try {
       setLoading(prev => ({ ...prev, users: true }));
@@ -141,12 +137,6 @@ const AdminPanel = () => {
       setUsers(response.data);
     } catch (error) {
       showNotification('Ошибка загрузки пользователей', 'error');
-      // Fallback data for demo
-      // setUsers([
-      //   { id: 1, name: 'John Doe', email: 'john@example.com', phone: '+1234567890', joinedAt: '2024-01-15', status: 'active' },
-      //   { id: 2, name: 'Jane Smith', email: 'jane@example.com', phone: '+1234567891', joinedAt: '2024-01-20', status: 'active' },
-      //   { id: 3, name: 'Mike Johnson', email: 'mike@example.com', phone: '+1234567892', joinedAt: '2024-01-25', status: 'inactive' },
-      // ]);
     } finally {
       setLoading(prev => ({ ...prev, users: false }));
     }
@@ -160,25 +150,6 @@ const AdminPanel = () => {
       setContactMessages(response.data);
     } catch (error) {
       showNotification('Ошибка загрузки сообщений', 'error');
-      // Fallback data for demo
-      setContactMessages([
-        {
-          id: 1,
-          name: 'Alice Brown',
-          email: 'alice@example.com',
-          message: 'I need help with my iPhone repair service. When will it be ready?',
-          createdAt: '2024-06-08T10:30:00Z',
-          captcha: 'verified'
-        },
-        {
-          id: 2,
-          name: 'Bob Wilson',
-          email: 'bob@example.com',
-          message: 'What are your rates for laptop screen replacement?',
-          createdAt: '2024-06-08T14:20:00Z',
-          captcha: 'verified'
-        },
-      ]);
     } finally {
       setLoading(prev => ({ ...prev, contacts: false }));
     }

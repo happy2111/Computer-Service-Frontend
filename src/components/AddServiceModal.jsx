@@ -121,9 +121,6 @@ export default function AddServiceModal({isOpen, onClose}) {
           },
         }
       );
-      if (response.statusText !== "OK") {
-        throw new Error('Failed to fetch masters');
-      }
       setMasters(response.data);
     } catch (error) {
       console.error('Error fetching masters:', error);
