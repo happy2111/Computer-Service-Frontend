@@ -328,7 +328,7 @@ const AdminPanel = () => {
       completed: 'bg-green-100 text-green-800',
       admin: 'bg-green-100 text-green-800',
       personal: 'bg-yellow-100 text-yellow-800',
-
+      unrepairable: "bg-red-100 text-red-800",
 
     };
     return colors[status] || 'bg-yellow-100 text-yellow-800';

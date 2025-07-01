@@ -12,7 +12,7 @@ const PrintableCard = React.forwardRef(({request}, ref) => (
   >
     <p><b>Mijoz:</b> {request.userName}</p>
     <p><b>Telefon:</b> {request.phone}</p>
-    <p><b>Доп. инфо:</b> {request.additionalInfo}</p>
+    <p><b>Qoshimcha Ma'l.:</b> {request.additionalInfo}</p>
     <p><b>Narxi:</b> {request.cost} so'm - {request.costOr} so'm</p>
     <p><b>Javobgar Shaxs:</b> {request.master}</p>
   </div>

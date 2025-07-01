@@ -3,6 +3,15 @@
 input::placeholder {
   opacity: 0.5;
 }
-*{
+
+* {
   /*border: 1px solid red;*/
+}
+
+@theme {
+  --color-primary: #1E88E5;
+  --color-primary-dark: #b94e0a;
+  --color-primary-light: #fc9e56;
+
+
 }

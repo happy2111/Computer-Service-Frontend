@@ -24,7 +24,7 @@ export default function AboutUsSection() {
               <span className="text-blue-600">Sifatli ta'mirlash</span>
             </h2>
             <p className="text-lg text-gray-600">
-              10 yildan ortiq tajribaga ega bo'lgan jamoamiz sifatli xizmat,
+              15 yildan ortiq tajribaga ega bo'lgan jamoamiz sifatli xizmat,
               original ehtiyot qismlar va mijozlar roziligi asosida obro' qozongan.
               Bizning tariximiz va ApplePark jamoasi haqida ko'proq bilib oling.
             </p>
@@ -39,7 +39,7 @@ export default function AboutUsSection() {
                 </h3>
                 <div className="space-y-4 text-gray-600">
                   <p>
-                    2013-yilda tashkil etilgan ApplePark kichik smartfonlarni
+                    2010-yilda tashkil etilgan ApplePark kichik smartfonlarni
                     ta'mirlash ustaxonasidan boshlangan. Maqsadimiz: yuqori
                     sifatli ta'mirlashni adolatli narxlarda va a'lo mijozlarga
                     xizmat ko'rsatish bilan ta'minlash.
@@ -51,10 +51,11 @@ export default function AboutUsSection() {
                     mutaxassislar jamoasiga aylandi.
                   </p>
                   <p>
-                    Yillar davomida xizmatlarimiz dasturiy ta'minotni tiklash,
-                    ma'lumotlarni tiklash va profilaktik xizmatlarni ham o'z
-                    ichiga oldi. Endi biz texnologiya ta'mirlash bo'yicha yagona
-                    yechim taklif qilamiz.
+                    Yillar davomida xizmatlarimizga original Apple zaxira
+                    qismlarini buyurtma asosida yetkazib berish, o‘rnatish,
+                    iCloud ochish va boshqa zamonaviy xizmatlar ham qo‘shildi.
+                    Endi biz texnologiya taʼmirlash bo‘yicha yagona yechim
+                    taklif qilamiz.
                   </p>
                   <p>
                     Bugungi kunda ApplePark minglab mamnun mijozlarga xizmat
@@ -93,7 +94,7 @@ export default function AboutUsSection() {
               <ValueCard
                 icon={<Star className="h-6 w-6 text-blue-600" />}
                 title="Mukammallik"
-                description="Har bir ta'mirlashda eng yuqori sifatli ehtiyot qismlar va eng yaxshi amaliyotlardan foydalanamiz."
+                description="Har bir ta'mirlashda eng yuqori sifatli ehtiyot qismlar va eng yaxshi texnalogiyalardan foydalanamiz."
               />
               <ValueCard
                 icon={<Shield className="h-6 w-6 text-blue-600" />}
@@ -201,10 +202,10 @@ export default function AboutUsSection() {
               Yutuqlarimiz
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <AchievementStat number="10+" label="Biznesdagi yillar" />
+              <AchievementStat number="15+" label="Biznesdagi yillar" />
               <AchievementStat number="50,000+" label="Ta'mirlangan qurilmalar" />
               <AchievementStat number="98%" label="Mijozlar roziligi" />
-              <AchievementStat number="5" label="Xizmat ko'rsatish nuqtalari" />
+              <AchievementStat number="2" label="Xizmat ko'rsatish nuqtalari" />
             </div>
           </div>
 

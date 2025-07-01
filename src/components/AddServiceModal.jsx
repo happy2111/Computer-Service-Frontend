@@ -3,6 +3,19 @@ import AddUserModal from "./AddUserModal";
 import axios from "axios";
 import AddMasterModal from "./AddMasterModal.jsx";
 
+// Массив типов сервисов
+const serviceTypes = [
+  { id: "iphone-repair", title: "iPhone ta'mirlash" },
+  { id: "ipad-repair", title: "iPad ta'mirlash" },
+  { id: "macbook-repair", title: "MacBook ta'mirlash" },
+  { id: "apple-watch-repair", title: "Apple Watch ta'mirlash" },
+  { id: "imac-repair", title: "iMac ta'mirlash" },
+  { id: "icloud-unlock", title: "iCloud blokdan chiqarish" },
+  { id: "apple-diagnostic", title: "Apple diagnostikasi" },
+  { id: "data-recovery", title: "Data Recovery" },
+  { id: "other", title: "Boshqa"},
+];
+
 export default function AddServiceModal({isOpen, onClose}) {
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState(null)
@@ -134,10 +147,12 @@ export default function AddServiceModal({isOpen, onClose}) {
 
   if (!isOpen) return null;
 
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center ">
       <div className="bg-white z-20 rounded-lg shadow-lg p-8 w-full max-w-lg">
+        <p className={"text-sm font-bold text-blue-600"}>
+          {userPhone}
+        </p>
         <div className="flex items-center mb-6 gap-3">
           <div className="relative w-full">
             <input
@@ -172,10 +187,9 @@ export default function AddServiceModal({isOpen, onClose}) {
                   ))}
               </ul>
             )}
-            <p>
-              {userPhone}
-            </p>
+
           </div>
+
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r ml-0"
             onClick={() => setShowAddUserModal(true)}
@@ -184,6 +198,7 @@ export default function AddServiceModal({isOpen, onClose}) {
             +
           </button>
         </div>
+
         <form
           className="space-y-4"
           id="addSevice"
@@ -191,16 +206,19 @@ export default function AddServiceModal({isOpen, onClose}) {
         >
           <div>
             <label className="block text-neutral-900 text-sm font-bold mb-1">
-              Device Type
+              Xizmat turi
             </label>
-            <input
-              type="text"
+            <select
               name="deviceType"
               className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={form.deviceType}
               onChange={handleInputChange}
-              placeholder="iPhone"
-            />
+            >
+              <option className={"text-gray-600"} value="" disabled hidden>Xizmat turini tanlang</option>
+              {serviceTypes.map((type) => (
+                <option key={type.id} value={type.title}>{type.title}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-neutral-900 text-sm font-bold mb-1">

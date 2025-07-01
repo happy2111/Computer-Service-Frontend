@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import {
   Facebook,
   Twitter,
@@ -11,6 +11,9 @@ import {
   MapPin,
   Clock,
 } from "lucide-react";
+import {TbBrandTelegram} from "react-icons/tb";
+import logo from "../assets/logo.PNG";
+import {Link} from "react-router-dom";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -22,12 +25,17 @@ export default function Footer() {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:gap-12">
             <div className="space-y-4">
               <div className="flex items-center">
-                <div className="h-10 w-10 rounded-md bg-blue-600 flex items-center justify-center">
-                  <Wrench className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="ml-2 text-xl font-bold text-gray-900">
-                  ApplePark
-                </h2>
+                <Link
+                  to="/"
+                  className="flex items-center gap-1"
+                >
+                  <img
+                    src={logo}
+                    alt="ApplePark"
+                    className="w-10 h-10"
+                  />
+                  <span className="font-bold text-xl text-gray-800 ">Apple Park</span>
+                </Link>
               </div>
               <p className="text-sm text-gray-600">
                 Barcha raqamli qurilmalaringiz uchun professional ta'mirlash
@@ -35,25 +43,7 @@ export default function Footer() {
               </p>
               <div className="flex space-x-4 mt-4">
                 <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  className="text-gray-400 hover:text-blue-600"
-                >
-                  <Facebook className="h-5 w-5" />
-                </a>
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                  className="text-gray-400 hover:text-blue-600"
-                >
-                  <Twitter className="h-5 w-5" />
-                </a>
-                <a
-                  href="#"
+                  href="https://www.instagram.com/applepark.uz?utm_source=ig_web_button_share_sheet&igsh=MXN1eW9wYzcxNWUydQ=="
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
@@ -62,13 +52,13 @@ export default function Footer() {
                   <Instagram className="h-5 w-5" />
                 </a>
                 <a
-                  href="#"
+                  href="https://t.me/iPhoneServiceA"
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Linkedin"
+                  aria-label="Telegram"
                   className="text-gray-400 hover:text-blue-600"
                 >
-                  <Linkedin className="h-5 w-5" />
+                  <TbBrandTelegram className="h-6 w-6" />
                 </a>
               </div>
             </div>
@@ -111,19 +101,43 @@ export default function Footer() {
               </h3>
               <div className="flex items-center text-gray-600 text-sm">
                 <Mail className="h-5 w-5 mr-2" />
-                <span>example@email.com</span>
+                <a
+                  href="https://t.me/iPhoneServiceA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Telegram"
+                  className=" hover:text-blue-600"
+                >info@applepark.uz
+                </a>
               </div>
               <div className="flex items-center text-gray-600 text-sm">
                 <Phone className="h-5 w-5 mr-2" />
-                <span>+998 90 000 00 00</span>
+                <div className={"flex flex-col"}>
+                  <a
+                    href="tel:+998772111110"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Telegram"
+                    className=" block hover:text-blue-600"
+                  >+998 77 211 11 10
+                  </a>
+                  <a
+                    href="tel:+998952111110"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Telegram"
+                    className="block hover:text-blue-600"
+                  >+998 95 211 11 10
+                  </a>
+                </div>
               </div>
               <div className="flex items-center text-gray-600 text-sm">
                 <MapPin className="h-5 w-5 mr-2" />
-                <span>Toshkent, O'zbekiston</span>
+                <span>Andijan, O'zbekiston</span>
               </div>
               <div className="flex items-center text-gray-600 text-sm">
                 <Clock className="h-5 w-5 mr-2" />
-                <span>Du-Yak: 09:00-21:00</span>
+                <span>Du-Yak: 09:00-22:00</span>
               </div>
             </div>
           </div>
@@ -141,7 +155,10 @@ export default function Footer() {
               </div>
               <div className="mt-4 md:mt-0">
                 <form className="flex sm:max-w-md">
-                  <label htmlFor="email-address" className="sr-only">
+                  <label
+                    htmlFor="email-address"
+                    className="sr-only"
+                  >
                     Email manzili
                   </label>
                   <input
@@ -178,10 +195,12 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+);
 }
 
-function SocialLink({ href, children, ariaLabel }) {
+function SocialLink({
+  href, children, ariaLabel
+}) {
   return (
     <a
       href={href}
@@ -195,7 +214,9 @@ function SocialLink({ href, children, ariaLabel }) {
   );
 }
 
-function FooterLink({ href, children }) {
+function FooterLink({
+  href, children
+}) {
   return (
     <li>
       <a

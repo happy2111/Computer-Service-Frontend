@@ -13,7 +13,7 @@ export default function RepairServiceHero() {
             <div className="space-y-6 md:space-y-8">
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
                 Raqamli qurilmalaringiz uchun{" "}
-                <span className="text-blue-600">mutaxassis ta'mirlash yechimlari</span>
+                <span className="text-primary">mutaxassis ta'mirlash yechimlari</span>
               </h1>
               <p className="text-lg text-gray-600 max-w-2xl">
                 Smartfonlar, kompyuterlar va dasturiy ta'minot muammolari uchun tez va ishonchli ta'mirlash. Bizning sertifikatlangan mutaxassislarimiz sifatli xizmat va kafolat beradi.
@@ -22,14 +22,14 @@ export default function RepairServiceHero() {
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Link
                   to="/services/#header"
-                  className="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
                 >
                   Bizning xizmatlarimiz
                   <ChevronRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link
                   to="/contact-us"
-                  className="inline-flex items-center justify-center rounded-md border border-blue-600 bg-white px-6 py-3 text-base font-medium text-blue-600 shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                  className="inline-flex items-center justify-center rounded-md border border-primary bg-white px-6 py-3 text-base font-medium text-primary shadow-sm hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-primary-light focus:ring-offset-2 transition-colors"
                 >
                   Biz bilan bog'laning
                 </Link>
@@ -39,26 +39,26 @@ export default function RepairServiceHero() {
             {/* Right Column - Service Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <ServiceCard
-                icon={<Smartphone className="h-8 w-8 text-blue-600" />}
+                icon={<Smartphone className="h-8 w-8 text-primary" />}
                 title="iPhone ta'mirlash"
                 description="Ekran almashtirish, batareya muammolari, suvdan zarar ko'rgan qurilmalar"
                 href="/services"
               />
               <ServiceCard
-                icon={<Laptop className="h-8 w-8 text-blue-600" />}
+                icon={<Laptop className="h-8 w-8 text-primary" />}
                 title="MacBook ta'mirlash"
                 description="Dasturiy ta'minotni tiklash, apparatni yangilash, ma'lumotlarni tiklash"
                 href="/services"
               />
               <ServiceCard
-                icon={<Cloud className="h-8 w-8 text-blue-600" />}
+                icon={<Cloud className="h-8 w-8 text-primary" />}
                 title="iCloud blokdan chiqarish"
                 description="iCloud akkauntingizni mutaxassislar yordamida oching"
                 href="/services"
               />
               <ServiceCard
                 icon={
-                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 text-blue-600 font-bold">
+                  <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary-light text-primary font-bold">
                     24
                   </div>
                 }
@@ -96,7 +96,7 @@ export default function RepairServiceHero() {
               </div>
               <div className="flex items-center space-x-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-green-500"></span>
-                <span className="text-sm">90 kunlik kafolat</span>
+                <span className="text-sm">30 kunlik kafolat</span>
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@ function ServiceCard({ icon, title, description, href}) {
         </div>
       </div>
       <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <ChevronRight className="h-5 w-5 text-blue-600" />
+        <ChevronRight className="h-5 w-5 text-primary" />
       </div>
     </Link>
   );

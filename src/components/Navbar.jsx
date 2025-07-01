@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { HashLink } from "react-router-hash-link";
 import axios from "axios";
 import { User, LogOut } from "lucide-react";
+import logo from "../assets/logo.PNG"
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -64,23 +65,9 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-md  text-white bg-blue-600 flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                </svg>
-              </div>
-              <span className="font-bold text-xl text-gray-800">ServiceHY</span>
+            <Link to="/" className="flex items-center gap-1">
+              <img src={logo} alt="ApplePark" className="w-10 h-10"/>
+              <span className="font-bold text-xl text-gray-800 ">Apple Park</span>
             </Link>
           </div>
           {/* Desktop Menu */}
@@ -88,42 +75,50 @@ export default function Navbar() {
             <HashLink
               smooth
               to="/#"
-              className="text-gray-700 hover:text-blue-600 transition"
+              className="text-gray-700 hover:text-primary transition"
             >
               Bosh sahifa
             </HashLink>
             <HashLink
               smooth
               to="/#about"
-              className="text-gray-700 hover:text-blue-600 transition"
+              className="text-gray-700 hover:text-primary transition"
             >
               Biz haqimizda
             </HashLink>
             <HashLink
               smooth
+              to="/services"
+              className="text-gray-700 hover:text-primary transition"
+            >
+              Bizning xizmatlarimiz
+            </HashLink>
+            <HashLink
+              smooth
               to="/contact-us/#header"
-              className="text-gray-700 hover:text-blue-600 transition"
+              className="text-gray-700 hover:text-primary transition"
             >
               Biz bilan bog'lanish
             </HashLink>
+
             {!localStorage.getItem("token") ? (
               <Link
                 to="/auth/login"
-                className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
+                className="ml-4 px-4 py-2 bg-primary text-white rounded-md shadow hover:bg-primary-dark transition"
               >
                 Kirish
               </Link>
             ) : (
               <div className="relative">
                 <button
-                  className="w-10 h-10 overflow-hidden rounded-full focus:outline-none border-2 border-blue-100 hover:border-blue-400 transition"
+                  className="w-10 h-10 overflow-hidden rounded-full focus:outline-none border-2 border-primary-light hover:border-primary transition"
                   onClick={() => setShowProfileModal((v) => !v)}
                   aria-label="Open profile menu"
                 >
                   {!isLogged ? (
                     // Иконка загрузки
                     <svg
-                      className="animate-spin w-7 h-7 text-blue-400 mx-auto my-auto"
+                      className="animate-spin w-7 h-7 text-primary-light mx-auto my-auto"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -164,7 +159,7 @@ export default function Navbar() {
                     >
                       <Link
                         to="/profile"
-                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition"
+                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-primary-light hover:text-primary transition"
                         onClick={() => setShowProfileModal(false)}
                       >
                         <User className="w-5 h-5 mr-2" />
@@ -172,7 +167,7 @@ export default function Navbar() {
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition w-full"
+                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-primary-light hover:text-primary transition w-full"
                       >
                         <LogOut className="w-5 h-5 mr-2" />
                         Chiqish
@@ -236,7 +231,7 @@ export default function Navbar() {
         <div className="px-4 pt-2 pb-4 space-y-2 flex flex-col">
           <Link
             to="/"
-            className="text-gray-700 hover:text-blue-600 transition py-2"
+            className="text-gray-700 hover:text-primary transition py-2"
             onClick={() => setMenuOpen(false)}
           >
             Bosh sahifa
@@ -244,7 +239,7 @@ export default function Navbar() {
           <HashLink
             smooth
             to="/#about"
-            className="text-gray-700 hover:text-blue-600 transition py-2"
+            className="text-gray-700 hover:text-primary transition py-2"
             onClick={() => setMenuOpen(false)}
           >
             Biz haqimizda
@@ -252,7 +247,7 @@ export default function Navbar() {
           <HashLink
             smooth
             to="/contact-us/"
-            className="text-gray-700 hover:text-blue-600 transition py-2"
+            className="text-gray-700 hover:text-primary transition py-2"
             onClick={() => setMenuOpen(false)}
           >
             Biz bilan bog'lanish
@@ -260,7 +255,7 @@ export default function Navbar() {
           {!localStorage.getItem("token") ? (
             <Link
               to="/auth/login"
-              className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
+              className="mt-2 px-4 py-2 bg-primary text-white rounded-md shadow hover:bg-primary-dark transition"
               onClick={() => setMenuOpen(false)}
             >
               Kirish
@@ -269,7 +264,7 @@ export default function Navbar() {
             <>
               <Link
                 to="/profile"
-                className="flex items-center text-gray-700 hover:text-blue-600 transition py-2"
+                className="flex items-center text-gray-700 hover:text-primary transition py-2"
                 onClick={() => setMenuOpen(false)}
               >
                 <User className="w-5 h-5 mr-2" />
@@ -281,7 +276,7 @@ export default function Navbar() {
                   setMenuOpen(false);
                   navigate("/auth/login");
                 }}
-                className="flex items-center text-gray-700 hover:text-blue-600 transition py-2"
+                className="flex items-center text-gray-700 hover:text-primary transition py-2"
               >
                 <LogOut className="w-5 h-5 mr-2" />
                 Chiqish

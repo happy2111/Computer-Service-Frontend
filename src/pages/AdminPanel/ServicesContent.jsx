@@ -1,7 +1,10 @@
-import {Search, RefreshCw, Plus,Phone, Calendar,  Trash2, AlertCircle, Hash, Info, UserCog, DollarSign} from 'lucide-react';
+import {Search, RefreshCw, Plus,Phone, Check, Calendar,  Trash2, AlertCircle, Hash, Info, UserCog, DollarSign} from 'lucide-react';
 import React, { useRef , useState} from "react";
 import { useReactToPrint } from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
+import SortOrderSelect from "../../components/SortOrderSelect";
+import pickedUp from "../../assets/food-delivery.png"
+import axios from "axios";
 
 const ServicesContent = React.memo(({
   filteredServiceRequests,
@@ -21,6 +24,7 @@ const ServicesContent = React.memo(({
 
   const componentRef = useRef(null);
   const [printData, setPrintData] = useState(null);
+  const [sortOrder, setSortOrder] = useState('desc')
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: "Ta'mirlash"
@@ -31,7 +35,25 @@ const ServicesContent = React.memo(({
     setTimeout(handlePrint, 100);
   };
 
+  const handlePackedUp = async (deviceId, userId, currentPackedUp) => {
+    try {
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/services/${deviceId}/picked?userId=${userId}`, {
+        status: !currentPackedUp
+      });
+      fetchServiceRequests();
+    } catch (error) {
+      alert("Xatolik yuz berdi: " + error.message);
+    }
+  };
 
+  function getSortedRequests(requests, order) {
+    return [...requests].sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      if (order === 'asc') return dateA - dateB;
+      return dateB - dateA;
+    });
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
@@ -61,13 +83,14 @@ const ServicesContent = React.memo(({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto flex items-center"
             >
               <option value="all">Barcha holatlar</option>
               <option value="pending">Kutilmoqda</option>
               <option value="in-progress">Jarayonda</option>
               <option value="completed">Bajarildi</option>
             </select>
+            <SortOrderSelect sortOrder={sortOrder} setSortOrder={setSortOrder} />
             <button
               onClick={fetchServiceRequests}
               className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
@@ -84,17 +107,17 @@ const ServicesContent = React.memo(({
       ) : (
         <div className="p-6">
           <div className="space-y-6">
-            {filteredServiceRequests.map((request) => (
+            {getSortedRequests(filteredServiceRequests, sortOrder).map((request) => (
               <div key={request._id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50">
                 <div className="flex flex-wrap sm:flex-col items-start justify-between mb-4">
                   <div className={"max-sm:order-1"}>
                     <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                       {/*<Info className="h-5 w-5 mr-2 text-blue-500" />*/}
-                      <span className="">{request.deviceType} {request.deviceModel}</span>
+                      <span className="">{request.deviceType} {request.deviceModel} {request._id}</span>
                     </h3>
                     <p className="text-blue-600 font-medium flex items-center">
                       {/*<User className="h-4 w-4 mr-1" />*/}
-                      <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName}</span>
+                      <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName} {request.userId}</span>
                     </p>
                     <br/>
                     <p className="text-gray-600 text-sm flex items-center">
@@ -129,6 +152,7 @@ const ServicesContent = React.memo(({
                       <option value="pending">Kutilmoqda</option>
                       <option value="in-progress">Jarayonda</option>
                       <option value="completed">Bajarildi</option>
+                      <option value="unrepairable">Tamirlab Bolmaydi</option>
                     </select>
                   </div>
 
@@ -175,6 +199,20 @@ const ServicesContent = React.memo(({
                     className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
                   >
                     Chop etish
+                  </button>
+                  <button
+                    onClick={() => handlePackedUp(request._id, request.userId, request.packedUp)}
+                    className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 hover:opacity-75 flex gap-2 py-2 border  text-gray-700 text-sm font-medium rounded-lg`}
+                  >
+                    <img
+                      className={"w-5"}
+                      src={pickedUp}
+                      alt="taked away"
+                      width=""
+                      height=""
+                      loading="lazy"
+                    /> Olib Ketilgan
+                    {request.packedUp && <Check className="w-4 h-4 text-green-600" />}
                   </button>
 
                   <button

@@ -78,19 +78,17 @@ export default function ContactUs() {
   return (
     <div className="bg-white max-sm:pt-9">
       <Helmet>
-        <title>Contact Us</title>
+        <title>Biz bilan bog'lanish</title>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="header">
         <div className="py-12 md:py-20">
           {/* Page Header */}
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Contact Us
+              Biz bilan bog'lanish
             </h1>
             <p className="text-lg text-gray-600">
-              Have questions or need assistance? We're here to help. Fill out
-              the form below and our team will get back to you as soon as
-              possible.
+              Savollaringiz bormi yoki yordam kerakmi? Biz yordam berishga tayyormiz. Quyidagi formani to'ldiring va jamoamiz imkon qadar tezroq siz bilan bog'lanadi.
             </p>
           </div>
 
@@ -98,7 +96,7 @@ export default function ContactUs() {
             {/* Contact Form */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Send us a message
+                Bizga xabar yuboring
               </h2>
 
               {submitStatus === "success" && (
@@ -106,11 +104,10 @@ export default function ContactUs() {
                   <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-green-800">
-                      Message sent successfully!
+                      Xabaringiz muvaffaqiyatli yuborildi!
                     </h3>
                     <p className="mt-1 text-sm text-green-700">
-                      Thank you for contacting us. We'll respond to your message
-                      as soon as possible.
+                      Biz bilan bog'langaningiz uchun rahmat. Xabaringizga imkon qadar tezroq javob beramiz.
                     </p>
                   </div>
                 </div>
@@ -121,11 +118,10 @@ export default function ContactUs() {
                   <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" />
                   <div className="ml-3">
                     <h3 className="text-sm font-medium text-red-800">
-                      Failed to send message
+                      Xabar yuborishda xatolik yuz berdi
                     </h3>
                     <p className="mt-1 text-sm text-red-700">
-                      There was an error sending your message. Please try again
-                      or contact us directly.
+                      Xabaringizni yuborishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring yoki biz bilan to'g'ridan-to'g'ri bog'laning.
                     </p>
                   </div>
                 </div>
@@ -138,7 +134,7 @@ export default function ContactUs() {
                     htmlFor="name"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Full Name <span className="text-red-500">*</span>
+                    To'liq ism <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="name"
@@ -149,10 +145,10 @@ export default function ContactUs() {
                         : "border-gray-300"
                     }`}
                     {...register("name", {
-                      required: "Name is required",
+                      required: "Ism majburiy",
                       minLength: {
                         value: 2,
-                        message: "Name must be at least 2 characters",
+                        message: "Ism kamida 2 ta belgidan iborat bo'lishi kerak",
                       },
                     })}
                   />
@@ -168,7 +164,7 @@ export default function ContactUs() {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Email Address <span className="text-red-500">*</span>
+                    Elektron pochta <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="email"
@@ -179,10 +175,10 @@ export default function ContactUs() {
                         : "border-gray-300"
                     }`}
                     {...register("email", {
-                      required: "Email is required",
+                      required: "Email majburiy",
                       pattern: {
-                        value: /\S+@\S+\.\S+/,
-                        message: "Please enter a valid email address",
+                        value: /\S+@\S+\.\S+/, // regex unchanged
+                        message: "Iltimos, to'g'ri email manzilini kiriting",
                       },
                     })}
                   />
@@ -198,8 +194,8 @@ export default function ContactUs() {
                     htmlFor="phone"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Phone Number{" "}
-                    <span className="text-gray-400">(Optional)</span>
+                    Telefon raqam{" "}
+                    <span className="text-gray-400">(Ixtiyoriy)</span>
                   </label>
                   <input
                     id="phone"
@@ -214,7 +210,7 @@ export default function ContactUs() {
                     htmlFor="message"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Message <span className="text-red-500">*</span>
+                    Xabar <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     id="message"
@@ -225,10 +221,10 @@ export default function ContactUs() {
                         : "border-gray-300"
                     }`}
                     {...register("message", {
-                      required: "Message is required",
+                      required: "Xabar majburiy",
                       minLength: {
                         value: 10,
-                        message: "Message must be at least 10 characters",
+                        message: "Xabar kamida 10 ta belgidan iborat bo‘lishi kerak",
                       },
                     })}
                   ></textarea>
@@ -275,12 +271,12 @@ export default function ContactUs() {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      Sending...
+                      Yuborilmoqda...
                     </>
                   ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Send Message
+                      Xabar yuborish
                     </>
                   )}
                 </button>
@@ -292,30 +288,36 @@ export default function ContactUs() {
               {/* Contact Info Card */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Contact Information
+                  Kontakt ma'lumotlari
                 </h2>
                 <ul className="space-y-5">
                   <li className="flex items-start">
                     <MapPin className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">
-                        Our Location
+                        Manzilimiz
                       </h3>
-                      <p className="mt-1 text-sm text-gray-600">Tashkent</p>
+                      <p className="mt-1 text-sm text-gray-600">Toshkent</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <Phone className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">
-                        Phone Number
+                        Telefon raqamlarimiz
                       </h3>
-                      <p className="mt-1 text-sm text-gray-600">
+                      <p className="mt-1 text-sm text-gray-600 flex flex-col">
                         <a
-                          href="tel:+998934474009"
+                          href="tel:+998772111110"
                           className="hover:text-blue-600"
                         >
-                          +998 (93) 447-40-09
+                          +998 (77) 211-11-10
+                        </a>
+                        <a
+                          href="tel:+998952111110"
+                          className="hover:text-blue-600"
+                        >
+                          +998 (95) 211-11-10
                         </a>
                       </p>
                     </div>
@@ -324,14 +326,14 @@ export default function ContactUs() {
                     <Mail className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">
-                        Email Address
+                        Elektron pochta
                       </h3>
                       <p className="mt-1 text-sm text-gray-600">
                         <a
-                          href="mailto:me@info.com"
+                          href="mailto:support@applepark.uz"
                           className="hover:text-blue-600"
                         >
-                          me@info.com
+                          support@applepark.uz
                         </a>
                       </p>
                     </div>
@@ -340,15 +342,11 @@ export default function ContactUs() {
                     <Clock className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-gray-900">
-                        Business Hours
+                        Ish vaqti
                       </h3>
                       <p className="mt-1 text-sm text-gray-600">
-                        Monday - Friday: 9AM - 7PM
+                        Dushanba - Yakshanba: 9:00 - 22:00
                       </p>
-                      <p className="text-sm text-gray-600">
-                        Saturday: 10AM - 5PM
-                      </p>
-                      <p className="text-sm text-gray-600">Sunday: Closed</p>
                     </div>
                   </li>
                 </ul>
@@ -357,35 +355,31 @@ export default function ContactUs() {
               {/* FAQ Section */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Frequently Asked Questions
+                  Ko'p so'raladigan savollar
                 </h2>
                 <div className="space-y-5">
                   <div>
                     <h3 className="text-sm font-medium text-gray-900">
-                      How long does a typical repair take?
+                      Odatda ta'mirlash qancha vaqt oladi?
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      Most repairs are completed within 24-48 hours, depending
-                      on the complexity and parts availability.
+                      Ko'pgina ta'mirlash ishlari 24-48 soat ichida, murakkablik va ehtiyot qismlar mavjudligiga qarab amalga oshiriladi.
                     </p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-900">
-                      Do you offer warranty on repairs?
+                      Ta'mirlashga kafolat bormi?
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      Yes, all our repairs come with a 90-day warranty covering
-                      both parts and labor.
+                      Ha, barcha ta'mirlash ishlarimiz 90 kunlik kafolat bilan ta'minlanadi (ehtiyot qismlar va ish haqi uchun).
                     </p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-900">
-                      Do I need an appointment?
+                      Oldindan yozilish kerakmi?
                     </h3>
                     <p className="mt-1 text-sm text-gray-600">
-                      Walk-ins are welcome, but appointments are recommended for
-                      faster service. You can schedule an appointment online or
-                      by phone.
+                      Oldindan yozilish tavsiya etiladi, lekin navbatsiz ham kelishingiz mumkin. Tezroq xizmat uchun onlayn yoki telefon orqali yozilishingiz mumkin.
                     </p>
                   </div>
                 </div>
