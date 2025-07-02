@@ -241,7 +241,7 @@ export default function Service() {
   return (
     <div className="bg-white ">
       <Helmet>
-        <link rel="canonical" href="https://www.applepark.uz/" />
+        <link rel="canonical" href="https://www.applepark.uz/services" />
         <meta
           name="description"
           content="Apple Park - Professional repair services for all Apple devices including iPhone, iPad, MacBook, and more. Fast, reliable, and certified technicians."/>

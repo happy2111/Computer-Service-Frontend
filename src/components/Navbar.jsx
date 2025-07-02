@@ -246,6 +246,14 @@ export default function Navbar() {
           </HashLink>
           <HashLink
             smooth
+            to="/services"
+            className="text-gray-700 hover:text-primary transition py-2"
+            onClick={() => setMenuOpen(false)}
+          >
+            Bizning xizmatlarimiz
+          </HashLink>
+          <HashLink
+            smooth
             to="/contact-us/"
             className="text-gray-700 hover:text-primary transition py-2"
             onClick={() => setMenuOpen(false)}

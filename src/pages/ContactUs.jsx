@@ -78,7 +78,7 @@ export default function ContactUs() {
   return (
     <div className="bg-white max-sm:pt-9">
       <Helmet>
-        <link rel="canonical" href="https://www.applepark.uz/" />
+        <link rel="canonical" href="https://www.applepark.uz/contact-us/" />
         <title>Apple Park - Biz bilan bog'lanish</title>
         <meta name="description" content="Apple Park - Bizning xizmatlarimiz, ta'mirlash so'rovlari va aloqa ma'lumotlari. Biz bilan bog'laning!" />
         <meta name="keywords" content="Apple Park, aloqa, xizmatlar, ta'mirlash so'rovlari, telefon raqami, elektron pochta" />
