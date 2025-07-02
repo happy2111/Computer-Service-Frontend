@@ -95,7 +95,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4" itemScope itemType="https://schema.org/Organization">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Biz bilan bog'laning
               </h3>
@@ -107,6 +107,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   aria-label="Telegram"
                   className=" hover:text-blue-600"
+                  itemProp="email"
                 >support@applepark.uz
                 </a>
               </div>
@@ -119,6 +120,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     aria-label="Telegram"
                     className=" block hover:text-blue-600"
+                    itemProp="telephone"
                   >+998 77 211 11 10
                   </a>
                   <a
@@ -127,17 +129,20 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     aria-label="Telegram"
                     className="block hover:text-blue-600"
+                    itemProp="telephone"
                   >+998 95 211 11 10
                   </a>
                 </div>
               </div>
-              <div className="flex items-center text-gray-600 text-sm">
+              <div className="flex items-center text-gray-600 text-sm" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
                 <MapPin className="h-5 w-5 mr-2" />
-                <span>Andijan, O'zbekiston</span>
+                <span>
+                  <span itemProp="addressLocality">Andijan</span>, <span itemProp="addressCountry">O'zbekiston</span>
+                </span>
               </div>
               <div className="flex items-center text-gray-600 text-sm">
                 <Clock className="h-5 w-5 mr-2" />
-                <span>Du-Yak: 09:00-22:00</span>
+                <span itemProp="openingHours">Du-Yak: 09:00-22:00</span>
               </div>
             </div>
           </div>

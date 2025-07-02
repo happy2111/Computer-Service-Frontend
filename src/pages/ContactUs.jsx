@@ -296,31 +296,39 @@ export default function ContactUs() {
             </div>
 
             {/* Branches Info */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8" itemScope itemType="https://schema.org/Organization">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Filiallarimiz</h2>
-              <div className="mb-6 flex items-start gap-4">
+              <div className="mb-6 flex items-start gap-4" itemProp="department" itemScope itemType="https://schema.org/LocalBusiness">
                 <MapPin className="h-6 w-6 text-blue-600 mt-1" />
                 <div>
-                  <div className="font-bold text-gray-900">Boburshox ko’chasi, 24b uy</div>
-                  <div className="text-gray-600">Uzbekistan, Andijon shahri</div>
-                  <div className="text-gray-600">Telefon: <a href="tel:+998772111110" className="text-blue-600 hover:underline">+998 77 211 11 10</a></div>
-                  <div className="text-gray-600">Ish vaqti: 9:00 - 22:00</div>
+                  <div className="font-bold text-gray-900" itemProp="name">Boburshox ko’chasi, 24b uy</div>
+                  <div className="text-gray-600" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
+                    <span itemProp="streetAddress">Boburshox ko’chasi, 24b uy</span>,
+                    <span itemProp="addressLocality">Andijon shahri</span>,
+                    <span itemProp="addressCountry">Uzbekistan</span>
+                  </div>
+                  <div className="text-gray-600">Telefon: <a href="tel:+998772111110" className="text-blue-600 hover:underline" itemProp="telephone">+998 77 211 11 10</a></div>
+                  <div className="text-gray-600">Ish vaqti: <span itemProp="openingHours">9:00 - 22:00</span></div>
                 </div>
               </div>
-              <div className="mb-6 flex items-start gap-4">
+              <div className="mb-6 flex items-start gap-4" itemProp="department" itemScope itemType="https://schema.org/LocalBusiness">
                 <MapPin className="h-6 w-6 text-blue-600 mt-1" />
                 <div>
-                  <div className="font-bold text-gray-900">Xalis Savdo Markazi, 2-qavat, 9-dokon</div>
-                  <div className="text-gray-600">Uzbekistan, Andijon shahri</div>
-                  <div className="text-gray-600">Telefon: <a href="tel:+998952111110" className="text-blue-600 hover:underline">+998 95 211 11 10</a></div>
-                  <div className="text-gray-600">Ish vaqti: 9:00 - 22:00</div>
+                  <div className="font-bold text-gray-900" itemProp="name">Xalis Savdo Markazi, 2-qavat, 9-dokon</div>
+                  <div className="text-gray-600" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
+                    <span itemProp="streetAddress">Xalis Savdo Markazi, 2-qavat, 9-dokon</span>,
+                    <span itemProp="addressLocality">Andijon shahri</span>,
+                    <span itemProp="addressCountry">Uzbekistan</span>
+                  </div>
+                  <div className="text-gray-600">Telefon: <a href="tel:+998952111110" className="text-blue-600 hover:underline" itemProp="telephone">+998 95 211 11 10</a></div>
+                  <div className="text-gray-600">Ish vaqti: <span itemProp="openingHours">9:00 - 22:00</span></div>
                 </div>
               </div>
               <div className="flex items-start gap-4">
                 <Mail className="h-6 w-6 text-blue-600 mt-1" />
                 <div>
                   <div className="font-bold text-gray-900">Email</div>
-                  <div className="text-gray-600"><a href="mailto:support@applepark.uz" className="text-blue-600 hover:underline">support@applepark.uz</a></div>
+                  <div className="text-gray-600"><a href="mailto:support@applepark.uz" className="text-blue-600 hover:underline" itemProp="email">support@applepark.uz</a></div>
                 </div>
               </div>
             </div>

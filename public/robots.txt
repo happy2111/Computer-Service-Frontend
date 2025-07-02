@@ -1,4 +1,4 @@
 User-agent: *
-Disallow: /admin/
+Disallow: /admin/*
 
 Sitemap: https://www.applepark.uz/sitemap.xml
