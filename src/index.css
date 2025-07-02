@@ -10,8 +10,10 @@ input::placeholder {
 
 @theme {
   --color-primary: #1E88E5;
-  --color-primary-dark: #b94e0a;
-  --color-primary-light: #fc9e56;
+  /*--color-primary-dark: #b94e0a;*/
+  /*--color-primary-light: #fc9e56;*/
+  --color-primary-dark: oklch(37.9% 0.146 265.522);
+  --color-primary-light: oklch(80.9% 0.105 251.813);
 
 
 }

@@ -1,4 +1,4 @@
-import {Search, RefreshCw, Plus,Phone, Check, Calendar,  Trash2, AlertCircle, Hash, Info, UserCog, DollarSign} from 'lucide-react';
+import {Search, RefreshCw, Plus,Phone, Check, Calendar,  Trash2, AlertCircle, Hash, Info, UserCog,Edit, DollarSign} from 'lucide-react';
 import React, { useRef , useState} from "react";
 import { useReactToPrint } from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
@@ -111,13 +111,14 @@ const ServicesContent = React.memo(({
               <div key={request._id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50">
                 <div className="flex flex-wrap sm:flex-col items-start justify-between mb-4">
                   <div className={"max-sm:order-1"}>
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <h3 className="text-lg font-semibold text-gray-900 flex max-sm:gap-2 items-center">
                       {/*<Info className="h-5 w-5 mr-2 text-blue-500" />*/}
-                      <span className="">{request.deviceType} {request.deviceModel} {request._id}</span>
+                      <span className="">{request.deviceType}</span>
+                      <span className="text-gray-500 text-sm">({request.deviceModel})</span>
                     </h3>
                     <p className="text-blue-600 font-medium flex items-center">
                       {/*<User className="h-4 w-4 mr-1" />*/}
-                      <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName} {request.userId}</span>
+                      <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName}</span>
                     </p>
                     <br/>
                     <p className="text-gray-600 text-sm flex items-center">
@@ -126,11 +127,11 @@ const ServicesContent = React.memo(({
                     </p>
                     <p className="text-gray-600 text-sm flex items-center">
                       <Hash className="h-4 w-4 mr-1 text-purple-500" />
-                      <span className="font-bold">IMEI:</span>&nbsp;<span className="font-bold text-gray-900">{request.imei}</span>
+                      <span className="font-bold">IMEI:</span>&nbsp;<span className="font-bold inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900 break-all">{request.imei}</span>
                     </p>
                     <p className="text-gray-600 text-sm flex items-center">
                       <Info className="h-4 w-4 mr-1 text-cyan-500" />
-                      <span className="font-bold">Qo'shimcha ma'lumotlar:</span>&nbsp;<span className="font-bold text-gray-900">{request.additionalInfo}</span>
+                      <span className="font-bold break-all ">Qo'shimcha ma'lumotlar:</span>&nbsp;<span className="font-bold break-all inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900">{request.additionalInfo}</span>
                     </p>
                     <p className="text-gray-600 text-sm flex items-center">
                       <UserCog className="h-4 w-4 mr-1 text-orange-500" />
@@ -202,7 +203,7 @@ const ServicesContent = React.memo(({
                   </button>
                   <button
                     onClick={() => handlePackedUp(request._id, request.userId, request.packedUp)}
-                    className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 hover:opacity-75 flex gap-2 py-2 border  text-gray-700 text-sm font-medium rounded-lg`}
+                    className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 hover:opacity-75 flex gap-2 py-2 border-gray-300 border  text-gray-700 text-sm font-medium rounded-lg`}
                   >
                     <img
                       className={"w-5"}
@@ -214,10 +215,14 @@ const ServicesContent = React.memo(({
                     /> Olib Ketilgan
                     {request.packedUp && <Check className="w-4 h-4 text-green-600" />}
                   </button>
-
+                  <button
+                    className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
                   <button
                     onClick={() => deleteServiceRequest(request._id, request.userId)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                    className="p-2 text-red-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

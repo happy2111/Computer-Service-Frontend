@@ -102,12 +102,12 @@ export default function Footer() {
               <div className="flex items-center text-gray-600 text-sm">
                 <Mail className="h-5 w-5 mr-2" />
                 <a
-                  href="https://t.me/iPhoneServiceA"
+                  href="mailto:support@applepark.uz"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Telegram"
                   className=" hover:text-blue-600"
-                >info@applepark.uz
+                >support@applepark.uz
                 </a>
               </div>
               <div className="flex items-center text-gray-600 text-sm">

@@ -28,7 +28,7 @@ export default function Navbar() {
         );
         if (res.status >= 200 && res.status < 300) {
           setUser(res.data);
-          console.log("User data fetched successfully", res);
+          // console.log("User data fetched successfully", res);
           setIsLogget(true);
         }
       } catch (error) {

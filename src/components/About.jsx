@@ -75,7 +75,7 @@ export default function AboutUsSection() {
                 <div className="absolute -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-lg border border-gray-200">
                   <div className="flex items-center space-x-2">
                     <Clock className="h-5 w-5 text-blue-600" />
-                    <span className="font-bold text-gray-900">10+ yil</span>
+                    <span className="font-bold text-gray-900">15+ yil</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     ishonchli xizmat

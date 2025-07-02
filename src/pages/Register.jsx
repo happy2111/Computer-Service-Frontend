@@ -28,6 +28,7 @@ export default function Register() {
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
     },
@@ -41,7 +42,7 @@ export default function Register() {
     try {
       console.log(data);
       const res = await axios.post(
-        "https://computer-service-backend.onrender.com/api/auth/register",
+        `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
         data
       );
       if (res.status >= 200 && res.status < 300) {
@@ -172,7 +173,7 @@ export default function Register() {
                   {...register("email", {
                     required: "Email is required",
                     pattern: {
-                      value: /\S+@\S+\.\S+/,
+                      value: /\S+@\S+\.\S+/, // простая проверка email
                       message: "Email is invalid",
                     },
                   })}
@@ -181,6 +182,40 @@ export default function Register() {
               {errors.email && (
                 <p className="text-xs sm:text-sm text-red-500">
                   {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            {/* Phone Field */}
+            <div className="space-y-1 sm:space-y-2">
+              <label
+                htmlFor="phone"
+                className="block text-xs sm:text-sm font-medium text-gray-700"
+              >
+                Телефон
+              </label>
+              <div className="relative">
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="+998 (99) 123-45-67"
+                  className={`w-full rounded-md border px-3 py-2 text-xs sm:text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    errors.phone
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      : "border-gray-300"
+                  }`}
+                  {...register("phone", {
+                    required: "Телефон обязателен",
+                    pattern: {
+                      value: /^\+?\d{10,15}$/,
+                      message: "Некорректный формат телефона",
+                    },
+                  })}
+                />
+              </div>
+              {errors.phone && (
+                <p className="text-xs sm:text-sm text-red-500">
+                  {errors.phone.message}
                 </p>
               )}
             </div>

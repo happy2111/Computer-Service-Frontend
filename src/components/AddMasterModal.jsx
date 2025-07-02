@@ -30,8 +30,8 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
         body: JSON.stringify(form)
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Ошибка создания мастера");
-      setSuccess("Мастер успешно создан!");
+      if (!res.ok) throw new Error(data.msg || "Ustani yaratishda xatolik yuz berdi");
+      setSuccess("Usta muvaffaqiyatli yaratildi!");
       setForm({ name: "", phone: "" });
       if (onMasterCreated) onMasterCreated(data); // вызываем callback
     } catch (err) {
@@ -46,10 +46,10 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="bg-white z-20 rounded-lg shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Добавить мастера</h2>
+        <h2 className="text-xl font-bold mb-4">Javobgar shaxs qo'shish</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-neutral-900 text-sm font-bold mb-1">Имя</label>
+            <label className="block text-neutral-900 text-sm font-bold mb-1">Ismi</label>
             <input
               type="text"
               name="name"
@@ -60,7 +60,7 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
             />
           </div>
           <div>
-            <label className="block text-neutral-900 text-sm font-bold mb-1">Телефон</label>
+            <label className="block text-neutral-900 text-sm font-bold mb-1">Telefon raqami</label>
             <input
               type="text"
               name="phone"
@@ -73,21 +73,21 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
           </div>
           {error && <div className="text-red-600 text-sm">{error}</div>}
           {success && <div className="text-green-600 text-sm">{success}</div>}
-          <div className="flex justify-end space-x-2 mt-4">
+          <div className="flex justify-end space-x-2 mt-6">
             <button
               className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded"
               onClick={onClose}
               type="button"
               disabled={loading}
             >
-              Закрыть
+              Yopish
             </button>
             <button
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
               type="submit"
               disabled={loading}
             >
-              {loading ? "Добавление..." : "Добавить"}
+              Qo'shish
             </button>
           </div>
         </form>

@@ -172,9 +172,7 @@ export default function Service() {
       deviceModel: "",
       issueDescription: "",
       name: "",
-      email: "",
       phone: "",
-      preferredDate: "",
       additionalInfo: "",
     },
   });
@@ -243,7 +241,7 @@ export default function Service() {
   return (
     <div className="bg-white ">
       <Helmet>
-        <title>Xizmatlar</title>
+        <title>Apple Park - Xizmatlar</title>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="header">
         <div className="py-12 md:py-20">
@@ -341,13 +339,13 @@ export default function Service() {
                           Xizmat turi <span className="text-red-500">*</span>
                         </label>
                         <select
-                          id="serviceType"
+                          id="deviceType"
                           className={`w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                            errors.serviceType
+                            errors.deviceType
                               ? "border-red-500"
                               : "border-gray-300"
                           }`}
-                          {...register("serviceType", {
+                          {...register("deviceType", {
                             required: "Xizmat turi majburiy",
                           })}
                         >

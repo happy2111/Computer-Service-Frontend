@@ -31,8 +31,8 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated }) {
         body: JSON.stringify(form)
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Ошибка создания клиента");
-      setSuccess("Клиент успешно создан!");
+      if (!res.ok) throw new Error(data.msg || "Mijoz yaratishda xatolik yuz berdi");
+      setSuccess("Mijoz muvaffaqiyatli yaratildi!");
       setForm({ name: "", surname: "", phone: "" });
       if (onUserCreated) onUserCreated(data.user);
     } catch (err) {
@@ -47,10 +47,10 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="bg-white z-20 rounded-lg shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Добавить клиента</h2>
+        <h2 className="text-xl font-bold mb-4">Mijoz qo'shish</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-neutral-900 text-sm font-bold mb-1">Имя</label>
+            <label className="block text-neutral-900 text-sm font-bold mb-1">Ismi</label>
             <input
               type="text"
               name="name"
@@ -61,18 +61,17 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated }) {
             />
           </div>
           <div>
-            <label className="block text-neutral-900 text-sm font-bold mb-1">Фамилия</label>
+            <label className="block text-neutral-900 text-sm font-bold mb-1">Familiyasi</label>
             <input
               type="text"
               name="surname"
               className="w-full border border-blue-300 px-3 py-2 rounded"
               value={form.surname}
               onChange={handleChange}
-              required
             />
           </div>
           <div>
-            <label className="block text-neutral-900 text-sm font-bold mb-1">Телефон</label>
+            <label className="block text-neutral-900 text-sm font-bold mb-1">Telefon raqami</label>
             <input
               type="text"
               name="phone"
@@ -92,14 +91,14 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated }) {
               type="button"
               disabled={loading}
             >
-              Закрыть
+              Yopish
             </button>
             <button
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
               type="submit"
               disabled={loading}
             >
-              {loading ? "Добавление..." : "Добавить"}
+              {loading ? "Qo'shilmoqda..." : "Qo'shish"}
             </button>
           </div>
         </form>

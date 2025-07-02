@@ -78,7 +78,7 @@ export default function ContactUs() {
   return (
     <div className="bg-white max-sm:pt-9">
       <Helmet>
-        <title>Biz bilan bog'lanish</title>
+        <title>Apple Park - Biz bilan bog'lanish</title>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="header">
         <div className="py-12 md:py-20">
@@ -283,105 +283,32 @@ export default function ContactUs() {
               </form>
             </div>
 
-            {/* Contact Information */}
-            <div className="space-y-8">
-              {/* Contact Info Card */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Kontakt ma'lumotlari
-                </h2>
-                <ul className="space-y-5">
-                  <li className="flex items-start">
-                    <MapPin className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-gray-900">
-                        Manzilimiz
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-600">Toshkent</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <Phone className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-gray-900">
-                        Telefon raqamlarimiz
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-600 flex flex-col">
-                        <a
-                          href="tel:+998772111110"
-                          className="hover:text-blue-600"
-                        >
-                          +998 (77) 211-11-10
-                        </a>
-                        <a
-                          href="tel:+998952111110"
-                          className="hover:text-blue-600"
-                        >
-                          +998 (95) 211-11-10
-                        </a>
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <Mail className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-gray-900">
-                        Elektron pochta
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-600">
-                        <a
-                          href="mailto:support@applepark.uz"
-                          className="hover:text-blue-600"
-                        >
-                          support@applepark.uz
-                        </a>
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex items-start">
-                    <Clock className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-gray-900">
-                        Ish vaqti
-                      </h3>
-                      <p className="mt-1 text-sm text-gray-600">
-                        Dushanba - Yakshanba: 9:00 - 22:00
-                      </p>
-                    </div>
-                  </li>
-                </ul>
+            {/* Branches Info */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Filiallarimiz</h2>
+              <div className="mb-6 flex items-start gap-4">
+                <MapPin className="h-6 w-6 text-blue-600 mt-1" />
+                <div>
+                  <div className="font-bold text-gray-900">Boburshox ko’chasi, 24b uy</div>
+                  <div className="text-gray-600">Uzbekistan, Andijon shahri</div>
+                  <div className="text-gray-600">Telefon: <a href="tel:+998772111110" className="text-blue-600 hover:underline">+998 77 211 11 10</a></div>
+                  <div className="text-gray-600">Ish vaqti: 9:00 - 22:00</div>
+                </div>
               </div>
-
-              {/* FAQ Section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                  Ko'p so'raladigan savollar
-                </h2>
-                <div className="space-y-5">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Odatda ta'mirlash qancha vaqt oladi?
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Ko'pgina ta'mirlash ishlari 24-48 soat ichida, murakkablik va ehtiyot qismlar mavjudligiga qarab amalga oshiriladi.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Ta'mirlashga kafolat bormi?
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Ha, barcha ta'mirlash ishlarimiz 90 kunlik kafolat bilan ta'minlanadi (ehtiyot qismlar va ish haqi uchun).
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
-                      Oldindan yozilish kerakmi?
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Oldindan yozilish tavsiya etiladi, lekin navbatsiz ham kelishingiz mumkin. Tezroq xizmat uchun onlayn yoki telefon orqali yozilishingiz mumkin.
-                    </p>
-                  </div>
+              <div className="mb-6 flex items-start gap-4">
+                <MapPin className="h-6 w-6 text-blue-600 mt-1" />
+                <div>
+                  <div className="font-bold text-gray-900">Xalis Savdo Markazi, 2-qavat, 9-dokon</div>
+                  <div className="text-gray-600">Uzbekistan, Andijon shahri</div>
+                  <div className="text-gray-600">Telefon: <a href="tel:+998952111110" className="text-blue-600 hover:underline">+998 95 211 11 10</a></div>
+                  <div className="text-gray-600">Ish vaqti: 9:00 - 22:00</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <Mail className="h-6 w-6 text-blue-600 mt-1" />
+                <div>
+                  <div className="font-bold text-gray-900">Email</div>
+                  <div className="text-gray-600"><a href="mailto:support@applepark.uz" className="text-blue-600 hover:underline">support@applepark.uz</a></div>
                 </div>
               </div>
             </div>
