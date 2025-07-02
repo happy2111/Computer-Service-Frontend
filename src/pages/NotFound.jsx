@@ -6,6 +6,14 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
       <Helmet>
+        <link rel="canonical" href="https://applepark.uz/404" />
+        <meta name="description" content="Страница не найдена - 404" />
+        <meta name="robots" content="noindex, nofollow" />
+        <meta property="og:title" content="Страница не найдена - 404" />
+        <meta property="og:description" content="Страница не найдена - 404" />
+        <meta property="og:url" content="https://applepark.uz/404" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://applepark.uz/logo.PNG" />
         <title>Not Found - 404</title>
       </Helmet>
       <div className="text-blue-600 mb-4">

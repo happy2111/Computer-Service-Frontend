@@ -179,7 +179,7 @@ export default function Service() {
 
   const handleServiceSelect = (serviceId) => {
     setSelectedService(serviceId);
-    setValue("serviceType", serviceId); // Pre-populate the service type field
+    setValue("deviceType", serviceId); // Pre-populate the service type field
     setShowForm(true);
     // Scroll to form
     setTimeout(() => {
@@ -241,7 +241,22 @@ export default function Service() {
   return (
     <div className="bg-white ">
       <Helmet>
+        <link rel="canonical" href="https://www.applepark.uz/" />
+        <meta
+          name="description"
+          content="Apple Park - Professional repair services for all Apple devices including iPhone, iPad, MacBook, and more. Fast, reliable, and certified technicians."/>
         <title>Apple Park - Xizmatlar</title>
+        <meta
+          name="keywords"
+          content="Apple Park, iPhone ta'mirlash, iPad ta'mirlash, MacBook ta'mirlash, Apple Watch ta'mirlash, iCloud blokdan chiqarish, ma'lumotlarni tiklash"/>
+        <meta name="robots" content="index, follow"/>
+        <meta name="author" content="Apple Park"/>
+        <meta property="og:title" content="Apple Park - Xizmatlar"/>
+        <meta property="og:description"
+              content="Apple Park - Professional repair services for all Apple devices including iPhone, iPad, MacBook, and more. Fast, reliable, and certified technicians."/>
+        <meta property="og:url" content="https://www.applepark.uz/services"/>
+        <meta property="og:image" content="https://www.applepark.uz/logo.PNG"/>
+        <meta property="og:type" content="website"/>
       </Helmet>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="header">
         <div className="py-12 md:py-20">
