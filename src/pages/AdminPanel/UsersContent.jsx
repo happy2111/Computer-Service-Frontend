@@ -18,8 +18,8 @@ const UsersContent = React.memo(({
   const [showAddUserModal, setShowAddUserModal] = useState(false);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm ">
-      <div className="p-6 border-b border-gray-200">
+    <div className="bg-white rounded-lg shadow-sm w-[calc(100vw-50px)] box-border" >
+      <div className="p-6 box-border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <h2 className="text-xl font-semibold text-gray-900 mb-2 md:mb-0">Ro‘yxatdan o‘tgan foydalanuvchilar</h2>
           <div className="flex flex-col md:flex-row flex-wrap gap-2 md:gap-3 w-full md:w-auto">
@@ -71,7 +71,7 @@ const UsersContent = React.memo(({
       {loading.users ? (
         <LoadingSpinner />
       ) : (
-        <div className="overflow-x-auto md:w-full ">
+        <div className="overflow-x-scroll  ">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>

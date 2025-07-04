@@ -529,23 +529,23 @@ export default function Service() {
           {!showForm && (
             <div className="mt-20">
               <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">
-                Why Choose Our Repair Services
+                Nima uchun bizning ta'mirlash xizmatlarimizni tanlashingiz kerak
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <FeatureCard
                   icon={<Shield className="h-8 w-8 text-blue-600" />}
-                  title="90-Day Warranty"
-                  description="All our repairs come with a 90-day warranty on both parts and labor for your peace of mind."
+                  title="90 kunlik kafolat"
+                  description="Barcha ta'mirlash ishlarimiz xotirjamligingiz uchun ham ehtiyot qismlari, ham xizmat ko'rsatish bo'yicha 90 kunlik kafolat bilan ta'minlanadi."
                 />
                 <FeatureCard
                   icon={<Clock className="h-8 w-8 text-blue-600" />}
-                  title="Fast Turnaround"
-                  description="Most repairs are completed the same day, often while you wait. We value your time."
+                  title="Tez natija"
+                  description="Ko'pgina ta'mirlash ishlari o'sha kunning o'zida, ko'pincha siz kutayotgan vaqtda bajariladi. Biz vaqtingizni qadrlaymiz."
                 />
                 <FeatureCard
                   icon={<CheckCircle className="h-8 w-8 text-blue-600" />}
-                  title="Certified Technicians"
-                  description="Our repair specialists are certified professionals with years of experience and ongoing training."
+                  title="Sertifikatlangan mutaxassislar"
+                  description="Bizning ta'mirlash mutaxassislarimiz ko'p yillik tajriba va doimiy o'qitishga ega bo'lgan sertifikatlangan mutaxassislardir."
                 />
               </div>
             </div>

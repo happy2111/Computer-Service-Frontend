@@ -25,6 +25,7 @@ const ServicesContent = React.memo(({
   const componentRef = useRef(null);
   const [printData, setPrintData] = useState(null);
   const [sortOrder, setSortOrder] = useState('desc')
+  const [expandedId, setExpandedId] = useState(null);
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: "Ta'mirlash"
@@ -107,128 +108,168 @@ const ServicesContent = React.memo(({
       ) : (
         <div className="p-6">
           <div className="space-y-6">
-            {getSortedRequests(filteredServiceRequests, sortOrder).map((request) => (
-              <div key={request._id} className="border border-gray-200 rounded-lg p-6 hover:bg-gray-50">
-                <div className="flex flex-wrap sm:flex-col items-start justify-between mb-4">
-                  <div className={"max-sm:order-1"}>
-                    <h3 className="text-lg font-semibold text-gray-900 flex max-sm:gap-2 items-center">
-                      {/*<Info className="h-5 w-5 mr-2 text-blue-500" />*/}
-                      <span className="">{request.deviceType}</span>
-                      <span className="text-gray-500 text-sm">({request.deviceModel})</span>
-                    </h3>
-                    <p className="text-blue-600 font-medium flex items-center">
-                      {/*<User className="h-4 w-4 mr-1" />*/}
-                      <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName}</span>
-                    </p>
-                    <br/>
-                    <p className="text-gray-600 text-sm flex items-center">
-                      <AlertCircle className="h-4 w-4 mr-1 text-red-500" />
-                      <span className="font-bold">Muammo:</span>&nbsp;<span className="font-bold text-gray-900">{request.issueDescription}</span>
-                    </p>
-                    <p className="text-gray-600 text-sm flex items-center">
-                      <Hash className="h-4 w-4 mr-1 text-purple-500" />
-                      <span className="font-bold">IMEI:</span>&nbsp;<span className="font-bold inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900 break-all">{request.imei}</span>
-                    </p>
-                    <p className="text-gray-600 text-sm flex items-center">
-                      <Info className="h-4 w-4 mr-1 text-cyan-500" />
-                      <span className="font-bold break-all ">Qo'shimcha ma'lumotlar:</span>&nbsp;<span className="font-bold break-all inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900">{request.additionalInfo}</span>
-                    </p>
-                    <p className="text-gray-600 text-sm flex items-center">
-                      <UserCog className="h-4 w-4 mr-1 text-orange-500" />
-                      <span className="font-bold">Javobgar:</span>&nbsp;<span className="font-bold text-gray-900">{request.master}</span>
-                    </p>
-                    <p className="text-gray-600 text-sm flex items-center">
-                      <DollarSign className="h-4 w-4 mr-1 text-green-600" />
-                      <span className="font-bold">Narx:</span>&nbsp;<span className="font-bold text-gray-900">{request.cost} so'm {request.costOr && `- ${request.costOr} so'm`}</span>
-                    </p>
+            {getSortedRequests(filteredServiceRequests, sortOrder).map((request) => {
+              const expanded = expandedId === request._id;
+              // Цвет фона карточки в зависимости от статуса
+              let cardBg = '';
+              switch (request.status) {
+                case 'pending':
+                  cardBg = 'bg-yellow-50 border-yellow-200';
+                  break;
+                case 'in-progress':
+                  cardBg = 'bg-blue-50 border-blue-200';
+                  break;
+                case 'completed':
+                  cardBg = 'bg-green-50 border-green-200';
+                  break;
+                case 'unrepairable':
+                  cardBg = 'bg-red-50 border-red-200';
+                  break;
+                default:
+                  cardBg = 'bg-gray-50 border-gray-200';
+              }
+              return (
+                <div
+                  key={request._id}
+                  className={`border rounded-lg p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${expanded ? 'shadow-lg' : ''}`}
+                  onClick={() => setExpandedId(expanded ? null : request._id)}
+                >
+                  <div className="flex  flex-col items-start justify-between mb-4">
+                    <div className={" flex items-center gap-2"}>
+                      <h3 className="text-lg font-semibold text-gray-900 flex max-sm:gap-2 items-center">
+                        <span className="">{request.deviceType}</span>
+                        <span className="text-gray-500 text-sm">({request.deviceModel})</span>
+                      </h3>
+
+                    </div>
+
+                    <span className=" flex items-center gap-1 text-blue-700 font-bold">
+                      <span className="font-bold ">{request.userName}</span>
+                    </span>
                   </div>
-
-
-                  <div className="max-sm:order-3 flex items-center space-x-2 my-4">
-                    <select
-                      value={request.status}
-                      onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
-                      className={`px-3 py-1 text-sm font-medium rounded-full border-0 ${getStatusBadge(request.status)}`}
-                    >
-                      <option value="pending">Kutilmoqda</option>
-                      <option value="in-progress">Jarayonda</option>
-                      <option value="completed">Bajarildi</option>
-                      <option value="unrepairable">Tamirlab Bolmaydi</option>
-                    </select>
-                  </div>
-
-
-                  <div className="max-sm:order-2 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Phone className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-600 font-bold">Telefon:</span>
-                        <span className="text-sm font-bold text-gray-900">{request.phone}</span>
+                  {expanded && (
+                    <div className="animate-fade-in">
+                      {/*<p className="text-blue-600 font-medium flex items-center">*/}
+                      {/*  <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName}</span>*/}
+                      {/*</p>*/}
+                      <br/>
+                      <p className="text-gray-600 text-sm flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-1 text-red-500" />
+                        <span className="font-bold">Muammo:</span>&nbsp;<span className="font-bold text-gray-900">{request.issueDescription}</span>
+                      </p>
+                      <p className="text-gray-600 text-sm flex items-center">
+                        <Hash className="h-4 w-4 mr-1 text-purple-500" />
+                        <span className="font-bold">IMEI:</span>&nbsp;<span className="font-bold inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900 break-all">{request.imei}</span>
+                      </p>
+                      <p className="text-gray-600 text-sm flex items-center">
+                        <Info className="h-4 w-4 mr-1 text-cyan-500" />
+                        <span className="font-bold break-all ">Qo'shimcha ma'lumotlar:</span>&nbsp;<span className="font-bold break-all inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900">{request.additionalInfo}</span>
+                      </p>
+                      <p className="text-gray-600 text-sm flex items-center">
+                        <UserCog className="h-4 w-4 mr-1 text-orange-500" />
+                        <span className="font-bold">Javobgar:</span>&nbsp;<span className="font-bold text-gray-900">{request.master}</span>
+                      </p>
+                      <p className="text-gray-600 text-sm flex items-center">
+                        <DollarSign className="h-4 w-4 mr-1 text-green-600" />
+                        <span className="font-bold">Narx:</span>&nbsp;<span className="font-bold text-gray-900">{request.cost} so'm {request.costOr && `- ${request.costOr} so'm`}</span>
+                      </p>
+                      <div className="max-sm:order-3 flex items-center space-x-2 my-4">
+                        <select
+                          value={request.status}
+                          onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
+                          className={`px-3 py-1 text-sm font-medium rounded-full border-0 ${getStatusBadge(request.status)}`}
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <option value="pending">Kutilmoqda</option>
+                          <option value="in-progress">Jarayonda</option>
+                          <option value="completed">Bajarildi</option>
+                          <option value="unrepairable">Tamirlab Bolmaydi</option>
+                        </select>
+                      </div>
+                      <div className="max-sm:order-2 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Phone className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-600 font-bold">Telefon:</span>
+                            <span className="text-sm font-bold text-gray-900">{request.phone}</span>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="h-4 w-4 text-gray-500" />
+                            <span className="text-sm text-gray-600 font-bold">Yaratilgan:</span>
+                            <span className="text-sm font-bold text-gray-900">{formatDate(request.createdAt)}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-3.5 items-center space-x-3">
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            const newStatus = request.status === 'pending' ? 'in-progress' :
+                              request.status === 'in-progress' ? 'completed' : 'pending';
+                            updateServiceRequestStatus(request._id, newStatus, request.userId);
+                          }}
+                          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                        >
+                          Holatni yangilash
+                        </button>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            window.open(`tel:${request.phone}`)
+                          }}
+                          className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+                        >
+                          Mijozga qo‘ng‘iroq qilish
+                        </button>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            triggerPrint(request)
+                          }}
+                          className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                        >
+                          Chop etish
+                        </button>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            handlePackedUp(request._id, request.userId, request.packedUp)
+                          }}
+                          className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 hover:opacity-75 flex gap-2 py-2 border-gray-300 border  text-gray-700 text-sm font-medium rounded-lg`}
+                        >
+                          <img
+                            className={"w-5"}
+                            src={pickedUp}
+                            alt="taked away"
+                            width=""
+                            height=""
+                            loading="lazy"
+                          /> Olib Ketilgan
+                          {request.packedUp && <Check className="w-4 h-4 text-green-600" />}
+                        </button>
+                        <button
+                          className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
+                          onClick={e => e.stopPropagation()}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            deleteServiceRequest(request._id, request.userId)
+                          }}
+                          className="p-2 text-red-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-600 font-bold">Yaratilgan:</span>
-                        <span className="text-sm font-bold text-gray-900">{formatDate(request.createdAt)}</span>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
-
-                <div className="flex flex-wrap gap-3.5 items-center space-x-3">
-                  <button
-                    onClick={() => {
-                      const newStatus = request.status === 'pending' ? 'in-progress' :
-                        request.status === 'in-progress' ? 'completed' : 'pending';
-                      updateServiceRequestStatus(request._id, newStatus, request.userId);
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
-                  >
-                    Holatni yangilash
-                  </button>
-                  <button
-                    onClick={() => window.open(`tel:${request.phone}`)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
-                  >
-                    Mijozga qo‘ng‘iroq qilish
-                  </button>
-                  <button
-                    onClick={() =>
-                      triggerPrint(request)
-                    }
-                    className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
-                  >
-                    Chop etish
-                  </button>
-                  <button
-                    onClick={() => handlePackedUp(request._id, request.userId, request.packedUp)}
-                    className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 hover:opacity-75 flex gap-2 py-2 border-gray-300 border  text-gray-700 text-sm font-medium rounded-lg`}
-                  >
-                    <img
-                      className={"w-5"}
-                      src={pickedUp}
-                      alt="taked away"
-                      width=""
-                      height=""
-                      loading="lazy"
-                    /> Olib Ketilgan
-                    {request.packedUp && <Check className="w-4 h-4 text-green-600" />}
-                  </button>
-                  <button
-                    className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => deleteServiceRequest(request._id, request.userId)}
-                    className="p-2 text-red-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div style={{ display: "none" }}>
             {printData && (

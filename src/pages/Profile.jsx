@@ -12,7 +12,8 @@ import {
   Upload,
   X,
   Info,
-  Hammer
+  Hammer,
+  Phone
 } from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
@@ -376,7 +377,7 @@ export default function Profile() {
 
             {/* Personal Information Section */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex flex-wrap justify-between items-start mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
                   Shaxsiy ma'lumotlar
                 </h2>
@@ -456,6 +457,29 @@ export default function Profile() {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-500 mb-1"
                   >
+                    Telefon raqam
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <input
+                      id="phone"
+                      type="phone"
+                      value={userData?.phone || ""}
+                      disabled
+                      className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 pl-10 text-sm text-gray-500 shadow-sm cursor-not-allowed"
+                    />
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Telefon raqamni hozircha o'zgartirib bo'lmaydi.
+                  </p>
+                </div>
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-500 mb-1"
+                  >
                     Email manzili
                   </label>
                   <div className="relative">
@@ -525,39 +549,39 @@ export default function Profile() {
                 </h2>
               </div>
               {userData && userData.device && userData.device.length > 0 ? (
-                <div className="grid gap-6">
+                <div className="grid gap-4 sm:gap-6">
                   {userData.device.map((d, idx) => (
                     <div
                       key={idx}
-                      className="border border-gray-100 rounded-lg shadow-sm p-5 flex flex-col sm:flex-row gap-4 bg-gray-50 hover:shadow-md transition"
+                      className="border border-gray-100 rounded-2xl shadow-sm p-3 sm:p-5 flex flex-col gap-2 sm:flex-row sm:gap-4 bg-gradient-to-br from-gray-50 to-white hover:shadow-lg transition-all duration-200"
                     >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-lg font-semibold text-gray-900">{d.deviceType}</span>
-                          <span className="ml-2 text-gray-500 text-sm">{d.deviceModel}</span>
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                          <span className="text-base sm:text-lg font-bold text-gray-900 break-all leading-tight">{d.deviceType}</span>
+                          <span className="text-gray-500 text-sm sm:text-base font-normal">{d.deviceModel}</span>
                         </div>
-                        <div className="text-gray-700 mb-1 flex items-center gap-2">
-                          <Info className="h-4 w-4 text-gray-400" />
-                          <span className="font-medium">Muammo tavsifi:</span> {d.issueDescription}
+                        <div className="text-gray-700 mb-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <span className="flex items-center gap-1 text-sm sm:text-base"><Info className="h-4 w-4 text-gray-400" /><span className="font-medium">Muammo:</span></span>
+                          <span className="break-all text-sm sm:text-base font-normal">{d.issueDescription}</span>
                         </div>
-                        <div className="text-gray-700 mb-1 flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-gray-400" />
-                          <span className="font-medium">Telefon:</span> {d.phone}
+                        <div className="text-gray-700 mb-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                          <span className="flex items-center gap-1 text-sm sm:text-base"><Phone className="h-4 w-4 text-gray-400" /><span className="font-medium">Telefon:</span></span>
+                          <span className="break-all text-sm sm:text-base font-normal">{d.phone}</span>
                         </div>
                         {d.additionalInfo && (
-                          <div className="text-gray-700 mb-1 flex items-center gap-2">
-                            <Info className="h-4 w-4 text-gray-400" />
-                            <span className="font-medium">Qo'shimcha ma'lumot:</span> {d.additionalInfo}
+                          <div className="text-gray-700 mb-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                            <span className="flex items-center gap-1 text-sm sm:text-base"><Info className="h-4 w-4 text-gray-400" /><span className="font-medium">Qo'shimcha:</span></span>
+                            <span className="break-all bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-sm sm:text-base font-normal">{d.additionalInfo}</span>
                           </div>
                         )}
                         {d.imei && (
-                          <div className="text-gray-700 mb-1 flex items-center gap-2">
-                            <span className="inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono">IMEI: {d.imei}</span>
+                          <div className="text-gray-700 mb-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                            <span className="inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-sm font-mono">IMEI: {d.imei}</span>
                           </div>
                         )}
-                        <div className="flex items-center gap-3 mt-2">
+                        <div className="flex flex-wrap gap-2 sm:gap-3 mt-2">
                           <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                            className={`inline-flex items-center px-2 py-0.5 rounded text-sm font-semibold whitespace-nowrap tracking-tight ${
                               d.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                 d.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
                                   'bg-green-100 text-green-800'
@@ -572,13 +596,13 @@ export default function Profile() {
                             {d.status === 'pending' ? 'Kutilmoqda' : d.status === 'in-progress' ? 'Jarayonda' : 'Bajarildi'}
                           </span>
                           {d.cost !== undefined && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-gray-100 text-gray-700 whitespace-nowrap tracking-tight">
                               Narxi: {d.cost} so'm
                             </span>
                           )}
                           {d.master && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-                              Usta: {d.master}
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-gray-100 text-gray-700 whitespace-nowrap tracking-tight">
+                              Javobgar: {d.master}
                             </span>
                           )}
                         </div>
