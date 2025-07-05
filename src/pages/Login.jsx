@@ -15,7 +15,7 @@ export default function Login() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "",
+      login: "",
       password: "",
     },
   });
@@ -54,15 +54,15 @@ export default function Login() {
 
     <div className="w-full min-h-screen flex items-center justify-center bg-gray-50 px-2 py-6">
       <Helmet>
-        <title>Login</title>
+        <title>Kirish</title>
       </Helmet>
       <div className="w-full mx-auto max-w-md sm:max-w-lg overflow-hidden rounded-lg bg-white shadow-xl">
         <div className="px-4 sm:px-8 pt-6 pb-4">
           <h2 className="text-center text-lg sm:text-2xl font-bold text-gray-800">
-            Sign in to your account
+            Hisobingizga kiring
           </h2>
           <p className="mt-1 text-center text-xs sm:text-sm text-gray-600">
-            Enter your email and password to login
+            Kirish uchun email yoki telefon va parolni kiriting
           </p>
         </div>
 
@@ -107,33 +107,37 @@ export default function Login() {
                 htmlFor="email"
                 className="block text-xs sm:text-sm font-medium text-gray-700"
               >
-                Email
+                Email yoki telefon
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                   <MailIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
+                  id="login"
+                  type="text"
+                  placeholder="m@example.com yoki +99891234567"
                   className={`w-full rounded-md border px-3 py-2 pl-10 text-xs sm:text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                    errors.email
+                    errors.login
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500"
                       : "border-gray-300"
                   }`}
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /\S+@\S+\.\S+/,
-                      message: "Email is invalid",
-                    },
+                  {...register("login", {
+                    required: "Email yoki telefon majburiy",
+                    validate: (value) => {
+                      const emailPattern = /\S+@\S+\.\S+/;
+                      const phonePattern = /^\+?[1-9]\d{1,15}$/;
+                      if (emailPattern.test(value) || phonePattern.test(value)) {
+                        return true;
+                      }
+                      return "Email yoki telefon raqami noto'g'ri";
+                    }
                   })}
                 />
               </div>
-              {errors.email && (
+              {errors.login && (
                 <p className="text-xs sm:text-sm text-red-500">
-                  {errors.email.message}
+                  {errors.login.message}
                 </p>
               )}
             </div>
@@ -144,7 +148,7 @@ export default function Login() {
                 htmlFor="password"
                 className="block text-xs sm:text-sm font-medium text-gray-700"
               >
-                Password
+                Parol
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -159,10 +163,10 @@ export default function Login() {
                       : "border-gray-300"
                   }`}
                   {...register("password", {
-                    required: "Password is required",
+                    required: "Parol majburiy",
                     minLength: {
                       value: 6,
-                      message: "Password must be at least 6 characters",
+                      message: "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
                     },
                   })}
                 />
@@ -170,7 +174,7 @@ export default function Login() {
                   type="button"
                   className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-500"
                   onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? "Parolni yashirish" : "Parolni ko'rsatish"}
                 >
                   {showPassword ? (
                     <EyeOffIcon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -214,10 +218,10 @@ export default function Login() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  <span className="ml-2">Signing in...</span>
+                  <span className="ml-2">Kirilmoqda...</span>
                 </div>
               ) : (
-                "Sign In"
+                "Kirish"
               )}
             </button>
           </div>
@@ -225,12 +229,12 @@ export default function Login() {
 
         {/* Footer */}
         <div className="bg-gray-50 px-4 sm:px-8 py-3 sm:py-4 text-center text-xs sm:text-sm">
-          <span className="text-gray-600">Don't have an account?</span>{" "}
+          <span className="text-gray-600">Hisobingiz yo'qmi?</span>{" "}
           <Link
             to="/auth/register"
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            Create one
+            Ro'yxatdan o'tish
           </Link>
         </div>
       </div>

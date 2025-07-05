@@ -9,7 +9,7 @@ input::placeholder {
 }
 
 @theme {
-  --color-primary: #1E88E5;
+  --color-primary: oklch(54.6% 0.245 262.881);
   /*--color-primary-dark: #b94e0a;*/
   /*--color-primary-light: #fc9e56;*/
   --color-primary-dark: oklch(37.9% 0.146 265.522);

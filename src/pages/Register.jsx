@@ -1,7 +1,5 @@
-"use client"; // Указывает, что компонент работает на стороне клиента (в Next.js)
-
 import { useState } from "react";
-import { useForm } from "react-hook-form"; // Хук для управления формой
+import { useForm } from "react-hook-form";
 import {
   EyeIcon,
   EyeOffIcon,
@@ -31,6 +29,7 @@ export default function Register() {
       phone: "",
       password: "",
       confirmPassword: "",
+      agreeToTerms: false,
     },
   });
 
@@ -40,10 +39,10 @@ export default function Register() {
     setIsLoading(true);
     setServerError(""); // сброс ошибки при новом сабмите
     try {
-      console.log(data);
+      const { agreeToTerms, ...sendData } = data;
       const res = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/auth/register`,
-        data
+        sendData
       );
       if (res.status >= 200 && res.status < 300) {
         console.log(res);
@@ -54,7 +53,7 @@ export default function Register() {
       setServerError(
         err.response?.data?.message ||
           err.response?.data?.msg ||
-          "Ошибка регистрации. Попробуйте еще раз."
+          "Ro'yxatdan o'tishda xatolik yuz berdi. Iltimos, qayta urinib ko'ring."
       );
       console.log(err.response?.data || err.message);
     } finally {
@@ -65,19 +64,19 @@ export default function Register() {
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-gray-50 px-2 py-6">
       <Helmet>
-        <title>Registration</title>
+        <title>Ro'yxatdan o'tish</title>
       </Helmet>
       <div className="w-full mx-auto max-w-md sm:max-w-lg overflow-hidden rounded-lg bg-white shadow-xl">
         <div className="px-4 sm:px-8 pt-6 pb-4">
           <h2 className="text-center text-lg sm:text-2xl font-bold text-gray-800">
-            Create an account
+            Hisob yaratish
           </h2>
           <p className="mt-1 text-center text-xs sm:text-sm text-gray-600">
-            Fill in your details to create a new account
+            Yangi hisob yaratish uchun ma'lumotlarni to'ldiring
           </p>
         </div>
 
-        {/* Ошибка сервера */}
+        {/* Server xatolik */}
         {serverError && (
           <div className="mx-4 sm:mx-8 mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start">
             <svg
@@ -118,7 +117,7 @@ export default function Register() {
                 htmlFor="name"
                 className="block text-xs sm:text-sm font-medium text-gray-700"
               >
-                Full Name
+                To'liq ism
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -127,7 +126,7 @@ export default function Register() {
                 <input
                   id="name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Ism Familiya"
                   className={`w-full rounded-md border px-3 py-2 pl-10 text-xs sm:text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                     errors.name
                       ? "border-red-500 focus:border-red-500 focus:ring-red-500"
@@ -144,7 +143,9 @@ export default function Register() {
               </div>
               {errors.name && (
                 <p className="text-xs sm:text-sm text-red-500">
-                  {errors.name.message}
+                  {errors.name.message === "Full name is required"
+                    ? "To'liq ismni ko'rsatish kerak"
+                    : "Ism kamida 2 ta belgidan iborat bo'lishi kerak"}
                 </p>
               )}
             </div>
@@ -171,10 +172,10 @@ export default function Register() {
                       : "border-gray-300"
                   }`}
                   {...register("email", {
-                    required: "Email is required",
+                    required: "Email majburiy",
                     pattern: {
-                      value: /\S+@\S+\.\S+/, // простая проверка email
-                      message: "Email is invalid",
+                      value: /\S+@\S+\.\S+/,
+                      message: "Email noto'g'ri formatda",
                     },
                   })}
                 />
@@ -192,7 +193,7 @@ export default function Register() {
                 htmlFor="phone"
                 className="block text-xs sm:text-sm font-medium text-gray-700"
               >
-                Телефон
+                Telefon
               </label>
               <div className="relative">
                 <input
@@ -215,7 +216,9 @@ export default function Register() {
               </div>
               {errors.phone && (
                 <p className="text-xs sm:text-sm text-red-500">
-                  {errors.phone.message}
+                  {errors.phone.message === "Телефон обязателен"
+                    ? "Telefon raqami majburiy"
+                    : "Noto'g'ri telefon formati"}
                 </p>
               )}
             </div>
@@ -226,7 +229,7 @@ export default function Register() {
                 htmlFor="password"
                 className="block text-xs sm:text-sm font-medium text-gray-700"
               >
-                Password
+                Parol
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -268,7 +271,11 @@ export default function Register() {
               </div>
               {errors.password && (
                 <p className="text-xs sm:text-sm text-red-500">
-                  {errors.password.message}
+                  {errors.password.message === "Password is required"
+                    ? "Parolni ko'rsatish kerak"
+                    : errors.password.message === "Password must be at least 6 characters"
+                    ? "Parol kamida 6 ta belgidan iborat bo'lishi kerak"
+                    : "Parolda kamida bitta katta harf, bitta kichik harf va bitta raqam bo'lishi kerak"}
                 </p>
               )}
             </div>
@@ -279,7 +286,7 @@ export default function Register() {
                 htmlFor="confirmPassword"
                 className="block text-xs sm:text-sm font-medium text-gray-700"
               >
-                Confirm Password
+                Parolni tasdiqlang
               </label>
               <div className="relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -316,7 +323,9 @@ export default function Register() {
               </div>
               {errors.confirmPassword && (
                 <p className="text-xs sm:text-sm text-red-500">
-                  {errors.confirmPassword.message}
+                  {errors.confirmPassword.message === "Please confirm your password"
+                    ? "Iltimos, parolni tasdiqlang"
+                    : "Parollar mos kelmadi"}
                 </p>
               )}
             </div>
@@ -328,6 +337,9 @@ export default function Register() {
                   id="agreeToTerms"
                   type="checkbox"
                   className="h-3 w-3 sm:h-4 sm:w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  {...register("agreeToTerms", {
+                    required: "You must agree to the terms and conditions",
+                  })}
                 />
               </div>
               <div className="ml-2 text-xs sm:text-sm">
@@ -335,17 +347,18 @@ export default function Register() {
                   htmlFor="agreeToTerms"
                   className="font-medium text-gray-700"
                 >
-                  I agree to the{" "}
-                  <a href="#" className="text-blue-600 hover:text-blue-500">
-                    Terms and Conditions
+                  Men{" "}
+                  <a href="/term.html" className="text-blue-600 hover:text-blue-500">
+                    Foydalanish shartlari
                   </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-blue-600 hover:text-blue-500">
-                    Privacy Policy
+                  va{" "}
+                  <a href="/privancy.html" className="text-blue-600 hover:text-blue-500">
+                    Maxfiylik siyosati
                   </a>
+                  ga roziman
                 </label>
                 {errors.agreeToTerms && (
-                  <p className="text-red-500">{errors.agreeToTerms.message}</p>
+                  <p className="text-red-500">Shartlarni qabul qilish kerak</p>
                 )}
               </div>
             </div>
@@ -378,10 +391,10 @@ export default function Register() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  <span className="ml-2">Creating account...</span>
+                  <span className="ml-2">Hisob yaratilmoqda...</span>
                 </div>
               ) : (
-                "Create Account"
+                "Hisob yaratish"
               )}
             </button>
           </div>
@@ -389,12 +402,12 @@ export default function Register() {
 
         {/* Footer */}
         <div className="bg-gray-50 px-4 sm:px-8 py-3 sm:py-4 text-center text-xs sm:text-sm">
-          <span className="text-gray-600">Already have an account?</span>{" "}
+          <span className="text-gray-600">Hisobingiz bormi?</span>{" "}
           <Link
             to="/auth/login"
             className="font-medium text-blue-600 hover:text-blue-500"
           >
-            Sign in
+            Kirish
           </Link>
         </div>
       </div>

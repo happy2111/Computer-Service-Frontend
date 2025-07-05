@@ -321,7 +321,7 @@ export default function ContactUs() {
                     <span itemProp="addressCountry">Uzbekistan</span>
                   </div>
                   <div className="text-gray-600">Telefon: <a href="tel:+998952111110" className="text-blue-600 hover:underline" itemProp="telephone">+998 95 211 11 10</a></div>
-                  <div className="text-gray-600">Ish vaqti: <span itemProp="openingHours">9:00 - 22:00</span></div>
+                  <div className="text-gray-600">Ish vaqti: <span itemProp="openingHours">9:00 - 19:00</span></div>
                 </div>
               </div>
               <div className="flex items-start gap-4">
