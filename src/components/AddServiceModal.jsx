@@ -133,17 +133,14 @@ export default function AddServiceModal({isOpen, onClose}) {
     }
   }
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedUserId) {
       alert("Foydalanuvchini ro'yxatdan tanlang");
       return;
     }
-
     try {
-      // Сначала подписываемся на уведомления
-      await subscribeToNotifications();
-
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/services/add`, {
         method: "POST",
         headers: {
@@ -157,11 +154,7 @@ export default function AddServiceModal({isOpen, onClose}) {
       onClose();
 
     } catch (err) {
-      if (err.message.includes('push')) {
-        alert("Ошибка при подписке на уведомления: " + err.message);
-      } else {
-        alert("Qurilmani qo'shishda xatolik yuz berdi: " + err.message);
-      }
+      alert("Qurilmani qo'shishda xatolik yuz berdi: " + err.message);
     }
   };
 

@@ -54,7 +54,7 @@ export default function ContactUs() {
       console.log("Form submitted with:", data);
       console.log("Captcha value:", captchaValue);
       const res = await axios.post(
-        "https://computer-service-backend.onrender.com/api/contact",
+        `${import.meta.env.VITE_API_BASE_URL}/contact`,
         {
           ...data,
           captcha: captchaValue, 

@@ -19,7 +19,7 @@ export default function Navbar() {
         const token = localStorage.getItem("token");
         if (!token) return;
         const res = await axios.get(
-          "https://computer-service-backend.onrender.com/api/user/me",
+          `${import.meta.env.VITE_API_BASE_URL}/user/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

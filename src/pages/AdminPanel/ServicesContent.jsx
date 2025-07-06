@@ -173,7 +173,7 @@ const ServicesContent = React.memo(({
                 >
                   <div className="flex  flex-col items-start justify-between mb-4">
                     <div className={" flex items-center gap-2"}>
-                      <h3 className="text-lg font-semibold text-gray-900 flex max-sm:gap-2 items-center">
+                      <h3 className="text-lg font-semibold text-gray-900 flex flex-wrap max-sm:gap-2 items-center">
                         <span className="">{request.deviceType}</span>
                         <span className="text-gray-500 text-sm">({request.deviceModel})</span>
                       </h3>

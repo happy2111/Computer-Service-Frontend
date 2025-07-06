@@ -233,7 +233,7 @@ export default function Profile() {
     return (
       <div className=" flex min-h-screen items-center justify-center bg-white">
         <Helmet>
-          <title>Profil</title>
+          <title>Apple Park - Profil</title>
         </Helmet>
         <div className="flex flex-col items-center">
           <svg
