@@ -40,14 +40,24 @@ const ServicesContent = React.memo(({
 
   const handlePackedUp = async (deviceId, userId, currentPackedUp) => {
     try {
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/services/${deviceId}/picked?userId=${userId}`, {
-        status: !currentPackedUp
-      });
+      await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/services/${deviceId}/picked?userId=${userId}`,
+        {
+          status: !currentPackedUp
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        }
+      );
       fetchServiceRequests();
     } catch (error) {
       alert("Xatolik yuz berdi: " + error.message);
     }
   };
+
 
   const handleEditService = async (serviceId, userId, updates) => {
     try {

@@ -91,13 +91,59 @@ export default function AddServiceModal({isOpen, onClose}) {
     setShowDropdown(false);
   };
 
+  async function subscribeToNotifications() {
+    try {
+      if (!('serviceWorker' in navigator)) {
+        throw new Error('Service Worker не поддерживается в этом браузере');
+      }
+
+      if (!('Notification' in window)) {
+        throw new Error('Push-уведомления не поддерживаются в этом браузере');
+      }
+
+      const registration = await navigator.serviceWorker.register('/service-worker.js');
+
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        throw new Error('Разрешение на уведомления не получено');
+      }
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: 'BHJiZv8rZPX1YNJruUZatuGdsTtF3Pu-xLi-jzqoZvLesfl9f8LZPjzCPyttUZB48J2o0ztuydHpJ4pXaW2TyCc'
+      });
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/push/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+        },
+        body: JSON.stringify(subscription)
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при отправке подписки на сервер');
+      }
+
+      console.log('Успешная подписка на push-уведомления');
+    } catch (error) {
+      console.error('Ошибка при подписке на уведомления:', error);
+      throw error; // Пробрасываем ошибку дальше для обработки в handleSubmit
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedUserId) {
       alert("Foydalanuvchini ro'yxatdan tanlang");
       return;
     }
+
     try {
+      // Сначала подписываемся на уведомления
+      await subscribeToNotifications();
+
       const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/services/add`, {
         method: "POST",
         headers: {
@@ -106,14 +152,19 @@ export default function AddServiceModal({isOpen, onClose}) {
         },
         body: JSON.stringify({userId: selectedUserId, ...form})
       });
-      // console.log({userId: selectedUserId, ...form})
-      if (!res.ok) throw new Error("Qurilmani qo'shishda xatolik yuz berdi");
 
+      if (!res.ok) throw new Error("Qurilmani qo'shishda xatolik yuz berdi");
       onClose();
+
     } catch (err) {
-      alert("Qurilmani qo'shishda xatolik yuz berdi: " + err.message);
+      if (err.message.includes('push')) {
+        alert("Ошибка при подписке на уведомления: " + err.message);
+      } else {
+        alert("Qurilmani qo'shishda xatolik yuz berdi: " + err.message);
+      }
     }
   };
+
 
   const handleUserCreated = () => {
     setShowAddUserModal(false);
