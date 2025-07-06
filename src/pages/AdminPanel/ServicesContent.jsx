@@ -5,6 +5,7 @@ import PrintableCard from "../../components/PrintableCard";
 import SortOrderSelect from "../../components/SortOrderSelect";
 import pickedUp from "../../assets/food-delivery.png"
 import axios from "axios";
+import EditServiceModal from "../../components/EditServiceModal";
 
 const ServicesContent = React.memo(({
   filteredServiceRequests,
@@ -26,6 +27,7 @@ const ServicesContent = React.memo(({
   const [printData, setPrintData] = useState(null);
   const [sortOrder, setSortOrder] = useState('desc')
   const [expandedId, setExpandedId] = useState(null);
+  const [editingService, setEditingService] = useState(null);
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: "Ta'mirlash"
@@ -42,6 +44,31 @@ const ServicesContent = React.memo(({
         status: !currentPackedUp
       });
       fetchServiceRequests();
+    } catch (error) {
+      alert("Xatolik yuz berdi: " + error.message);
+    }
+  };
+
+  const handleEditService = async (serviceId, userId, updates) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/services/${serviceId}?userId=${userId}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          },
+          body: JSON.stringify(updates)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to update service');
+      }
+
+      fetchServiceRequests(); // Обновляем список сервисов
+      setEditingService(null); // Закрываем модальное окно
     } catch (error) {
       alert("Xatolik yuz berdi: " + error.message);
     }
@@ -251,7 +278,10 @@ const ServicesContent = React.memo(({
                         </button>
                         <button
                           className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
-                          onClick={e => e.stopPropagation()}
+                          onClick={e => {
+                            e.stopPropagation();
+                            setEditingService(request);
+                          }}
                         >
                           <Edit className="h-4 w-4" />
                         </button>
@@ -278,6 +308,15 @@ const ServicesContent = React.memo(({
           </div>
         </div>
 
+      )}
+      {editingService && (
+        <EditServiceModal
+          isOpen={Boolean(editingService)}
+          onClose={() => setEditingService(null)}
+          service={editingService}
+          userId={editingService.userId}
+          onSave={handleEditService}
+        />
       )}
     </div>
   );
