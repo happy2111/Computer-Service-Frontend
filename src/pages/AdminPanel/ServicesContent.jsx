@@ -127,6 +127,7 @@ const ServicesContent = React.memo(({
               <option value="pending">Kutilmoqda</option>
               <option value="in-progress">Jarayonda</option>
               <option value="completed">Bajarildi</option>
+              <option value="unrepairable">Tamirlab Bolmaydi</option>
             </select>
             <SortOrderSelect sortOrder={sortOrder} setSortOrder={setSortOrder} />
             <button
@@ -172,7 +173,8 @@ const ServicesContent = React.memo(({
                   onClick={() => setExpandedId(expanded ? null : request._id)}
                 >
                   <div className="flex  flex-col items-start justify-between mb-4">
-                    <div className={" flex items-center gap-2"}>
+                    <div className={"flex items-center gap-2"}>
+                      <span className={"font-bold rounded-full p-2 text-sm bg-blue-300/50"}>{request.orderNumber}</span>
                       <h3 className="text-lg font-semibold text-gray-900 flex flex-wrap max-sm:gap-2 items-center">
                         <span className="">{request.deviceType}</span>
                         <span className="text-gray-500 text-sm">({request.deviceModel})</span>
