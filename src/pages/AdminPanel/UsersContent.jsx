@@ -17,8 +17,18 @@ const UsersContent = React.memo(({
 }) => {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
 
+  const getAvatar = (user) => {
+      if (user.avatar.endsWith("empty-profile.jpg")) return user.name.charAt(0);
+      return (
+        <img
+          src={`https://api.applepark.uz${user.avatar}`}
+          alt=""
+          className="w-6 h-6 rounded-full object-cover"
+        />
+      );
+  }
   return (
-    <div className="bg-white rounded-lg shadow-sm w-[calc(100vw-50px)] box-border" >
+    <div className="bg-white rounded-lg shadow-sm max-md:w-[calc(100vw-50px)] box-border" >
       <div className="p-6 box-border border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <h2 className="text-xl font-semibold text-gray-900 mb-2 md:mb-0">Ro‘yxatdan o‘tgan foydalanuvchilar</h2>
@@ -88,7 +98,9 @@ const UsersContent = React.memo(({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-medium text-sm">{user.name.charAt(0)}</span>
+                        <span className="text-blue-600 font-medium text-sm">
+                          {getAvatar(user)}
+                        </span>
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{user.name}</div>

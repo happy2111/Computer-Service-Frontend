@@ -3,9 +3,17 @@ import { Helmet } from 'react-helmet';
 import AddServiceModal from "../../components/AddServiceModal.jsx";
 import UsersContent from './UsersContent.jsx';
 import ServicesContent from './ServicesContent.jsx';
-
-import MastersStatsTable from "../../components/MastersStatsTable";
-import { useNavigate, Outlet } from "react-router-dom";
+import DashboardContent from './DashboardContent';
+import api from "../../api/simpleApi.js"
+import {
+  useNavigate,
+  Outlet,
+  useLocation,
+  Routes,
+  Route,
+  Navigate,
+  Links, Link
+} from "react-router-dom";
 
 import {
   Users,
@@ -33,6 +41,8 @@ import {
   User
 } from 'lucide-react';
 import Profile from '../Profile.jsx';
+import NotFound from "../NotFound.jsx";
+import {HashLink} from "react-router-hash-link";
 
 // Конфигурация API
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -136,7 +146,7 @@ const AdminPanel = () => {
       const response = await api.get('/user');
       setUsers(response.data);
     } catch (error) {
-      showNotification('Ошибка загрузки пользователей', 'error');
+      showNotification('Ошибка загрузки пользователей', error.message ? 'error' : 'success');
     } finally {
       setLoading(prev => ({ ...prev, users: false }));
     }
@@ -163,37 +173,6 @@ const AdminPanel = () => {
       // console.log(response.data) // Удалено для предотвращения утечки данных
     } catch (error) {
       showNotification('Ошибка загрузки заявок на сервис', 'error');
-      // Fallback data for demo
-      // setServiceRequests([
-      //   {
-      //     id: 1,
-      //     serviceType: 'Phone Repair',
-      //     deviceType: 'iPhone',
-      //     deviceModel: 'iPhone 14 Pro',
-      //     issueDescription: 'Screen cracked after dropping',
-      //     name: 'David Lee',
-      //     email: 'david@example.com',
-      //     phone: '+1234567893',
-      //     preferredDate: '2024-06-10T09:00:00Z',
-      //     additionalInfo: 'Urgent repair needed',
-      //     createdAt: '2024-06-08T16:45:00Z',
-      //     status: 'pending'
-      //   },
-      //   {
-      //     id: 2,
-      //     serviceType: 'Computer Repair',
-      //     deviceType: 'Laptop',
-      //     deviceModel: 'MacBook Pro 2023',
-      //     issueDescription: 'Won\'t turn on, possible battery issue',
-      //     name: 'Sarah Connor',
-      //     email: 'sarah@example.com',
-      //     phone: '+1234567894',
-      //     preferredDate: '2024-06-12T14:00:00Z',
-      //     additionalInfo: 'Data recovery also needed',
-      //     createdAt: '2024-06-08T11:20:00Z',
-      //     status: 'in-progress'
-      //   },
-      // ]);
     } finally {
       setLoading(prev => ({ ...prev, services: false }));
     }
@@ -206,13 +185,6 @@ const AdminPanel = () => {
       setDashboardStats(response.data);
     } catch (error) {
       showNotification('Ошибка загрузки статистики', 'error');
-      // Fallback data for demo
-      // setDashboardStats({
-      //   totalUsers: users.length,
-      //   totalMessages: contactMessages.length,
-      //   totalRequests: serviceRequests.length,
-      //   rating: 4.9
-      // });
     } finally {
       setLoading(prev => ({ ...prev, dashboard: false }));
     }
@@ -268,21 +240,6 @@ const AdminPanel = () => {
     }
   };
 
-  // Получение статуса заявки по deviceId и userId (для админа)
-  const getServiceRequestStatus = async (deviceId, userId) => {
-    try {
-      const response = await api.get(`/services/${deviceId}/status?userId=${userId}`);
-      return response.data.status;
-    } catch (error) {
-      showNotification('Ошибка получения статуса заявки', 'error');
-      return null;
-    }
-  };
-
-  // Пример использования:
-  // const status = await getServiceRequestStatus(request._id, request.userId);
-
-  // Загр��зка данных при инициализации
   useEffect(() => {
     fetchDashboardStats();
     fetchUsers();
@@ -290,7 +247,6 @@ const AdminPanel = () => {
     fetchServiceRequests();
   }, []);
 
-  // Обновление статистики при изменении данных
   useEffect(() => {
     setDashboardStats({
       totalUsers: users.length,
@@ -301,12 +257,12 @@ const AdminPanel = () => {
   }, [users, contactMessages, serviceRequests]);
 
   const sidebarItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'contacts', label: 'Contact Messages', icon: MessageSquare },
-    { id: 'services', label: 'Service Requests', icon: Wrench },
-    { id: 'profile', label: 'Profile', icon: User }, // добавлен профиль
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 , href: '/admin/dashboard'},
+    { id: 'users', label: 'Users', icon: Users , href: '/admin/users'},
+    { id: 'contacts', label: 'Contact Messages', icon: MessageSquare, href: '/admin/contacts' },
+    { id: 'services', label: 'Service Requests', icon: Wrench, href: '/admin/services' },
+    { id: 'profile', label: 'Profile', icon: User , href: "/admin/profile"},
+    { id: 'settings', label: 'Settings', icon: Settings, href: "/admin/settings" },
   ];
 
   const formatDate = (dateString) => {
@@ -334,7 +290,6 @@ const AdminPanel = () => {
     return colors[status] || 'bg-yellow-100 text-yellow-800';
   };
 
-  // Фильтрация данных
   const filteredUsers = useMemo(() => {
     return users.filter(user => {
       const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -344,7 +299,6 @@ const AdminPanel = () => {
     });
   }, [users, searchTerm, statusFilter]);
 
-  // Фильтрация заявок с учётом новых полей
   const filteredServiceRequests = serviceRequests.filter(request => {
     const matchesSearch = request.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       request.deviceModel?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -355,7 +309,6 @@ const AdminPanel = () => {
     return matchesSearch && matchesStatus;
   });
 
-  // Компонент уведомлений
   const NotificationComponent = () => {
     if (!notification) return null;
 
@@ -377,127 +330,12 @@ const AdminPanel = () => {
     );
   };
 
-  // Компонент загрузки
   const LoadingSpinner = () => (
     <div className="flex items-center justify-center p-8">
       <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
     </div>
   );
 
-  const DashboardContent = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Boshqaruv paneli</h2>
-        <button
-          onClick={() => {
-            fetchDashboardStats();
-            fetchUsers();
-            fetchContactMessages();
-            fetchServiceRequests();
-          }}
-          className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Yangilash
-        </button>
-      </div>
-
-      {loading.dashboard ? (
-        <LoadingSpinner />
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white rounded-lg shadow-sm  p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Jami foydalanuvchilar</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalUsers}</p>
-                </div>
-                <div className="p-3 bg-blue-100 rounded-full">
-                  <Users className="h-6 w-6 text-blue-600" />
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm  p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Aloqa xabarlari</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalMessages}</p>
-                </div>
-                <div className="p-3 bg-green-100 rounded-full">
-                  <MessageSquare className="h-6 w-6 text-green-600" />
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm  p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Xizmat so'rovlari</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalRequests}</p>
-                </div>
-                <div className="p-3 bg-purple-100 rounded-full">
-                  <Wrench className="h-6 w-6 text-purple-600" />
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg shadow-sm  p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Reyting</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardStats.rating}</p>
-                </div>
-                <div className="p-3 bg-yellow-100 rounded-full">
-                  <Star className="h-6 w-6 text-yellow-600" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-lg shadow-sm  p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">So'nggi xizmat so'rovlari</h3>
-              <div className="space-y-3">
-                {serviceRequests.slice(0, 3).map((request) => (
-                  <div key={request._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900">{request.userName}</p>
-                      <p className="text-sm text-gray-600">{request.deviceType} {request.deviceModel}</p>
-                      <p className="text-xs text-gray-500">IMEI: {request.imei}</p>
-                      <p className="text-xs text-gray-500">Телефон: {request.phone}</p>
-                    </div>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusBadge(request.status)}`}>
-                      {request.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm  p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">So'nggi xabarlar</h3>
-              <div className="space-y-3">
-                {contactMessages.slice(0, 3).map((message) => (
-                  <div key={message.id} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium text-gray-900">{message.name}</p>
-                        <p className="text-sm text-gray-600 mt-1">{message.message.substring(0, 50)}...</p>
-                      </div>
-                      <span className="text-xs text-gray-500">{formatDate(message.createdAt)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <MastersStatsTable />
-          </div>
-        </>
-      )}
-    </div>
-  );
 
   const ContactsContent = () => (
     <div className="bg-white rounded-lg shadow-sm">
@@ -571,7 +409,7 @@ const AdminPanel = () => {
 
   const SettingsContent = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm  p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">API Configuration</h2>
         <div className="space-y-4">
           <div>
@@ -616,7 +454,7 @@ const AdminPanel = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+      <div className="bg-white rounded-lg shadow-sm  p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">System Status</h2>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -639,57 +477,71 @@ const AdminPanel = () => {
     </div>
   );
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'dashboard':
-        return <DashboardContent />;
-      case 'users':
-        return (
-          <UsersContent
-            filteredUsers={filteredUsers}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            loading={loading}
-            fetchUsers={fetchUsers}
-            deleteUser={deleteUser}
-            formatDate={formatDate}
-            getStatusBadge={getStatusBadge}
-            LoadingSpinner={LoadingSpinner}
-          />
-        );
-      case 'contacts':
-        return <ContactsContent />;
-      case 'services':
-        return (
-          <ServicesContent
-            filteredServiceRequests={filteredServiceRequests}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            loading={loading}
-            fetchServiceRequests={fetchServiceRequests}
-            updateServiceRequestStatus={updateServiceRequestStatus}
-            deleteServiceRequest={deleteServiceRequest}
-            formatDate={formatDate}
-            getStatusBadge={getStatusBadge}
-            setShowAddServiceModal={setShowAddServiceModal}
-            LoadingSpinner={LoadingSpinner}
-          />
-        );
-      case 'profile':
-        return <Profile />;
-      case 'settings':
-        return <SettingsContent />;
-      default:
-        return <DashboardContent />;
-    }
-  };
 
-  // console.log('[AdminPanel render]', { searchTerm, statusFilter, usersLength: users.length });
+
+  // const renderContent = () => {
+  //   switch (activeTab) {
+  //     case 'dashboard':
+  //       return <DashboardContent
+  //         dashboardStats={dashboardStats}
+  //         loading={loading}
+  //         fetchDashboardStats={fetchDashboardStats}
+  //         fetchUsers={fetchUsers}
+  //         fetchContactMessages={fetchContactMessages}
+  //         fetchServiceRequests={fetchServiceRequests}
+  //         serviceRequests={serviceRequests}
+  //         contactMessages={contactMessages}
+  //         LoadingSpinner={LoadingSpinner}
+  //         formatDate={formatDate}
+  //       />;
+  //     case 'users':
+  //       return (
+  //         <UsersContent
+  //           filteredUsers={filteredUsers}
+  //           searchTerm={searchTerm}
+  //           setSearchTerm={setSearchTerm}
+  //           statusFilter={statusFilter}
+  //           setStatusFilter={setStatusFilter}
+  //           loading={loading}
+  //           fetchUsers={fetchUsers}
+  //           deleteUser={deleteUser}
+  //           formatDate={formatDate}
+  //           getStatusBadge={getStatusBadge}
+  //           LoadingSpinner={LoadingSpinner}
+  //         />
+  //       );
+  //     case 'contacts':
+  //       return <ContactsContent />;
+  //     case 'services':
+  //       return (
+  //         <ServicesContent
+  //           filteredServiceRequests={filteredServiceRequests}
+  //           searchTerm={searchTerm}
+  //           setSearchTerm={setSearchTerm}
+  //           statusFilter={statusFilter}
+  //           setStatusFilter={setStatusFilter}
+  //           loading={loading}
+  //           fetchServiceRequests={fetchServiceRequests}
+  //           updateServiceRequestStatus={updateServiceRequestStatus}
+  //           deleteServiceRequest={deleteServiceRequest}
+  //           formatDate={formatDate}
+  //           getStatusBadge={getStatusBadge}
+  //           setShowAddServiceModal={setShowAddServiceModal}
+  //           LoadingSpinner={LoadingSpinner}
+  //         />
+  //       );
+  //     case 'profile':
+  //       return <Profile />;
+  //     case 'settings':
+  //       return <SettingsContent />;
+  //     default:
+  //       return <DashboardContent />;
+  //   }
+  // };
+
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -705,7 +557,7 @@ const AdminPanel = () => {
             <div className="p-2 bg-blue-600 rounded-lg">
               <Wrench className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">ServiceHY</span>
+            <span className="text-xl font-bold text-gray-900">Apple Park</span>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
@@ -721,7 +573,8 @@ const AdminPanel = () => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
-                <button
+                <HashLink
+                  to={item.href}
                   key={item.id}
                   onClick={() => {
                     setActiveTab(item.id);
@@ -762,15 +615,17 @@ const AdminPanel = () => {
                 {/*  <Bell className="h-6 w-6" />*/}
                 {/*  <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>*/}
                 {/*</button>*/}
-                {/*<button*/}
-                {/*  type="button"*/}
-                {/*  className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-400"*/}
-                {/*  onClick={() => {*/}
-                {/*  }}*/}
-                {/*  title="Профиль"*/}
-                {/*>*/}
-                {/*  <span className="text-white font-medium text-sm">A</span>*/}
-                {/*</button>*/}
+                <Link
+                  to={"/admin/profile"}
+
+                  className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  onClick={() => {
+                    setActiveTab('profile');
+                  }}
+                  title="Профиль"
+                >
+                  <span className="text-white font-medium text-sm">A</span>
+                </Link>
               </div>
             </div>
           </div>
@@ -778,7 +633,61 @@ const AdminPanel = () => {
 
         {/* Content */}
         <main className="p-6">
-          {renderContent()}
+          {/*{renderContent()}*/}
+          <Routes>
+            <Route path="" element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<DashboardContent
+              setActiveTab={setActiveTab}
+              activeTab={activeTab}
+              dashboardStats={dashboardStats}
+              loading={loading}
+              fetchDashboardStats={fetchDashboardStats}
+              fetchUsers={fetchUsers}
+              fetchContactMessages={fetchContactMessages}
+              fetchServiceRequests={fetchServiceRequests}
+              serviceRequests={serviceRequests}
+              contactMessages={contactMessages}
+              LoadingSpinner={LoadingSpinner}
+              formatDate={formatDate}
+            />} />
+            <Route path="services" element={<ServicesContent
+              filteredServiceRequests={filteredServiceRequests}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              statusFilter={statusFilter}
+              setStatusFilter={setStatusFilter}
+              loading={loading}
+              fetchServiceRequests={fetchServiceRequests}
+              updateServiceRequestStatus={updateServiceRequestStatus}
+              deleteServiceRequest={deleteServiceRequest}
+              formatDate={formatDate}
+              getStatusBadge={getStatusBadge}
+              setShowAddServiceModal={setShowAddServiceModal}
+              LoadingSpinner={LoadingSpinner}
+            />} />
+
+            <Route path="users" element={
+              <UsersContent
+                filteredUsers={filteredUsers}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                loading={loading}
+                fetchUsers={fetchUsers}
+                deleteUser={deleteUser}
+                formatDate={formatDate}
+                getStatusBadge={getStatusBadge}
+                LoadingSpinner={LoadingSpinner}
+              />
+            } />
+            <Route path="contacts" element={<ContactsContent />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<SettingsContent />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+
+
           {/*<Outlet />*/}
         </main>
       </div>

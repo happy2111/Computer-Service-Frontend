@@ -1,0 +1,78 @@
+// src/api/axiosInstance.js
+import axios from "axios";
+
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:5000/api", // или прод URL
+  withCredentials: true, // обязательно для работы с cookie
+});
+
+// Добавляем access token к каждому запросу
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const onRefreshed = (token) => {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+};
+
+axiosInstance.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/login") &&
+      !originalRequest.url.includes("/auth/refresh")
+    ) {
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          refreshSubscribers.push((newToken) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            resolve(axiosInstance(originalRequest));
+          });
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const res = await axiosInstance.post("/auth/refresh");
+        const newToken = res.data.token;
+        localStorage.setItem("token", newToken);
+
+        onRefreshed(newToken);
+        isRefreshing = false;
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+
+
+export default axiosInstance;

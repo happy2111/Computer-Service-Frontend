@@ -261,7 +261,7 @@ export default function Service() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" id="header">
         <div className="py-12 md:py-20">
           {/* Page Header */}
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-16 max-md:mt-12">
             <span
               id="header"
               className="inline-block rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 mb-4"

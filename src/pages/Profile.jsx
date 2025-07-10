@@ -195,9 +195,10 @@ export default function Profile() {
       );
       if (res.data) {
         setUser(res.data);
-        setAvatar(res.data.avatar || "/uploads/empty-profile.jpg");
+        console.log(res.data.avatar)
+        setAvatar(res.data.avatar || "/public/empty-profile.jpg");
       } else {
-        setAvatar("/uploads/empty-profile.jpg");
+        setAvatar("/public/empty-profile.jpg");
       }
       setAvatarFile(null);
       setAvatarPreview(null);
@@ -221,12 +222,12 @@ export default function Profile() {
       // If avatar is a full URL, use it directly
       if (avatar.startsWith("http")) return avatar;
       // If avatar is a server path, prepend the API base URL
-      if (avatar.startsWith("/uploads")) {
-        return `https://computer-service-backend.onrender.com${avatar}`;
+      if (avatar.startsWith("/uploads") || avatar.startsWith("/public")) {
+        return `https://api.applepark.uz${avatar}`;
       }
       return avatar;
     }
-    return "https://img.freepik.com/premium-vector/man-empty-avatar-casual-business-style-vector-photo-placeholder-social-networks-resumes_885953-434.jpg";
+    return "https://api.applepark.uz/public/empty-profile.jpg";
   };
 
   if (loading) {
@@ -320,7 +321,7 @@ export default function Profile() {
                       </div>
                     ) : (
                       <img
-                        src={getAvatarUrl() || "/placeholder.svg"}
+                        src={getAvatarUrl() || "https://api.applepark.uz/public/empty-profile.jpg"}
                         alt="Profil rasmi"
                         className="h-full w-full object-cover"
                       />
