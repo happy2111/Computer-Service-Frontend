@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import api from "../api/simpleApi.js";
 
 export default function AddUserModal({ isOpen, onClose, onUserCreated }) {
   const [form, setForm] = useState({
@@ -22,16 +23,8 @@ export default function AddUserModal({ isOpen, onClose, onUserCreated }) {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user/create-client`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token') || ''}`
-        },
-        body: JSON.stringify(form)
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Mijoz yaratishda xatolik yuz berdi");
+      const res = await api.post(`/user/create-client`,  form);
+      const data = await res.data;
       setSuccess("Mijoz muvaffaqiyatli yaratildi!");
       setForm({ name: "", surname: "", phone: "" });
       if (onUserCreated) onUserCreated(data.user);

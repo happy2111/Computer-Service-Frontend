@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { EyeIcon, EyeOffIcon, MailIcon, LockIcon } from "lucide-react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import axios from "../api/axiosInstance";
+// import axios from "axios";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function Login() {
     setServerError("");
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
+        `/auth/login`,
         data
       );
       if (res.status >= 200 && res.status < 300) {

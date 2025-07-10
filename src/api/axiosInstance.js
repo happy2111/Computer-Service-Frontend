@@ -2,8 +2,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api", // или прод URL
-  withCredentials: true, // обязательно для работы с cookie
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
 });
 
 // Добавляем access token к каждому запросу
@@ -64,7 +64,7 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
         return Promise.reject(refreshError);
       }
     }

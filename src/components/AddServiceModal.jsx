@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useRef} from "react";
 import AddUserModal from "./AddUserModal";
-import axios from "axios";
 import AddMasterModal from "./AddMasterModal.jsx";
 import {X} from "lucide-react";
+import api from "../api/simpleApi.js";
 
 // Массив типов сервисов
 const serviceTypes = [
@@ -97,13 +97,8 @@ export default function AddServiceModal({isOpen, onClose}) {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        }
-      });
-      const data = await res.json();
+      const res = await api.get(`/user`);
+      const data = await res.data;
       setUserList(data.map(u => ({id: u._id, name: u.name, phone: u.phone})));
     } catch (e) {
       setUserList([]);
@@ -170,19 +165,10 @@ export default function AddServiceModal({isOpen, onClose}) {
         applicationServerKey: 'BHJiZv8rZPX1YNJruUZatuGdsTtF3Pu-xLi-jzqoZvLesfl9f8LZPjzCPyttUZB48J2o0ztuydHpJ4pXaW2TyCc'
       });
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/push/subscribe`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        },
-        body: JSON.stringify(subscription)
-      });
-
+      const response = await api.post(`/push/subscribe`, JSON.stringify(subscription));
       if (!response.ok) {
-        throw new Error('Ошибка при отправке подписки на сервер');
+        throw new Error('Ошибка при подписке на push-уведомления');
       }
-
       console.log('Успешная подписка на push-уведомления');
     } catch (error) {
       console.error('Ошибка при подписке на уведомления:', error);
@@ -199,16 +185,9 @@ export default function AddServiceModal({isOpen, onClose}) {
     }
     try {
       const { costFormatted, constOrFormatted, ...formDataToSend } = form;
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/services/add`, {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        },
-        body: JSON.stringify({userId: selectedUserId, ...formDataToSend})
-      });
-
-      if (!res.ok) throw new Error("Qurilmani qo'shishda xatolik yuz berdi");
+      const res = await api.post(
+        `/services/add`, {userId: selectedUserId, ...formDataToSend}
+      );
       onClose();
 
     } catch (err) {
@@ -227,15 +206,7 @@ export default function AddServiceModal({isOpen, onClose}) {
   const [masters, setMasters] = useState([])
   const fetchMaster = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/dashboard/masters`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          },
-        }
-      );
+      const response = await api.get(`/dashboard/masters`,);
       setMasters(response.data);
     } catch (error) {
       console.error('Error fetching masters:', error);
@@ -244,10 +215,10 @@ export default function AddServiceModal({isOpen, onClose}) {
 
   const handleMasterCreated = () => {
     setShowAddMasterModal(false);
-    fetchMaster(); // обновить список мастеров
+    fetchMaster();
   };
 
-  // Функция фильтрации моделей
+
   const filterModels = (input) => {
     if (!input) {
       setFilteredModels(appleDeviceModels);

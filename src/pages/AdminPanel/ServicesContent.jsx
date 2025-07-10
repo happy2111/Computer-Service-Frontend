@@ -4,8 +4,8 @@ import { useReactToPrint } from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
 import SortOrderSelect from "../../components/SortOrderSelect";
 import pickedUp from "../../assets/food-delivery.png"
-import axios from "axios";
 import EditServiceModal from "../../components/EditServiceModal";
+import api from "../../api/simpleApi.js";
 
 const ServicesContent = React.memo(({
   filteredServiceRequests,
@@ -40,17 +40,8 @@ const ServicesContent = React.memo(({
 
   const handlePackedUp = async (deviceId, userId, currentPackedUp) => {
     try {
-      await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/services/${deviceId}/picked?userId=${userId}`,
-        {
-          status: !currentPackedUp
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-          }
-        }
+      await api.put(
+        `/services/${deviceId}/picked?userId=${userId}`, {status: !currentPackedUp}
       );
       fetchServiceRequests();
     } catch (error) {
@@ -61,22 +52,7 @@ const ServicesContent = React.memo(({
 
   const handleEditService = async (serviceId, userId, updates) => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/services/${serviceId}?userId=${userId}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-          },
-          body: JSON.stringify(updates)
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to update service');
-      }
-
+      const response = await api.patch(`/services/${serviceId}?userId=${userId}`, updates);
       fetchServiceRequests(); // Обновляем список сервисов
       setEditingService(null); // Закрываем модальное окно
     } catch (error) {

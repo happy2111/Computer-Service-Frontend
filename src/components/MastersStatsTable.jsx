@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Wrench } from "lucide-react";
+import api from "../api/simpleApi.js"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -8,22 +9,23 @@ export default function MastersStatsTable() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+
   useEffect(() => {
-    setLoading(true);
-    setError("");
-    fetch(`${API_BASE_URL}/dashboard/masters/stats`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+    const fetchMasterStats = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const response = await api.get("/dashboard/masters/stats");
+        setMasterStats(response.data);
+      } catch (err) {
+        setError(err.message || "Ошибка загрузки статистики мастеров");
+      } finally {
+        setLoading(false);
       }
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Ошибка загрузки статистики мастеров");
-        return res.json();
-      })
-      .then(data => setMasterStats(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+    };
+
+    fetchMasterStats();
   }, []);
 
   return (

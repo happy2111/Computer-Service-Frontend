@@ -104,7 +104,7 @@ const createApiInstance = () => {
   return instance;
 };
 
-const api = createApiInstance();
+// const api = createApiInstance();
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -146,7 +146,7 @@ const AdminPanel = () => {
       const response = await api.get('/user');
       setUsers(response.data);
     } catch (error) {
-      showNotification('Ошибка загрузки пользователей', error.message ? 'error' : 'success');
+      showNotification('Ошибка загрузки пользователей', 'error');
     } finally {
       setLoading(prev => ({ ...prev, users: false }));
     }
@@ -182,6 +182,8 @@ const AdminPanel = () => {
     try {
       setLoading(prev => ({ ...prev, dashboard: true }));
       const response = await api.get('/dashboard/stats');
+      console.log("🧪 Response:", response); // ⬅️ проверь, что здесь
+      
       setDashboardStats(response.data);
     } catch (error) {
       showNotification('Ошибка загрузки статистики', 'error');
@@ -588,7 +590,7 @@ const AdminPanel = () => {
                 >
                   <Icon className="h-5 w-5 mr-3" />
                   {item.label}
-                </button>
+                </HashLink>
               );
             })}
           </div>

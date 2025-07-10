@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import api from "../api/simpleApi.js";
 
 export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
   const [form, setForm] = useState({
@@ -21,19 +22,11 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/dashboard/masters`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token') || ''}`
-        },
-        body: JSON.stringify(form)
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.msg || "Ustani yaratishda xatolik yuz berdi");
+      const res = await api.post(`/dashboard/masters`, form);
+      const data = await res
       setSuccess("Usta muvaffaqiyatli yaratildi!");
       setForm({ name: "", phone: "" });
-      if (onMasterCreated) onMasterCreated(data); // вызываем callback
+      if (onMasterCreated) onMasterCreated(data);
     } catch (err) {
       setError(err.message);
     } finally {

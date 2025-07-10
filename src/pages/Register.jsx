@@ -7,7 +7,8 @@ import {
   LockIcon,
   UserIcon,
 } from "lucide-react";
-import axios from "axios";
+import axios from "../api/axiosInstance"; // импортируем настроенный axios
+// import axios from "axios"; // импортируем axios напрямую
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 export default function Register() {
@@ -47,6 +48,7 @@ export default function Register() {
       if (res.status >= 200 && res.status < 300) {
         console.log(res);
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/", { replace: true });
       }
     } catch (err) {

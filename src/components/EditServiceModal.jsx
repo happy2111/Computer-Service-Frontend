@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance.js";
+import { toast } from "react-hot-toast";
+import api from "../api/simpleApi.js";
 
 const serviceTypes = [
   { id: "iphone-repair", title: "iPhone ta'mirlash" },
@@ -50,15 +52,7 @@ export default function EditServiceModal({ isOpen, onClose, service, userId, onS
 
   const fetchMasters = async () => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/dashboard/masters`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-          },
-        }
-      );
+      const response = await api.get(`/dashboard/masters`);
       setMasters(response.data);
     } catch (error) {
       console.error('Error fetching masters:', error);
@@ -70,33 +64,18 @@ export default function EditServiceModal({ isOpen, onClose, service, userId, onS
     if (!service?._id) return;
 
     try {
-      // Сначала отправляем предварительный OPTIONS запрос
-      await axios({
-        method: 'OPTIONS',
-        url: `${import.meta.env.VITE_API_BASE_URL}/services/${service._id}?userId=${userId}`,
-        headers: {
-          'Access-Control-Request-Method': 'PATCH',
-          'Access-Control-Request-Headers': 'content-type,authorization'
+      const response = await axiosInstance.patch(
+        `/services/${service._id}?userId=${userId}`,
+        form,
+        {
+          headers: {
+            'Accept': 'application/json'
+          }
         }
-      });
+      );
 
-      // Затем отправляем PATCH запрос
-      const response = await axios({
-        method: 'PATCH',
-        url: `${import.meta.env.VITE_API_BASE_URL}/services/${service._id}?userId=${userId}`,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-          'Accept': 'application/json'
-        },
-        data: form,
-        withCredentials: true // Добавляем поддержку credentials
-      });
-
-      if (response.status === 200) {
-        onClose();
-        onSave(service._id, userId, form);
-      }
+      onClose();
+      onSave(service._id, userId, form);
     } catch (error) {
       console.error('Error updating service:', error);
       if (error.response) {

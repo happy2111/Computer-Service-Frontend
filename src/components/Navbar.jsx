@@ -1,9 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
-import { HashLink } from "react-router-hash-link";
-import axios from "axios";
-import { User, LogOut } from "lucide-react";
+import {Link, useNavigate} from "react-router-dom";
+import {useState, useEffect, useRef} from "react";
+import {HashLink} from "react-router-hash-link";
+import {User, LogOut} from "lucide-react";
 import logo from "../assets/logo.PNG"
+import api from "../api/simpleApi.js";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,23 +18,16 @@ export default function Navbar() {
       try {
         const token = localStorage.getItem("token");
         if (!token) return;
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/user/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const res = await api.get(
+          `/user/me`,
         );
-        if (res.status >= 200 && res.status < 300) {
-          setUser(res.data);
-          // console.log("User data fetched successfully", res);
-          setIsLogget(true);
-        }
+        setUser(res.data);
+        setIsLogget(true);
       } catch (error) {
         console.error("Error fetching user data", error);
         if (error.response && error.response.status === 401) {
           localStorage.removeItem("token");
+          localStorage.removeItem("user");
         }
       }
     };
@@ -65,8 +58,15 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="flex items-center gap-1">
-              <img src={logo} alt="ApplePark" className="w-10 h-10"/>
+            <Link
+              to="/"
+              className="flex items-center gap-1"
+            >
+              <img
+                src={logo}
+                alt="ApplePark"
+                className="w-10 h-10"
+              />
               <span className="font-bold text-xl text-gray-800 ">Apple Park</span>
             </Link>
           </div>
@@ -226,7 +226,7 @@ export default function Navbar() {
             ? "max-h-96 opacity-100 pointer-events-auto"
             : "max-h-0 opacity-0 pointer-events-none"
         }`}
-        style={{ willChange: "max-height, opacity" }}
+        style={{willChange: "max-height, opacity"}}
       >
         <div className="px-4 pt-2 pb-4 space-y-2 flex flex-col">
           <Link

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import {Helmet} from "react-helmet";
+import api from "../api/simpleApi.js";
 
 export default function ContactUs() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,10 +52,14 @@ export default function ContactUs() {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
+      console.log({
+        ...data,
+        captcha: captchaValue,
+      })
       console.log("Form submitted with:", data);
       console.log("Captcha value:", captchaValue);
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/contact`,
+      const res = await api.post(
+        `/contact`,
         {
           ...data,
           captcha: captchaValue, 

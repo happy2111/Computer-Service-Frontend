@@ -11,7 +11,6 @@ import Service from './pages/Service.jsx'
 import ScrollTop from './components/ScrollTop.jsx'
 import AdminPanel from './pages/AdminPanel/AdminPanel.jsx'
 import AdminRoute from "./pages/AdminPanel/AdminRoute.jsx";
-
 function App() {
   return (
     <BrowserRouter>
