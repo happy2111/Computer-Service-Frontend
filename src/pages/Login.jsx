@@ -32,7 +32,7 @@ export default function Login() {
       if (res.status >= 200 && res.status < 300) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        if (res.data.user.role === "admin") {
+        if (["admin", "master"].includes(res.data.user.role)) {
           window.location.href = "/admin";
         } else {
           navigate("/", { replace: true });

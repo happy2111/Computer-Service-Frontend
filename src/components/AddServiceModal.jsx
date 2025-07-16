@@ -67,6 +67,7 @@ const appleDeviceModels = [
 
 
 export default function AddServiceModal({isOpen, onClose}) {
+  const [localStorageUser, setLocalStorageUser] = useState(null)
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState(null)
   const [showDropdown, setShowDropdown] = useState(false);
@@ -106,6 +107,7 @@ export default function AddServiceModal({isOpen, onClose}) {
   };
 
   useEffect(() => {
+    setLocalStorageUser(localStorage.getItem("user"))
     fetchUsers();
     fetchMaster()
   }, []);
@@ -130,6 +132,18 @@ export default function AddServiceModal({isOpen, onClose}) {
     };
   }, [showDropdown]);
 
+  useEffect(() => {
+
+    if (localStorageUser?.role === "master") {
+      console.log("Auto-setting master ID:", localStorageUser.id); // <== Debug
+      setForm((prevForm) => ({
+        ...prevForm,
+        master: localStorageUser.id,
+      }));
+    }
+  }, [localStorageUser, setForm]);
+
+
   const handleInputChange = (e) => {
     setForm({...form, [e.target.name]: e.target.value});
   };
@@ -143,40 +157,6 @@ export default function AddServiceModal({isOpen, onClose}) {
     setShowDropdown(false);
   };
 
-  async function subscribeToNotifications() {
-    try {
-      if (!('serviceWorker' in navigator)) {
-        throw new Error('Service Worker не поддерживается в этом браузере');
-      }
-
-      if (!('Notification' in window)) {
-        throw new Error('Push-уведомления не поддерживаются в этом браузере');
-      }
-
-      const registration = await navigator.serviceWorker.register('/service-worker.js');
-
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') {
-        throw new Error('Разрешение на уведомления не получено');
-      }
-
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: 'BHJiZv8rZPX1YNJruUZatuGdsTtF3Pu-xLi-jzqoZvLesfl9f8LZPjzCPyttUZB48J2o0ztuydHpJ4pXaW2TyCc'
-      });
-
-      const response = await api.post(`/push/subscribe`, JSON.stringify(subscription));
-      if (!response.ok) {
-        throw new Error('Ошибка при подписке на push-уведомления');
-      }
-      console.log('Успешная подписка на push-уведомления');
-    } catch (error) {
-      console.error('Ошибка при подписке на уведомления:', error);
-      throw error; // Пробрасываем ошибку дальше для обработки в handleSubmit
-    }
-  }
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedUserId) {
@@ -184,7 +164,7 @@ export default function AddServiceModal({isOpen, onClose}) {
       return;
     }
     try {
-      const { costFormatted, constOrFormatted, ...formDataToSend } = form;
+      const {costFormatted, constOrFormatted, ...formDataToSend} = form;
       const res = await api.post(
         `/services/add`, {userId: selectedUserId, ...formDataToSend}
       );
@@ -206,7 +186,7 @@ export default function AddServiceModal({isOpen, onClose}) {
   const [masters, setMasters] = useState([])
   const fetchMaster = async () => {
     try {
-      const response = await api.get(`/dashboard/masters`,);
+      const response = await api.get(`/masters/all`,);
       setMasters(response.data);
     } catch (error) {
       console.error('Error fetching masters:', error);
@@ -266,7 +246,7 @@ export default function AddServiceModal({isOpen, onClose}) {
         style={{boxSizing: "border-box"}}
       >
         <button
-          className="bg-blue-400 hover:bg-blue-500 text-white font-bold p-2 my-3 rounded"
+          className="bg-red-400 duration-100 hover:bg-red-500 active:bg-red-500 text-white font-bold p-2 my-3 rounded"
           onClick={onClose}
           type="button"
         >
@@ -356,7 +336,10 @@ export default function AddServiceModal({isOpen, onClose}) {
             <label className="block text-neutral-900 text-sm font-bold mb-1">
               Qurilma modeli
             </label>
-            <div className="relative" ref={modelInputRef}>
+            <div
+              className="relative"
+              ref={modelInputRef}
+            >
               <input
                 type="text"
                 name="deviceModel"
@@ -457,7 +440,7 @@ export default function AddServiceModal({isOpen, onClose}) {
                     cost: numeric,
                     costFormatted: formatted,
                   });
-                 }
+                }
                 }
                 placeholder="so'm"
               />
@@ -483,7 +466,7 @@ export default function AddServiceModal({isOpen, onClose}) {
               />
             </div>
           </div>
-          <div>
+          <div className={`${localStorageUser && localStorageUser.role === "admin" ? "block" : ""}`}>
             <label className="block text-neutral-900 text-sm font-bold mb-1">
               Javobgar Shaxs
             </label>
@@ -496,15 +479,16 @@ export default function AddServiceModal({isOpen, onClose}) {
               >
                 <option
                   disabled
-                  selected
                   hidden
-                  className={"text-gray-500"}
-                >Ustani tanlang
+                  value=""
+                >
+                  Ustani tanlang
                 </option>
+
                 {masters.map((master, index) => (
                   <option
                     key={index}
-                    value={master.name}
+                    value={master._id}
                   >
                     {master.name}
                   </option>

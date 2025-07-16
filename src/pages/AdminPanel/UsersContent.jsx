@@ -61,9 +61,13 @@ const UsersContent = React.memo(({
               }}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto"
             >
-              <option value="all">Barcha holatlar</option>
-              <option value="active">Faol</option>
-              <option value="inactive">Faol emas</option>
+
+              <option value="all">All</option>
+              <option value="admin">Admin</option>
+              <option value="personal">Shaxsiy</option>
+              <option value="client">Mijoz</option>
+              <option value="master">Javobgar Shaxs</option>
+
             </select>
             <button
               onClick={() => {

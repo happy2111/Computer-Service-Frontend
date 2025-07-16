@@ -6,6 +6,7 @@ input::placeholder {
 
 * {
   /*border: 1px solid red;*/
+  /*filter: hue-rotate(200deg) !important;*/
 }
 
 @theme {

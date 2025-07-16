@@ -22,9 +22,9 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
     setError("");
     setSuccess("");
     try {
-      const res = await api.post(`/dashboard/masters`, form);
+      const res = await api.post(`/user/create-master`, form);
       const data = await res
-      setSuccess("Usta muvaffaqiyatli yaratildi!");
+      setSuccess("Javobgar shaxs muvaffaqiyatli yaratildi!");
       setForm({ name: "", phone: "" });
       if (onMasterCreated) onMasterCreated(data);
     } catch (err) {
@@ -39,6 +39,7 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="bg-white z-20 rounded-lg shadow-lg p-8 w-full max-w-md">
+
         <h2 className="text-xl font-bold mb-4">Javobgar shaxs qo'shish</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>

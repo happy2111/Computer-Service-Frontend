@@ -59,10 +59,14 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link
+              style={{
+                filter: "hue-rotate(200deg)"
+              }}
               to="/"
               className="flex items-center gap-1"
             >
               <img
+
                 src={logo}
                 alt="ApplePark"
                 className="w-10 h-10"

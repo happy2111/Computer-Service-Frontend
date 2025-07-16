@@ -29,8 +29,9 @@ export default function EditServiceModal({ isOpen, onClose, service, userId, onS
     status: "",
     statusComment: ""
   });
+  const [localUserData,setLocalUserData] = useState(null);
   const [masters, setMasters] = useState([]);
-
+  useEffect(() => {setLocalUserData(JSON.parse(localStorage.getItem("user")))}, []);
   useEffect(() => {
     if (service) {
       setForm({
@@ -52,7 +53,7 @@ export default function EditServiceModal({ isOpen, onClose, service, userId, onS
 
   const fetchMasters = async () => {
     try {
-      const response = await api.get(`/dashboard/masters`);
+      const response = await api.get(`/masters/all`);
       setMasters(response.data);
     } catch (error) {
       console.error('Error fetching masters:', error);
@@ -197,7 +198,7 @@ export default function EditServiceModal({ isOpen, onClose, service, userId, onS
             </div>
           </div>
 
-          <div>
+          <div className={`${localUserData?.role === "master" ? "hidden" : ""}`}>
             <label className="block text-sm font-medium text-gray-700">Javobgar shaxs</label>
             <select
               name="master"
@@ -205,9 +206,9 @@ export default function EditServiceModal({ isOpen, onClose, service, userId, onS
               onChange={handleInputChange}
               className="border border-blue-400 rounded-l px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             >
-              <option value="">Ustani tanlang</option>
+              <option value="" hidden>Javobgar Shaxsni tanlang</option>
               {masters.map((master, index) => (
-                <option key={index} value={master.name}>
+                <option key={index} value={master._id}>
                   {master.name}
                 </option>
               ))}

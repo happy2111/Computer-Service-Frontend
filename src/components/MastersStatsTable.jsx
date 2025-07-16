@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Wrench } from "lucide-react";
 import api from "../api/simpleApi.js"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function MastersStatsTable() {
   const [masterStats, setMasterStats] = useState([]);
@@ -16,7 +15,7 @@ export default function MastersStatsTable() {
       setError("");
 
       try {
-        const response = await api.get("/dashboard/masters/stats");
+        const response = await api.get("/masters/stats");
         setMasterStats(response.data);
       } catch (err) {
         setError(err.message || "Ошибка загрузки статистики мастеров");
@@ -57,11 +56,11 @@ export default function MastersStatsTable() {
               )}
               {masterStats.map((m, idx) => (
                 <tr key={idx}>
-                  <td className="px-4 py-2 font-medium text-gray-900">{m.master}</td>
+                  <td className="px-4 py-2 font-medium text-gray-900">{m.masterName}</td>
                   <td className="px-4 py-2 text-blue-700">{m.phone}</td>
                   <td className="px-4 py-2 text-center">
                     <span className="inline-flex items-center px-2 py-1 rounded bg-blue-50 text-blue-700 font-semibold">
-                      {m.deviceCount}
+                      {m.count}
                     </span>
                   </td>
                 </tr>
