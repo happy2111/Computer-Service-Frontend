@@ -59,7 +59,7 @@ const AdminPanel = () => {
   const [dashboardStats, setDashboardStats] = useState({
     totalUsers: 0,
     totalMessages: 0,
-    totalRequests: 0,
+    totalDevices: 0,
     rating: 0
   });
 
