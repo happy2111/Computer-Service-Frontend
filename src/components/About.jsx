@@ -7,11 +7,34 @@ import {
   PenToolIcon as Tool,
   Users,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
+import api from "../api/simpleApi.js";
+import {useEffect, useState} from "react";
 
 export default function AboutUsSection() {
+  const [masters, setMasters] = useState([]);
+
+  const fetchMasters = async () => {
+    try {
+      const res = await api.get("/masters/all")
+      setMasters(res.data);
+      console.log(res.data)
+    } catch (error) {
+      console.error("Error fetching masters:", error);
+      // Здесь можно обработать ошибку, например, показать уведомление пользователю
+    }
+  }
+
+  useEffect(() => {
+    fetchMasters()
+  }, []);
+
+
   return (
-    <div id="about" className="bg-white">
+    <div
+      id="about"
+      className="bg-white"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-12 md:py-20">
           {/* Header */}
@@ -130,30 +153,17 @@ export default function AboutUsSection() {
               Mutaxassislarimiz bilan tanishing
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <TeamMember
-                image="https://i.natgeofe.com/k/5e4ea67e-2219-4de4-9240-2992faef0cb6/trump-portrait.jpg"
-                name="Donald Trump"
-                position="Asoschi va bosh texnik"
-                description="15 yildan ortiq elektronika ta'mirlash tajribasiga ega. Alex RepairPro'ni mijozlarga yo'naltirilgan xizmat ko'rsatish maqsadida tashkil qilgan."
-              />
-              <TeamMember
-                image="https://upload.wikimedia.org/wikipedia/commons/5/5e/Shavkat_Mirziyoyev.jpg"
-                name="Shavkat Mirziyoyev"
-                position="Katta telefonlarni ta'mirlash bo'yicha mutaxassis"
-                description="Sarah smartfonlarni ta'mirlash bo'yicha ixtisoslashgan va faoliyati davomida 5000 dan ortiq qurilmani ta'mirladi. U aniqligi va e'tiborli ishlari bilan mashhur."
-              />
-              <TeamMember
-                image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5eV1vHS5fERvuyJt1oIDGZ6Yb-m3oSA3LgEauSMXDIBQcQeP8d_gfEYzyqEL6LjaK958&usqp=CAU"
-                name="Kim Jong-un"
-                position="Kompyuter tizimlari bo'yicha mutaxassis"
-                description="Michael 10 yillik IT tajribasiga ega, noutbuk va kompyuterlarni ta'mirlash, ma'lumotlarni tiklash va tizimlarni optimallashtirish bo'yicha mutaxassis."
-              />
-              <TeamMember
-                image="https://hips.hearstapps.com/hmg-prod/images/queen-elizabeth-ii-watches-from-the-balcony-of-buckingham-news-photo-1662662018.jpg?crop=0.668xw:1.00xh;0.167xw,0&resize=1200:*"
-                name="Queen Elizabeth II's"
-                position="Mijozlarga xizmat ko'rsatish bo'limi boshlig'i"
-                description="Priya har bir mijozga mukammal xizmat ko'rsatilishini ta'minlaydi va ta'mirlangan qurilmani qaytarib olguniga qadar ularni kuzatib boradi."
-              />
+              {masters.map((master) => (
+                <TeamMember
+                  key={master._id }
+                  image={`https://api.applepark.uz${master.avatar}`}
+                  name={master.name}
+                  position={master.position}
+                  description={master.description}
+                />
+              ))}
+
+
             </div>
           </div>
 
@@ -202,10 +212,22 @@ export default function AboutUsSection() {
               Yutuqlarimiz
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <AchievementStat number="15+" label="Biznesdagi yillar" />
-              <AchievementStat number="50,000+" label="Ta'mirlangan qurilmalar" />
-              <AchievementStat number="98%" label="Mijozlar roziligi" />
-              <AchievementStat number="2" label="Xizmat ko'rsatish nuqtalari" />
+              <AchievementStat
+                number="15+"
+                label="Biznesdagi yillar"
+              />
+              <AchievementStat
+                number="50,000+"
+                label="Ta'mirlangan qurilmalar"
+              />
+              <AchievementStat
+                number="98%"
+                label="Mijozlar roziligi"
+              />
+              <AchievementStat
+                number="2"
+                label="Xizmat ko'rsatish nuqtalari"
+              />
             </div>
           </div>
 
@@ -240,7 +262,7 @@ export default function AboutUsSection() {
 }
 
 // Helper Components
-function ValueCard({ icon, title, description }) {
+function ValueCard({icon, title, description}) {
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex flex-col h-full">
@@ -252,7 +274,7 @@ function ValueCard({ icon, title, description }) {
   );
 }
 
-function TeamMember({ image, name, position, description }) {
+function TeamMember({image, name, position, description}) {
   return (
     <div className="text-center">
       <img
@@ -267,7 +289,7 @@ function TeamMember({ image, name, position, description }) {
   );
 }
 
-function ReasonCard({ number, title, description }) {
+function ReasonCard({number, title, description}) {
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
       <span className="text-blue-600 font-bold text-xl mb-2 block">
@@ -279,7 +301,7 @@ function ReasonCard({ number, title, description }) {
   );
 }
 
-function AchievementStat({ number, label }) {
+function AchievementStat({number, label}) {
   return (
     <div>
       <div className="text-3xl font-bold text-blue-600">{number}</div>

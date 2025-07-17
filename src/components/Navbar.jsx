@@ -2,7 +2,6 @@ import {Link, useNavigate} from "react-router-dom";
 import {useState, useEffect, useRef} from "react";
 import {HashLink} from "react-router-hash-link";
 import {User, LogOut} from "lucide-react";
-import logo from "../assets/logo.PNG"
 import api from "../api/simpleApi.js";
 
 export default function Navbar() {
@@ -59,16 +58,13 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link
-              style={{
-                filter: "hue-rotate(200deg)"
-              }}
               to="/"
               className="flex items-center gap-1"
             >
               <img
 
-                src={logo}
-                alt="ApplePark"
+                src="/logo.PNG"
+                alt="ApplePark Logo"
                 className="w-10 h-10"
               />
               <span className="font-bold text-xl text-gray-800 ">Apple Park</span>
@@ -145,7 +141,7 @@ export default function Navbar() {
                     <img
                       src={
                         user.avatar &&
-                        `https://computer-service-backend.onrender.com${user.avatar}`
+                        `https://api.applepark.uz${user.avatar}`
                       }
                       alt="Profile"
                       className="w-full h-full object-cover"

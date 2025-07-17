@@ -157,6 +157,7 @@ export default function AddServiceModal({isOpen, onClose, showNotification}) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     if (!selectedUserId) {
       alert("Foydalanuvchini ro'yxatdan tanlang");
       return;
@@ -526,7 +527,7 @@ export default function AddServiceModal({isOpen, onClose, showNotification}) {
             Yopish
           </button>
           <button
-            className={` bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounde`}
+            className={` bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounde ${isSubmitting && "cursor-not-allowed"}`}
             type="submit"
             form="addSevice"
             disabled={isSubmitting}

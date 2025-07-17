@@ -12,7 +12,6 @@ import {
   Clock,
 } from "lucide-react";
 import {TbBrandTelegram} from "react-icons/tb";
-import logo from "../assets/logo.PNG";
 import {Link} from "react-router-dom";
 
 export default function Footer() {
@@ -30,7 +29,7 @@ export default function Footer() {
                   className="flex items-center gap-1"
                 >
                   <img
-                    src={logo}
+                    src="/logo.PNG"
                     alt="ApplePark"
                     className="w-10 h-10"
                   />

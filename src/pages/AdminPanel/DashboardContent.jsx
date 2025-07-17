@@ -99,7 +99,7 @@ const DashboardContent = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Xizmat so'rovlari</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalRequests}</p>
+                  <p className="text-2xl font-bold text-gray-900">{dashboardStats.totalDevices}</p>
                 </div>
                 <div className="p-3 bg-purple-100 rounded-full">
                   <Wrench className="h-6 w-6 text-purple-600" />

@@ -1,4 +1,4 @@
-// public/service-worker.js
+
 self.addEventListener('push', function(event) {
   const options = event.data.json();
   event.waitUntil(

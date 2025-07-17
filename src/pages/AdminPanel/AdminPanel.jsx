@@ -44,67 +44,9 @@ import Profile from '../Profile.jsx';
 import NotFound from "../NotFound.jsx";
 import {HashLink} from "react-router-hash-link";
 
-// Конфигурация API
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// Axios instance для API запросов
-const createApiInstance = () => {
-  const instance = {
-    get: async (url) => {
-      const response = await fetch(`${API_BASE_URL}${url}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return { data: await response.json() };
-    },
-
-    post: async (url, data) => {
-      const response = await fetch(`${API_BASE_URL}${url}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        },
-        body: JSON.stringify(data)
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return { data: await response.json() };
-    },
-
-    put: async (url, data) => {
-      const response = await fetch(`${API_BASE_URL}${url}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        },
-        body: JSON.stringify(data)
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return { data: await response.json() };
-    },
-
-    delete: async (url) => {
-      const response = await fetch(`${API_BASE_URL}${url}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-        }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return { data: await response.json() };
-    }
-  };
-
-  return instance;
-};
-
-// const api = createApiInstance();
 
 const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -482,68 +424,6 @@ const AdminPanel = () => {
   );
 
 
-
-  // const renderContent = () => {
-  //   switch (activeTab) {
-  //     case 'dashboard':
-  //       return <DashboardContent
-  //         dashboardStats={dashboardStats}
-  //         loading={loading}
-  //         fetchDashboardStats={fetchDashboardStats}
-  //         fetchUsers={fetchUsers}
-  //         fetchContactMessages={fetchContactMessages}
-  //         fetchServiceRequests={fetchServiceRequests}
-  //         serviceRequests={serviceRequests}
-  //         contactMessages={contactMessages}
-  //         LoadingSpinner={LoadingSpinner}
-  //         formatDate={formatDate}
-  //       />;
-  //     case 'users':
-  //       return (
-  //         <UsersContent
-  //           filteredUsers={filteredUsers}
-  //           searchTerm={searchTerm}
-  //           setSearchTerm={setSearchTerm}
-  //           statusFilter={statusFilter}
-  //           setStatusFilter={setStatusFilter}
-  //           loading={loading}
-  //           fetchUsers={fetchUsers}
-  //           deleteUser={deleteUser}
-  //           formatDate={formatDate}
-  //           getStatusBadge={getStatusBadge}
-  //           LoadingSpinner={LoadingSpinner}
-  //         />
-  //       );
-  //     case 'contacts':
-  //       return <ContactsContent />;
-  //     case 'services':
-  //       return (
-  //         <ServicesContent
-  //           filteredServiceRequests={filteredServiceRequests}
-  //           searchTerm={searchTerm}
-  //           setSearchTerm={setSearchTerm}
-  //           statusFilter={statusFilter}
-  //           setStatusFilter={setStatusFilter}
-  //           loading={loading}
-  //           fetchServiceRequests={fetchServiceRequests}
-  //           updateServiceRequestStatus={updateServiceRequestStatus}
-  //           deleteServiceRequest={deleteServiceRequest}
-  //           formatDate={formatDate}
-  //           getStatusBadge={getStatusBadge}
-  //           setShowAddServiceModal={setShowAddServiceModal}
-  //           LoadingSpinner={LoadingSpinner}
-  //         />
-  //       );
-  //     case 'profile':
-  //       return <Profile />;
-  //     case 'settings':
-  //       return <SettingsContent />;
-  //     default:
-  //       return <DashboardContent />;
-  //   }
-  // };
-
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -558,8 +438,8 @@ const AdminPanel = () => {
       <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg border-r border-gray-200`}>
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-600 rounded-lg">
-              <Wrench className="h-6 w-6 text-white" />
+            <div className="rounded-lg">
+              <img src={"/logo.PNG"} alt="Logo" className="h-8 w-8" />
             </div>
             <span className="text-xl font-bold text-gray-900">Apple Park</span>
           </div>

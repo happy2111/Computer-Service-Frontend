@@ -13,7 +13,7 @@ import {
   X,
   Info,
   Hammer,
-  Phone, ArrowBigLeft, LogOut, RotateCcwKey
+  Phone, ArrowBigLeft, LogOut, RotateCcwKey, Clipboard
 } from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
@@ -68,16 +68,6 @@ export default function Profile() {
     fetchUser();
   }, [navigate]);
 
-  // // Проверка прав доступа
-  // if (!loading && userData && userData.role !== 'admin') {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-[40vh]">
-  //       <div className="bg-red-100 text-red-700 px-6 py-4 rounded-lg text-lg font-semibold">Нет доступа</div>
-  //     </div>
-  //   );
-  // }
-
-  // Profile form
   const {
     register: registerProfile,
     handleSubmit: handleSubmitProfile,
@@ -86,12 +76,18 @@ export default function Profile() {
   } = useForm({
     defaultValues: {
       name: "",
+      description: "",
+      position: "",
     },
   });
 
   useEffect(() => {
     if (userData) {
-      reset({name: userData.name || ""});
+      reset({
+        name: userData.name || "",
+        description: userData.description || "",
+        position: userData.position || "",
+      });
     }
   }, [userData, reset]);
 
@@ -105,6 +101,8 @@ export default function Profile() {
       // Create FormData object to handle file upload
       const formData = new FormData();
       formData.append("name", data.name);
+      formData.append("description", data.description || "");
+      formData.append("position", data.position || "");
 
       // Only append avatar if a new file was selected
       if (avatarFile) {
@@ -417,9 +415,8 @@ export default function Profile() {
 
               <form
                 onSubmit={handleSubmitProfile(onSubmitProfile)}
-                className="space-y-5"
+                className="space-y-6"
               >
-                {/* Name Field - Editable */}
                 <div>
                   <label
                     htmlFor="name"
@@ -449,6 +446,8 @@ export default function Profile() {
                       })}
                     />
                   </div>
+
+
                   {profileErrors.name && (
                     <p className="mt-1 text-sm text-red-500">
                       {profileErrors.name.message}
@@ -456,91 +455,73 @@ export default function Profile() {
                   )}
                 </div>
 
-                {/* Email Field - Disabled */}
+                {/* Email (read-only) */}
                 <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-500 mb-1"
-                  >
-                    Telefon raqam
-                  </label>
-                  <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                      <Phone className="h-5 w-5" />
-                    </div>
-                    <input
-                      id="phone"
-                      type="phone"
-                      value={userData?.phone || ""}
-                      disabled
-                      className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 pl-10 text-sm text-gray-500 shadow-sm cursor-not-allowed"
-                    />
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <div className="mt-1 flex items-center rounded-md bg-gray-100 border border-gray-200 px-3 py-2 text-gray-700">
+                    <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                    <span className="text-sm">{userData?.email || '-'}</span>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Telefon raqamni hozircha o'zgartirib bo'lmaydi.
-                  </p>
-                </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-500 mb-1"
-                  >
-                    Email manzili
-                  </label>
-                  <div className="relative">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                      <Mail className="h-5 w-5" />
-                    </div>
-                    <input
-                      id="email"
-                      type="email"
-                      value={userData?.email || ""}
-                      disabled
-                      className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 pl-10 text-sm text-gray-500 shadow-sm cursor-not-allowed"
-                    />
-                  </div>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Email manzilini hozircha o'zgartirib bo'lmaydi.
-                  </p>
                 </div>
 
-                {/* Submit Button */}
-                <div className="pt-2">
+                {/* Phone (read-only) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Telefon</label>
+                  <div className="mt-1 flex items-center rounded-md bg-gray-100 border border-gray-200 px-3 py-2 text-gray-700">
+                    <Phone className="h-4 w-4 mr-2 text-gray-400" />
+                    <span className="text-sm">{userData?.phone || '-'}</span>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                    Tavsif (описание)
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                      <Clipboard className="h-5 w-5" />
+                    </div>
+                    <textarea
+                      id="description"
+                      rows={2}
+                      {...registerProfile("description")}
+                      className="w-full rounded-md border border-gray-300  px-3 py-2 pl-10 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      disabled={isSubmittingProfile}
+                    />
+                  </div>
+                </div>
+
+                {/* Position */}
+                <div className={`${JSON.parse(localStorage.getItem("user")).role !== "master" &&  "hidden"}`}>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Lavozim
+                  </label>
+                  <div className="relative">
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                      <Hammer className="h-5 w-5" />
+                    </div>
+                    <input
+                      id="position"
+                      type="text"
+                      {...registerProfile("position")}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 pl-10 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      disabled={isSubmittingProfile}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
                   <button
                     type="submit"
-                    disabled={isSubmittingProfile || isUploading}
-                    className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-70"
+                    className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                    disabled={isSubmittingProfile}
                   >
-                    {isSubmittingProfile || isUploading ? (
-                      <>
-                        <svg
-                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                        Saqlanmoqda...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4 mr-2" />
-                        O'zgarishlarni saqlash
-                      </>
-                    )}
+                    <Save className="h-4 w-4 mr-2" />
+                    Saqlash
                   </button>
                 </div>
               </form>
@@ -548,12 +529,12 @@ export default function Profile() {
 
             {/* Chage Password*/}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex flex-wrap justify-between items-start mb-6">
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
                   <RotateCcwKey className="h-5 w-5 text-green-500" /> Parolni o'zgartirish
                 </h2>
                 <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-medium flex items-center">
-                  <RotateCcwKey className="h-3 w-3 mr-1" />
+                  <Info className="h-3 w-3 mr-1" />
                   Parolni o'zgartirish uchun eski parolni kiritishingiz kerak
                 </div>
               </div>
@@ -562,7 +543,6 @@ export default function Profile() {
                 className={`inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}>
                 Parolni O'zgartirish
               </button>
-              {/*<ChangePasswordForm userId={userData?._id} />*/}
             </div>
 
 
@@ -625,9 +605,9 @@ export default function Profile() {
                               Narxi: {d.cost} so'm
                             </span>
                           )}
-                          {d.master && (
+                          {d.masterName && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-gray-100 text-gray-700 whitespace-nowrap tracking-tight">
-                              Javobgar: {d.master}
+                              Javobgar: {d.masterName}
                             </span>
                           )}
                         </div>

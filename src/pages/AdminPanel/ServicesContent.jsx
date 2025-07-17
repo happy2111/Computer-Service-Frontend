@@ -1,6 +1,20 @@
-import {Search, RefreshCw, Plus,Phone, Check, Calendar,  Trash2, AlertCircle, Hash, Info, UserCog,Edit, DollarSign} from 'lucide-react';
-import React, { useRef , useState} from "react";
-import { useReactToPrint } from "react-to-print";
+import {
+  Search,
+  RefreshCw,
+  Plus,
+  Phone,
+  Check,
+  Calendar,
+  Trash2,
+  AlertCircle,
+  Hash,
+  Info,
+  UserCog,
+  Edit,
+  DollarSign
+} from 'lucide-react';
+import React, {useRef, useState} from "react";
+import {useReactToPrint} from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
 import SortOrderSelect from "../../components/SortOrderSelect";
 import pickedUp from "../../assets/food-delivery.png"
@@ -8,20 +22,20 @@ import EditServiceModal from "../../components/EditServiceModal";
 import api from "../../api/simpleApi.js";
 
 const ServicesContent = React.memo(({
-  filteredServiceRequests,
-  searchTerm,
-  setSearchTerm,
-  statusFilter,
-  setStatusFilter,
-  loading,
-  fetchServiceRequests,
-  updateServiceRequestStatus,
-  deleteServiceRequest,
-  formatDate,
-  getStatusBadge,
-  setShowAddServiceModal,
-  LoadingSpinner
-}) => {
+                                      filteredServiceRequests,
+                                      searchTerm,
+                                      setSearchTerm,
+                                      statusFilter,
+                                      setStatusFilter,
+                                      loading,
+                                      fetchServiceRequests,
+                                      updateServiceRequestStatus,
+                                      deleteServiceRequest,
+                                      formatDate,
+                                      getStatusBadge,
+                                      setShowAddServiceModal,
+                                      LoadingSpinner
+                                    }) => {
 
   const componentRef = useRef(null);
   const [printData, setPrintData] = useState(null);
@@ -105,7 +119,10 @@ const ServicesContent = React.memo(({
               <option value="completed">Bajarildi</option>
               <option value="unrepairable">Tamirlab Bolmaydi</option>
             </select>
-            <SortOrderSelect sortOrder={sortOrder} setSortOrder={setSortOrder} />
+            <SortOrderSelect
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+            />
             <button
               onClick={fetchServiceRequests}
               className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
@@ -149,8 +166,11 @@ const ServicesContent = React.memo(({
                   onClick={() => setExpandedId(expanded ? null : request._id)}
                 >
                   <div className="flex  flex-col items-start justify-between mb-4">
+                    <span className="inline-flex items-center px-2 py-1 rounded bg-blue-50 text-blue-700 font-semibold">
+                        {request.orderNumber}
+                      </span>
                     <div className={"flex items-center gap-2"}>
-                      <span className={"font-bold rounded-full p-2 text-sm bg-blue-300/50"}>{request.orderNumber}</span>
+
                       <h3 className="text-lg font-semibold text-gray-900 flex flex-wrap max-sm:gap-2 items-center">
                         <span className="">{request.deviceType}</span>
                         <span className="text-gray-500 text-sm">({request.deviceModel})</span>
@@ -167,26 +187,31 @@ const ServicesContent = React.memo(({
                       {/*<p className="text-blue-600 font-medium flex items-center">*/}
                       {/*  <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName}</span>*/}
                       {/*</p>*/}
-                      <br/>
+                      <br />
                       <p className="text-gray-600 text-sm flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1 text-red-500" />
-                        <span className="font-bold">Muammo:</span>&nbsp;<span className="font-bold text-gray-900">{request.issueDescription}</span>
+                        <span className="font-bold">Muammo:</span>&nbsp;
+                        <span className="font-bold text-gray-900">{request.issueDescription}</span>
                       </p>
                       <p className="text-gray-600 text-sm flex items-center">
                         <Hash className="h-4 w-4 mr-1 text-purple-500" />
-                        <span className="font-bold">IMEI:</span>&nbsp;<span className="font-bold inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900 break-all">{request.imei}</span>
+                        <span className="font-bold">IMEI:</span>&nbsp;
+                        <span className="font-bold inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900 break-all">{request.imei}</span>
                       </p>
                       <p className="text-gray-600 text-sm flex items-center">
                         <Info className="h-4 w-4 mr-1 text-cyan-500" />
-                        <span className="font-bold break-all ">Qo'shimcha ma'lumotlar:</span>&nbsp;<span className="font-bold break-all inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900">{request.additionalInfo}</span>
+                        <span className="font-bold break-all ">Qo'shimcha ma'lumotlar:</span>&nbsp;
+                        <span className="font-bold break-all inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900">{request.additionalInfo}</span>
                       </p>
                       <p className="text-gray-600 text-sm flex items-center">
                         <UserCog className="h-4 w-4 mr-1 text-orange-500" />
-                        <span className="font-bold">Javobgar:</span>&nbsp;<span className="font-bold text-gray-900">{request.master}</span>
+                        <span className="font-bold">Javobgar:</span>&nbsp;
+                        <span className="font-bold text-gray-900">{request.masterName} </span>
                       </p>
                       <p className="text-gray-600 text-sm flex items-center">
                         <DollarSign className="h-4 w-4 mr-1 text-green-600" />
-                        <span className="font-bold">Narx:</span>&nbsp;<span className="font-bold text-gray-900">{request.cost} so'm {request.costOr && `- ${request.costOr} so'm`}</span>
+                        <span className="font-bold">Narx:</span>&nbsp;
+                        <span className="font-bold text-gray-900">{request.cost} so'm {request.costOr && `- ${request.costOr} so'm`}</span>
                       </p>
                       <div className="max-sm:order-3 flex items-center space-x-2 my-4">
                         <select
@@ -261,8 +286,10 @@ const ServicesContent = React.memo(({
                             width=""
                             height=""
                             loading="lazy"
-                          /> Olib Ketilgan
-                          {request.packedUp && <Check className="w-4 h-4 text-green-600" />}
+                          />
+                          Olib Ketilgan
+                          {request.packedUp &&
+                            <Check className="w-4 h-4 text-green-600" />}
                         </button>
                         <button
                           className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
@@ -289,9 +316,12 @@ const ServicesContent = React.memo(({
               );
             })}
           </div>
-          <div style={{ display: "none" }}>
+          <div style={{display: "none"}}>
             {printData && (
-              <PrintableCard ref={componentRef} request={printData} />
+              <PrintableCard
+                ref={componentRef}
+                request={printData}
+              />
             )}
           </div>
         </div>
