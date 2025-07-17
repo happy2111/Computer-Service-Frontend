@@ -66,7 +66,7 @@ const appleDeviceModels = [
 ];
 
 
-export default function AddServiceModal({isOpen, onClose}) {
+export default function AddServiceModal({isOpen, onClose, showNotification}) {
   const [localStorageUser, setLocalStorageUser] = useState(null)
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState(null)
@@ -83,7 +83,7 @@ export default function AddServiceModal({isOpen, onClose}) {
     cost: 0,
     constOrFormatted: "",
     costOr: 0,
-    master: "",
+    master: localStorageUser?.role === "master" ? localStorageUser._id : "",
   });
   const [selectedUserId, setSelectedUserId] = useState("");
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -92,7 +92,7 @@ export default function AddServiceModal({isOpen, onClose}) {
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [filteredModels, setFilteredModels] = useState([]);
   const modelInputRef = useRef(null);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dropdownRef = React.useRef(null);
 
@@ -107,10 +107,17 @@ export default function AddServiceModal({isOpen, onClose}) {
   };
 
   useEffect(() => {
-    setLocalStorageUser(localStorage.getItem("user"))
+    setLocalStorageUser(JSON.parse(localStorage.getItem("user")))
     fetchUsers();
     fetchMaster()
   }, []);
+  useEffect(() => {
+    console.log(localStorageUser)
+  }, [localStorageUser]);
+
+  useEffect(() => {
+    console.log(form)
+  }, [form]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -132,16 +139,7 @@ export default function AddServiceModal({isOpen, onClose}) {
     };
   }, [showDropdown]);
 
-  useEffect(() => {
 
-    if (localStorageUser?.role === "master") {
-      console.log("Auto-setting master ID:", localStorageUser.id); // <== Debug
-      setForm((prevForm) => ({
-        ...prevForm,
-        master: localStorageUser.id,
-      }));
-    }
-  }, [localStorageUser, setForm]);
 
 
   const handleInputChange = (e) => {
@@ -169,9 +167,12 @@ export default function AddServiceModal({isOpen, onClose}) {
         `/services/add`, {userId: selectedUserId, ...formDataToSend}
       );
       onClose();
-
+      console.log(res.message, res.data, res)
+      showNotification("Qurilma muvaffaqiyatli qo'shildi\n(Ko'rish uchun yangilang)","success");
     } catch (err) {
       alert("Qurilmani qo'shishda xatolik yuz berdi: " + err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -284,7 +285,7 @@ export default function AddServiceModal({isOpen, onClose}) {
                       className="px-3 py-2 cursor-pointer hover:bg-blue-100"
                       onClick={() => handleUserSelect(user.name)}
                     >
-                      {user.name}
+                      <button>{user.name}</button>
                     </li>
                   ))}
               </ul>
@@ -360,7 +361,7 @@ export default function AddServiceModal({isOpen, onClose}) {
                       className="px-3 py-2 cursor-pointer hover:bg-blue-100"
                       onClick={() => handleModelSelect(model)}
                     >
-                      {model}
+                      <button>{model}</button>
                     </li>
                   ))}
                 </ul>
@@ -466,7 +467,7 @@ export default function AddServiceModal({isOpen, onClose}) {
               />
             </div>
           </div>
-          <div className={`${localStorageUser && localStorageUser.role === "admin" ? "block" : ""}`}>
+          <div className={`${localStorageUser?.role === "admin" ? "block" : ""}`}>
             <label className="block text-neutral-900 text-sm font-bold mb-1">
               Javobgar Shaxs
             </label>
@@ -477,28 +478,38 @@ export default function AddServiceModal({isOpen, onClose}) {
                 id="master"
                 onChange={handleInputChange}
               >
-                <option
-                  disabled
-                  hidden
-                  value=""
-                >
-                  Ustani tanlang
-                </option>
+                {localStorageUser?.role === "master" ? (
+                  <>
+                    <option disabled selected hidden>
+                      Ustani tanlang
+                    </option>
+                    <option value={localStorageUser?.id}>
+                      {localStorageUser?.name}
+                    </option>
+                  </>
 
-                {masters.map((master, index) => (
-                  <option
-                    key={index}
-                    value={master._id}
-                  >
-                    {master.name}
-                  </option>
-                ))}
+                ) : (
+                  <>
+                    <option disabled selected hidden value="">
+                      Ustani tanlang
+                    </option>
+                    {masters.map((master, index) => (
+                      <option key={index} value={master._id}>
+                        {master.name}
+                      </option>
+                    ))}
+                  </>
+                )}
+
+
+
+
               </select>
               <button
                 type={"button"}
                 onClick={() => setShowAddMasterModal(true)}
                 className={
-                  "bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r ml-0"
+                  `${localStorageUser?.role === "master" && "hidden" } bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-r ml-0`
                 }
               >
                 +
@@ -515,11 +526,12 @@ export default function AddServiceModal({isOpen, onClose}) {
             Yopish
           </button>
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
+            className={` bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounde`}
             type="submit"
             form="addSevice"
+            disabled={isSubmitting}
           >
-            Qo'shish
+            {isSubmitting ? "Qo'shilmoqda..." : "Qo'shish"}
           </button>
         </div>
       </div>

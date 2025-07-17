@@ -705,7 +705,7 @@ const AdminPanel = () => {
       )}
 
       {showAddServiceModal && (
-        <AddServiceModal isOpen={showAddServiceModal} onClose={() => setShowAddServiceModal(false)} />
+        <AddServiceModal showNotification={showNotification} isOpen={showAddServiceModal} onClose={() => setShowAddServiceModal(false)} />
       )}
     </div>
   );

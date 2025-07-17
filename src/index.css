@@ -15,6 +15,13 @@ input::placeholder {
   /*--color-primary-light: #fc9e56;*/
   --color-primary-dark: oklch(37.9% 0.146 265.522);
   --color-primary-light: oklch(80.9% 0.105 251.813);
+}
 
-
+@layer components {
+  .center-y {
+    @apply absolute top-1/2 -translate-y-1/2;
+  }
+  .center-x {
+    @apply absolute left-1/2 -translate-x-1/2;
+  }
 }

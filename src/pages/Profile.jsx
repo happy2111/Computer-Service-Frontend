@@ -13,11 +13,13 @@ import {
   X,
   Info,
   Hammer,
-  Phone
+  Phone, ArrowBigLeft, LogOut, RotateCcwKey
 } from "lucide-react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import {Helmet} from "react-helmet";
+import api from "../api/simpleApi.js";
+import ChangePasswrodModal from "../components/ChangePasswrodModal.jsx";
 
 export default function Profile() {
   // State for avatar
@@ -31,6 +33,8 @@ export default function Profile() {
   const [profileStatus, setProfileStatus] = useState("idle");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [showCPModal, setShowCPModal] = useState(false)
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -185,7 +189,7 @@ export default function Profile() {
       // Отправляем запрос на обновление профиля с флагом removeAvatar
       const res = await axios.put(
         `${import.meta.env.VITE_API_BASE_URL}/user/profile`,
-        { removeAvatar: true },
+        {removeAvatar: true},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -542,6 +546,26 @@ export default function Profile() {
               </form>
             </div>
 
+            {/* Chage Password*/}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                  <RotateCcwKey className="h-5 w-5 text-green-500" /> Parolni o'zgartirish
+                </h2>
+                <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-medium flex items-center">
+                  <RotateCcwKey className="h-3 w-3 mr-1" />
+                  Parolni o'zgartirish uchun eski parolni kiritishingiz kerak
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCPModal(true)}
+                className={`inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}>
+                Parolni O'zgartirish
+              </button>
+              {/*<ChangePasswordForm userId={userData?._id} />*/}
+            </div>
+
+
             {/*  devices */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
               <div className="flex justify-between items-start mb-6">
@@ -615,6 +639,64 @@ export default function Profile() {
                 <div className="text-gray-500 text-sm">Qo'shilgan qurilmalar yo'q.</div>
               )}
             </div>
+
+            {/* Degare zone */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+              <div className="flex justify-between items-start mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+                  <Info className="h-5 w-5 text-red-500" /> Xavfli zona
+                </h2>
+
+
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-sm text-gray-500 mb-2">
+                  Hisobingizni xavfsiz saqlash uchun, agar kerak bo'lsa, hisobingizdan chiqishingiz yoki o'chirishingiz mumkin.
+                </p>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    navigate("/auth/login");
+                  }}
+                  className="inline-flex w-[250px] items-center rounded-md duration-75 bg-yellow-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:yellow-red-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Hisobdan Chiqish
+                </button>
+                <hr className="my-5 text-gray-500" />
+
+                <p className="text-sm text-gray-500 mb-2">
+                  Agar hisobingizni o'chirishni xohlasangiz, quyidagi tugmani bosing. Bu amal qaytarib bo'lmaydi va barcha ma'lumotlaringiz o'chiriladi.
+                </p>
+                <button
+                  onClick={() => {
+                    if (window.confirm("Hisobingizni o'chirishni xohlaysizmi?")) {
+                      api.delete(`/user/${userData._id}`).then(() => {
+                        localStorage.removeItem("token");
+                        navigate("/auth/login");
+                      }).catch(err => {
+                        console.error("Error deleting account:", err);
+                      });
+                    }
+                  }}
+                  className="inline-flex w-[250px] items-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Hisobni o'chirish
+                </button>
+
+              </div>
+
+            </div>
+
+            {/* Change Password Modal */}
+            {showCPModal && (
+              <ChangePasswrodModal
+                isOpen={showCPModal}
+                onClose={() => setShowCPModal(false)}
+                userId={userData?._id}
+              />
+            )}
 
 
           </div>

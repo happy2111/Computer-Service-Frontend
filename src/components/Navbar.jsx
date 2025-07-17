@@ -285,6 +285,7 @@ export default function Navbar() {
               <button
                 onClick={() => {
                   localStorage.removeItem("token");
+                  localStorage.removeItem("user");
                   setMenuOpen(false);
                   navigate("/auth/login");
                 }}
