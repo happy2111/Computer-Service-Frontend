@@ -8,17 +8,16 @@ import {
   Users,
 } from "lucide-react";
 import {Link} from "react-router-dom";
-import api from "../api/simpleApi.js";
 import {useEffect, useState} from "react";
+import api from "../api/simpleApi.js";
 
 export default function AboutUsSection() {
   const [masters, setMasters] = useState([]);
 
   const fetchMasters = async () => {
     try {
-      const res = await api.get("/masters/all")
+      const res = await api.get("masters/all");
       setMasters(res.data);
-      console.log(res.data)
     } catch (error) {
       console.error("Error fetching masters:", error);
       // Здесь можно обработать ошибку, например, показать уведомление пользователю

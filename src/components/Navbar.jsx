@@ -11,27 +11,32 @@ export default function Navbar() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const modalRef = useRef(null);
   const navigate = useNavigate();
+  const [localStorageUser, setLocalStorageUser] = useState(null)
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setLocalStorageUser(JSON.parse(storedUser));
+    }
+  }, [])
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return;
-        const res = await api.get(
-          `/user/me`,
-        );
+        if (!token) {
+          setUser(null);
+          setIsLogget(false);
+          return;
+        }
+        const res = await api.get("/user/me");
         setUser(res.data);
         setIsLogget(true);
       } catch (error) {
         console.error("Error fetching user data", error);
-        if (error.response && error.response.status === 401) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-        }
       }
     };
     fetchUser();
-  }, [navigate]);
+  }, []);
 
   // Закрытие модалки при клике вне её
   useEffect(() => {
@@ -45,10 +50,25 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showProfileModal]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setShowProfileModal(false);
-    navigate("/auth/login");
+  const handleLogout = async () => {
+    try {
+      // Сначала делаем запрос на логаут
+      await api.post("/auth/logout");
+
+      // Затем очищаем локальное состояние
+      setShowProfileModal(false);
+      setIsLogget(false);
+      setUser(null);
+      setLocalStorageUser(null);
+
+      // Очищаем localStorage
+      localStorage.clear();
+
+      // Принудительно обновляем страницу и редиректим
+      window.location.href = "/";
+    } catch (err) {
+      console.error("Ошибка при выходе:", err);
+    }
   };
 
   return (
@@ -100,6 +120,17 @@ export default function Navbar() {
             >
               Biz bilan bog'lanish
             </HashLink>
+            {["admin", "master"].includes(localStorageUser?.role) && (
+              <HashLink
+                smooth
+                to="/admin"
+                className="text-gray-700 hover:text-primary transition"
+                onClick={() => setMenuOpen(false)}
+              >
+                Boshqaruv paneli
+              </HashLink>
+            )}
+
 
             {!localStorage.getItem("token") ? (
               <Link

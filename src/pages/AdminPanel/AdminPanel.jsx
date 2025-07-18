@@ -124,7 +124,7 @@ const AdminPanel = () => {
     try {
       setLoading(prev => ({ ...prev, dashboard: true }));
       const response = await api.get('/dashboard/stats');
-      console.log("🧪 Response:", response); // ⬅️ проверь, что здесь
+      console.log("🧪 Response:", response);
       
       setDashboardStats(response.data);
     } catch (error) {

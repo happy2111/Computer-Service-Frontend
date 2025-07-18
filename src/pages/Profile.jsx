@@ -34,6 +34,18 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [showCPModal, setShowCPModal] = useState(false)
+  const userRole = JSON.parse(localStorage.getItem("user"))?.role;
+
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+      localStorage.clear();
+      window.location.href = "/";
+    } catch (err) {
+      console.error("Ошибка при выходе:", err);
+    }
+  };
 
 
   useEffect(() => {
@@ -493,7 +505,7 @@ export default function Profile() {
                 </div>
 
                 {/* Position */}
-                <div className={`${JSON.parse(localStorage.getItem("user")).role !== "master" &&  "hidden"}`}>
+                <div className={userRole !== "master" ? "hidden" : ""}>
                   <label
                     htmlFor="name"
                     className="block text-sm font-medium text-gray-700 mb-1"
@@ -634,10 +646,7 @@ export default function Profile() {
                   Hisobingizni xavfsiz saqlash uchun, agar kerak bo'lsa, hisobingizdan chiqishingiz yoki o'chirishingiz mumkin.
                 </p>
                 <button
-                  onClick={() => {
-                    localStorage.removeItem("token");
-                    navigate("/auth/login");
-                  }}
+                  onClick={handleLogout}
                   className="inline-flex w-[250px] items-center rounded-md duration-75 bg-yellow-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:yellow-red-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
