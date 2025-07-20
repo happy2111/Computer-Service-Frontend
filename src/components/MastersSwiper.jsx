@@ -34,17 +34,17 @@ export default function MastersSwiper({masters}) {
           }
         }
         autoplay={{
-          delay: 1000,
+          delay: 1200,
           disableOnInteraction: false,
         }}
         pagination={{
           clickable: true,
         }}
         modules={[Autoplay,FreeMode, Pagination, Mousewheel]}
-        className="masters-Swiper"
+        className="masters-Swiper min-h-105"
       >
         {masters.map((master) => (
-          <SwiperSlide className={"select-none"} >
+          <SwiperSlide className={"select-none "} >
             <TeamMember
               key={master._id }
               image={`https://api.applepark.uz${master.avatar}`}
