@@ -277,12 +277,14 @@ export default function Profile() {
     );
   }
 
+
+
   return (
     <div className="bg-white max-sm:pt-9  ">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-12 md:py-20">
           {/* Page Header */}
-          <div className="max-w-3xl mx-auto mb-12">
+          <div className="max-w-3xl mx-auto mb-12 max-sm:hidden">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               Profilingiz
             </h1>

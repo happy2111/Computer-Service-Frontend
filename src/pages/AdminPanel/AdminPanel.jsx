@@ -195,7 +195,6 @@ const AdminPanel = () => {
     setDashboardStats({
       totalUsers: users.length,
       totalMessages: contactMessages.length,
-      totalRequests: serviceRequests.length,
       rating: 4.9
     });
   }, [users, contactMessages, serviceRequests]);
@@ -427,6 +426,39 @@ const AdminPanel = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+
+  const getRole = () => {
+    if (typeof localStorage !== 'undefined') {
+      const user = JSON.parse(localStorage.getItem('user'));
+      return user ? user.role : null;
+    }
+    return null;
+  }
+  const getLocation = () => {
+    switch (window.location.pathname) {
+      case '/admin/dashboard':
+        return 'Dashboard';
+      case '/admin/users':
+        return 'Users';
+      case '/admin/contacts':
+        return 'Contacts';
+      case '/admin/services':
+        return 'Services';
+      case '/admin/profile':
+        return 'Profile';
+      case '/admin/settings':
+        return 'Settings';
+      default:
+        return 'Dashboard';
+    }
+  }
+  const [role, setRole] = useState("");
+  const [locationName, setLocationName] = useState("");
+  useEffect(() => {
+    setRole(getRole());
+    setLocationName(getLocation());
+  }, [window.location.pathname]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Helmet>
@@ -463,6 +495,7 @@ const AdminPanel = () => {
                   onClick={() => {
                     setActiveTab(item.id);
                     setStatusFilter('all');
+                    setSidebarOpen(false)
                   }}
                   className={`w-full flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                     isActive
@@ -492,7 +525,7 @@ const AdminPanel = () => {
                 >
                   <Menu className="h-6 w-6" />
                 </button>
-                <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                <h1 className="text-2xl font-bold text-gray-900 capitalize">{role} {locationName}</h1>
               </div>
               <div className="flex items-center space-x-4">
                 {/*<button className="relative p-2 text-gray-400 hover:text-gray-600">*/}

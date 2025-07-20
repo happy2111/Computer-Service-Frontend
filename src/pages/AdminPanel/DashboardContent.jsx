@@ -31,7 +31,7 @@ const DashboardContent = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Boshqaruv paneli</h2>
+        <h2 className="max-sm:hidden text-2xl font-bold text-gray-900">Boshqaruv paneli</h2>
         <button
           onClick={() => {
             fetchDashboardStats();

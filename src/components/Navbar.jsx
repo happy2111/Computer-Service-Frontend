@@ -60,16 +60,30 @@ export default function Navbar() {
       setIsLogget(false);
       setUser(null);
       setLocalStorageUser(null);
-
-      // Очищаем localStorage
       localStorage.clear();
-
-      // Принудительно обновляем страницу и редиректим
       window.location.href = "/";
     } catch (err) {
       console.error("Ошибка при выходе:", err);
     }
   };
+
+
+  const [currentLocation, setCurrentLocation] = useState("Note Found");
+  useEffect(() => {
+    const getLocation = () => {
+      const pathname = window.location.pathname;
+      switch (pathname) {
+        case "/profile":
+          setCurrentLocation("Profilingiz");
+          break;
+        default:
+          setCurrentLocation("Apple Park");
+      }
+    }
+    getLocation()
+  }, [window.location.pathname]);
+
+
 
   return (
     <nav className="bg-white shadow-md fixed w-full z-20 top-0 left-0 !max-sm:mb-9">
@@ -87,7 +101,7 @@ export default function Navbar() {
                 alt="ApplePark Logo"
                 className="w-10 h-10"
               />
-              <span className="font-bold text-xl text-gray-800 ">Apple Park</span>
+              <span className="font-bold text-xl text-gray-800 ">{currentLocation}</span>
             </Link>
           </div>
           {/* Desktop Menu */}
