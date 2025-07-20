@@ -10,6 +10,7 @@ import {
 import {Link} from "react-router-dom";
 import {useEffect, useState} from "react";
 import api from "../api/simpleApi.js";
+import MastersSwiper from "./MastersSwiper.jsx";
 
 export default function AboutUsSection() {
   const [masters, setMasters] = useState([]);
@@ -20,7 +21,6 @@ export default function AboutUsSection() {
       setMasters(res.data);
     } catch (error) {
       console.error("Error fetching masters:", error);
-      // Здесь можно обработать ошибку, например, показать уведомление пользователю
     }
   }
 
@@ -146,24 +146,13 @@ export default function AboutUsSection() {
             </div>
           </div>
 
+
           {/* Team Section */}
           <div className="mb-20">
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-10">
               Mutaxassislarimiz bilan tanishing
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {masters.map((master) => (
-                <TeamMember
-                  key={master._id }
-                  image={`https://api.applepark.uz${master.avatar}`}
-                  name={master.name}
-                  position={master.position}
-                  description={master.description}
-                />
-              ))}
-
-
-            </div>
+            <MastersSwiper masters={masters}/>
           </div>
 
           {/* Why Choose Us */}
