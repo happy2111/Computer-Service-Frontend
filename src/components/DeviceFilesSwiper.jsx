@@ -51,7 +51,7 @@ export default function DeviceFilesSwiper({isOpen, onClose, data, setData}) {
               <div className="swiper-zoom-container">
                 {file.startsWith("/uploads/devices/images") ? (
                   <img
-                    src={`http://localhost:5000${file}`}
+                    src={`${import.meta.env.VITE_STATIC_BASE_URL}${file}`}
                     alt="device image"
                   />
                 ) : (
@@ -59,7 +59,7 @@ export default function DeviceFilesSwiper({isOpen, onClose, data, setData}) {
                     className="w-full"
                     controls
                   >
-                    <source src={`http://localhost:5000${file}`} type="video/mp4" />
+                    <source src={`${import.meta.env.VITE_STATIC_BASE_URL}${file}`} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 )}

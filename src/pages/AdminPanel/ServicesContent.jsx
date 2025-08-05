@@ -211,7 +211,7 @@ const ServicesContent = React.memo(({
                             <img
                               className={"object-cover w-full  h-full"}
                               loading={"lazy"}
-                              src={`http://localhost:5000${image}`}
+                              src={`${import.meta.env.VITE_STATIC_BASE_URL}${image}`}
                               alt="device image"
                             />
                           </div>
@@ -232,7 +232,7 @@ const ServicesContent = React.memo(({
                               // controls
                             >
                               <source
-                                src={`http://localhost:5000${video}`}
+                                src={`${import.meta.env.VITE_STATIC_BASE_URL}${video}`}
                                 type="video/mp4"
                               />
                               Your browser does not support the video tag.
