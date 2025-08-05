@@ -17,8 +17,6 @@ function App() {
       <ScrollTop />
 
       <Routes>
-        {/* <Route path="/" element={<Home />} /> */}
-
         <Route
           path="/auth"
           elevation={<AuthLayout />}

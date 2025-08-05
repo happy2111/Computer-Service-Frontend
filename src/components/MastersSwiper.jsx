@@ -1,15 +1,13 @@
-import React, {useEffect, useRef, useState} from 'react';
-// Import Swiper React components
+import React, {useState} from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-// Import Swiper styles
+
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 
 import '../index.css';
 
-// import required modules
 import { FreeMode,Mousewheel, Pagination, Autoplay } from 'swiper/modules';
 
 

@@ -11,8 +11,13 @@ import {
   Info,
   UserCog,
   Edit,
-  DollarSign
+  DollarSign,
+  Upload,
+  Printer,
+  PhoneForwarded,
+  RefreshCcwDot
 } from 'lucide-react';
+
 import React, {useRef, useState} from "react";
 import {useReactToPrint} from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
@@ -20,6 +25,9 @@ import SortOrderSelect from "../../components/SortOrderSelect";
 import pickedUp from "../../assets/food-delivery.png"
 import EditServiceModal from "../../components/EditServiceModal";
 import api from "../../api/simpleApi.js";
+import {FcFinePrint} from "react-icons/fc";
+import UploadModal from "../../components/UploadModal.jsx";
+import DeviceFilesSwiper from "../../components/DeviceFilesSwiper.jsx";
 
 const ServicesContent = React.memo(({
                                       filteredServiceRequests,
@@ -42,10 +50,14 @@ const ServicesContent = React.memo(({
   const [sortOrder, setSortOrder] = useState('desc')
   const [expandedId, setExpandedId] = useState(null);
   const [editingService, setEditingService] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [uploadData, setUploadData] = useState(null)
+  const [swiperData, setSwiperData] = useState(null)
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: "Ta'mirlash"
   });
+  const [showFileSwiper, setShowFileSwiper] = useState(false)
 
   const triggerPrint = (request) => {
     setPrintData(request);
@@ -82,6 +94,7 @@ const ServicesContent = React.memo(({
       return dateB - dateA;
     });
   }
+
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
@@ -168,7 +181,7 @@ const ServicesContent = React.memo(({
                   <div className="flex  flex-col items-start justify-between mb-4">
                     <span className="inline-flex items-center px-2 py-1 rounded bg-blue-50 text-blue-700 font-semibold">
                         {request.orderNumber}
-                      </span>
+                    </span>
                     <div className={"flex items-center gap-2"}>
 
                       <h3 className="text-lg font-semibold text-gray-900 flex flex-wrap max-sm:gap-2 items-center">
@@ -180,13 +193,57 @@ const ServicesContent = React.memo(({
 
                     <span className=" flex items-center gap-1 text-blue-700 font-bold">
                       <span className="font-bold ">{request.userName}</span>
+                      {/*<p>{request.userId}</p>*/}
                     </span>
                   </div>
                   {expanded && (
                     <div className="animate-fade-in">
-                      {/*<p className="text-blue-600 font-medium flex items-center">*/}
-                      {/*  <span className="">Mijoz:</span>&nbsp;<span className="font-bold text-gray-900">{request.userName}</span>*/}
-                      {/*</p>*/}
+                      <div className={"gap-2 flex flex-wrap"}>
+                        {request?.images?.map((image, index) => (
+                          <div
+                            onClick={() => {
+                              setShowFileSwiper(true);
+                              setSwiperData(request.images)
+                            }}
+                            key={index}
+                            className={"h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90"}
+                          >
+                            <img
+                              className={"object-cover w-full  h-full"}
+                              loading={"lazy"}
+                              src={`http://localhost:5000${image}`}
+                              alt="device image"
+                            />
+                          </div>
+                        ))}
+                        {request?.videos?.map((video, index) => (
+                          <div
+                            onClick={() => {
+                              setShowFileSwiper(true);
+                              setSwiperData(request.videos)
+                            }}
+                            key={index}
+                            className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90"
+                          >
+                            <video
+                              className="w-full h-full object-cover"
+                              muted
+                              // loop
+                              // controls
+                            >
+                              <source
+                                src={`http://localhost:5000${video}`}
+                                type="video/mp4"
+                              />
+                              Your browser does not support the video tag.
+                            </video>
+                          </div>
+                        ))}
+                        {!request?.images?.length && !request?.videos?.length && (
+                          <p className="text-sm text-gray-500 italic">Rasm yoki video mavjud emas.</p>
+                        )}
+
+                      </div>
                       <br />
                       <p className="text-gray-600 text-sm flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1 text-red-500" />
@@ -250,27 +307,42 @@ const ServicesContent = React.memo(({
                               request.status === 'in-progress' ? 'completed' : 'pending';
                             updateServiceRequestStatus(request._id, newStatus, request.userId);
                           }}
-                          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                          className="px-4 py-2 items-center  flex gap-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
                         >
-                          Holatni yangilash
+                          <RefreshCcwDot className="h-4 w-4" /> Holatni yangilash
+                        </button>
+                        <button
+                          onClick={e => {
+                            setShowUploadModal(true);
+                            setUploadData(
+                              {
+                                userId: request.userId,
+                                deviceId: request._id
+                              }
+                            )
+                            // setUploadModalDatas({userId: })
+                          }}
+                          className="px-4 py-2 items-center  flex gap-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-500"
+                        >
+                          <Upload className="h-4 w-4" /> Rasm/Video Yuklash
                         </button>
                         <button
                           onClick={e => {
                             e.stopPropagation();
                             window.open(`tel:${request.phone}`)
                           }}
-                          className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+                          className="px-4 py-2 border items-center  flex gap-2 border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
                         >
-                          Mijozga qo‘ng‘iroq qilish
+                          <PhoneForwarded className="h-4 w-4" /> Mijozga qo‘ng‘iroq qilish
                         </button>
                         <button
                           onClick={e => {
                             e.stopPropagation();
                             triggerPrint(request)
                           }}
-                          className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                          className="px-4 py-2 flex gap-2 items-center  bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
                         >
-                          Chop etish
+                          <Printer className="h-4 w-4" /> Chop etish
                         </button>
                         <button
                           onClick={e => {
@@ -336,6 +408,27 @@ const ServicesContent = React.memo(({
           onSave={handleEditService}
         />
       )}
+      {showUploadModal && (
+        <UploadModal
+          isOpen={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          data={uploadData}
+          refresh={fetchServiceRequests}
+        />
+      )}
+      {
+        showFileSwiper && (
+          <div className={"device-swiper fixed inset-0 z-90"}>
+            <DeviceFilesSwiper
+              isOpen={showFileSwiper}
+              onClose={() => setShowFileSwiper(false)}
+              data={swiperData}
+              setData={setSwiperData}
+            />
+          </div>
+        )
+      }
+
     </div>
   );
 });

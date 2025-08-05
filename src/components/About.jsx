@@ -148,7 +148,7 @@ export default function AboutUsSection() {
 
 
           {/* Team Section */}
-          <div className="mb-20">
+          <div className="mb-20 masters-swiper">
             <h3 className="text-2xl font-bold text-gray-900 text-center mb-10">
               Mutaxassislarimiz bilan tanishing
             </h3>
