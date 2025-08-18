@@ -46,6 +46,11 @@ input::placeholder {
     overflow: hidden;
   }
 }
+@media print {
+  .print-content {
+    display: block !important;
+  }
+}
 
 
 @layer components {

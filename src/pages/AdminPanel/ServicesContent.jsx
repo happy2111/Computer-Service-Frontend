@@ -18,9 +18,10 @@ import {
   RefreshCcwDot
 } from 'lucide-react';
 
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useReactToPrint} from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
+import CreaterQRCode from "../../components/CreaterQRCode";
 import SortOrderSelect from "../../components/SortOrderSelect";
 import pickedUp from "../../assets/food-delivery.png"
 import EditServiceModal from "../../components/EditServiceModal";
@@ -28,6 +29,7 @@ import api from "../../api/simpleApi.js";
 import {FcFinePrint} from "react-icons/fc";
 import UploadModal from "../../components/UploadModal.jsx";
 import DeviceFilesSwiper from "../../components/DeviceFilesSwiper.jsx";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 const ServicesContent = React.memo(({
                                       filteredServiceRequests,
@@ -45,24 +47,53 @@ const ServicesContent = React.memo(({
                                       LoadingSpinner
                                     }) => {
 
-  const componentRef = useRef(null);
-  const [printData, setPrintData] = useState(null);
   const [sortOrder, setSortOrder] = useState('desc')
   const [expandedId, setExpandedId] = useState(null);
   const [editingService, setEditingService] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [uploadData, setUploadData] = useState(null)
   const [swiperData, setSwiperData] = useState(null)
+  const [showFileSwiper, setShowFileSwiper] = useState(false);
+
+
+  // PRINT -----------------------------------------------
+
+  const componentRef = useRef(null);
+  const [printData, setPrintData] = useState(null);
+
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
+    removeAfterPrint: true,
+    // onAfterPrint: () => {
+    //   const printIframe = document.querySelector("iframe[title='print-preview']");
+    //   if (printIframe?.parentNode) {
+    //     printIframe.parentNode.removeChild(printIframe);
+    //   }
+    // },
+    pageStyle: `
+      @page {
+        size: 80mm 60mm;
+        margin: 0;
+      }
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          margin: 0;
+          padding: 0;
+        }
+      }
+    `,
     documentTitle: "Ta'mirlash"
   });
-  const [showFileSwiper, setShowFileSwiper] = useState(false)
 
   const triggerPrint = (request) => {
     setPrintData(request);
-    setTimeout(handlePrint, 100);
+    setTimeout(() => {
+      handlePrint();
+    }, 100);
   };
+
+  // REQUESTS -----------------------------------------------
 
   const handlePackedUp = async (deviceId, userId, currentPackedUp) => {
     try {
@@ -74,7 +105,6 @@ const ServicesContent = React.memo(({
       alert("Xatolik yuz berdi: " + error.message);
     }
   };
-
 
   const handleEditService = async (serviceId, userId, updates) => {
     try {
@@ -94,6 +124,23 @@ const ServicesContent = React.memo(({
       return dateB - dateA;
     });
   }
+
+  // Def -----------------------------------------------
+
+  const {hash} = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!filteredServiceRequests || filteredServiceRequests.length === 0) return;
+
+    if (hash) {
+      const elementId = hash.replace("#", "");
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.scrollIntoView({behavior: "smooth", block: "center"});
+      }
+    }
+  }, [filteredServiceRequests, hash]);
 
 
   return (
@@ -174,9 +221,15 @@ const ServicesContent = React.memo(({
               }
               return (
                 <div
+                  id={request.orderNumber}
                   key={request._id}
-                  className={`border rounded-lg p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${expanded ? 'shadow-lg' : ''}`}
-                  onClick={() => setExpandedId(expanded ? null : request._id)}
+                  className={`relative border rounded-lg p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${expanded ? 'shadow-lg' : ''}`}
+                  onClick={() => {
+                    setExpandedId(expanded ? null : request._id);
+                    navigate({
+                      hash: `${request.orderNumber}`,
+                    });
+                  }}
                 >
                   <div className="flex  flex-col items-start justify-between mb-4">
                     <span className="inline-flex items-center px-2 py-1 rounded bg-blue-50 text-blue-700 font-semibold">
@@ -193,10 +246,9 @@ const ServicesContent = React.memo(({
 
                     <span className=" flex items-center gap-1 text-blue-700 font-bold">
                       <span className="font-bold ">{request.userName}</span>
-                      {/*<p>{request.userId}</p>*/}
                     </span>
                   </div>
-                  {expanded && (
+                  {(hash === `#${request.orderNumber}` || expanded) && (
                     <div className="animate-fade-in">
                       <div className={"gap-2 flex flex-wrap"}>
                         {request?.images?.map((image, index) => (
@@ -243,6 +295,9 @@ const ServicesContent = React.memo(({
                           <p className="text-sm text-gray-500 italic">Rasm yoki video mavjud emas.</p>
                         )}
 
+                      </div>
+                      <div className={"max-md:hidden absolute right-1 top-1"}>
+                        <CreaterQRCode link={`https://applepark.uz/admin/services#${request.orderNumber}`} />
                       </div>
                       <br />
                       <p className="text-gray-600 text-sm flex items-center">
@@ -388,14 +443,12 @@ const ServicesContent = React.memo(({
               );
             })}
           </div>
-          <div style={{display: "none"}}>
-            {printData && (
-              <PrintableCard
-                ref={componentRef}
-                request={printData}
-              />
-            )}
-          </div>
+          {printData && (
+            <PrintableCard
+              ref={componentRef}
+              request={printData}
+            />
+          )}
         </div>
 
       )}
