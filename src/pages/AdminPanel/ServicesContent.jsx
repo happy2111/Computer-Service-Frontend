@@ -71,20 +71,21 @@ const ServicesContent = React.memo(({
     //   }
     // },
     pageStyle: `
-      @page {
-        size: 80mm 60mm;
-        margin: 0;
-      }
+      @page { size: 80mm 60mm; margin: 0; }
       @media print {
         html, body {
+          width: auto !important;
           height: auto !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: visible !important;
           -webkit-print-color-adjust: exact;
-          color-adjust: exact;
           print-color-adjust: exact;
+          color-adjust: exact;
           background: transparent !important;
         }
-        /* На всякий случай: избегаем разрывов внутри карточки */
         .print-content { break-inside: avoid; }
+        img { max-width: 100% !important; }
       }
     `,
     documentTitle: "Ta'mirlash"
