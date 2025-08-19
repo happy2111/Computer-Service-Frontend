@@ -76,11 +76,15 @@ const ServicesContent = React.memo(({
         margin: 0;
       }
       @media print {
-        body {
+        html, body {
+          height: auto !important;
           -webkit-print-color-adjust: exact;
-          margin: 0;
-          padding: 0;
+          color-adjust: exact;
+          print-color-adjust: exact;
+          background: transparent !important;
         }
+        /* На всякий случай: избегаем разрывов внутри карточки */
+        .print-content { break-inside: avoid; }
       }
     `,
     documentTitle: "Ta'mirlash"
