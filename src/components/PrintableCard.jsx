@@ -5,8 +5,7 @@ const PrintableCard = React.forwardRef(({request}, ref) => (
   <div
     ref={ref}
     key={request._id}
-    style={{ display: "none" }}
-    className="relative w-[80mm] h-[60mm] p-2 text-[10px] bg-white text-black border print-content"
+    className="relative w-[80mm] h-[60mm] p-2 text-[10px] bg-white text-black border print-content hidden print:block "
   >
     {/* Логотип на фоне */}
     <img
