@@ -8,12 +8,11 @@ const PrintableCard = React.forwardRef(({ request }, ref) => (
       print-content bg-white text-black border text-[10px]
       w-[80mm] h-[60mm] p-2
       absolute -left-[10000px] top-0 pointer-events-none
-      print:static print:left-auto print:top-auto print:pointer-events-auto
-      print:break-inside-avoid
+      print:relative print:left-auto print:top-auto print:pointer-events-auto
     "
   >
     <img
-      src="/logo.PNG"  // проверьте точное имя файла на сервере
+      src="/logo.PNG"
       alt="logo"
       className="absolute inset-0 w-full h-full object-contain opacity-10 pointer-events-none"
     />
@@ -24,7 +23,7 @@ const PrintableCard = React.forwardRef(({ request }, ref) => (
       <p>Telefon: <b>{request.phone}</b></p>
       <p>Qoshimcha Ma'l: <b>{request.additionalInfo}</b></p>
       <div className="mt-2">
-        <CreaterQRCode link={"https://applepark.uz"} size={88} />
+        <CreaterQRCode link={"https://applepark.uz"} size={50} />
       </div>
     </div>
   </div>

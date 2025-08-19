@@ -47,10 +47,20 @@ input::placeholder {
   }
 }
 @media print {
+  @page {
+    size: 80mm 60mm; /* фиксируем размер страницы */
+    margin: 0;       /* убираем поля */
+  }
+
   .print-content {
-    display: block !important;
+    width: 80mm !important;
+    height: 60mm !important;
+    page-break-inside: avoid;
+    page-break-before: avoid;
+    page-break-after: avoid;
   }
 }
+
 
 
 @layer components {

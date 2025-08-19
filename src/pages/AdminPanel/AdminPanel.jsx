@@ -43,6 +43,7 @@ import {
 import Profile from '../Profile.jsx';
 import NotFound from "../NotFound.jsx";
 import {HashLink} from "react-router-hash-link";
+import PrintPage from "../PrintPage.jsx";
 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;

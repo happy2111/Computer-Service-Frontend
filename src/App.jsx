@@ -11,6 +11,8 @@ import Service from './pages/Service.jsx'
 import ScrollTop from './components/ScrollTop.jsx'
 import AdminPanel from './pages/AdminPanel/AdminPanel.jsx'
 import AdminRoute from "./pages/AdminPanel/AdminRoute.jsx";
+import React from "react";
+import PrintPage from "./pages/PrintPage.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -59,6 +61,8 @@ function App() {
             element={<Service />}
           />
         </Route>
+        <Route path="/print/:id" element={<PrintPage/>} />
+
 
         <Route
           path="/admin/*"

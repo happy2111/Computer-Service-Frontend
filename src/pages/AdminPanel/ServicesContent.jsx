@@ -30,6 +30,7 @@ import {FcFinePrint} from "react-icons/fc";
 import UploadModal from "../../components/UploadModal.jsx";
 import DeviceFilesSwiper from "../../components/DeviceFilesSwiper.jsx";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
+import PrintButton from "../../components/PrintButton.jsx";
 
 const ServicesContent = React.memo(({
                                       filteredServiceRequests,
@@ -423,6 +424,7 @@ const ServicesContent = React.memo(({
                           {request.packedUp &&
                             <Check className="w-4 h-4 text-green-600" />}
                         </button>
+                        <PrintButton request={request} />
                         <button
                           className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 active:scale-103 hover:bg-red-50 rounded-lg"
                           onClick={e => {
