@@ -31,7 +31,7 @@ const PrintableCard = React.forwardRef(({request}, ref) => (
         <p className="font-bold text-gray-500 mx-2">
           Web: <a href="https://applepark.uz" className="text-blue-500">applepark.uz</a>
         </p>
-        <CreaterQRCode link={`https://applepark.uz`} size={50}/>
+        {/*<CreaterQRCode link={`https://applepark.uz`} size={50}/>*/}
       </div>
     </div>
   </div>

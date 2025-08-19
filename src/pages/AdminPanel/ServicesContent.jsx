@@ -362,7 +362,7 @@ const ServicesContent = React.memo(({
                               request.status === 'in-progress' ? 'completed' : 'pending';
                             updateServiceRequestStatus(request._id, newStatus, request.userId);
                           }}
-                          className="px-4 py-2 items-center  flex gap-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                          className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
                         >
                           <RefreshCcwDot className="h-4 w-4" /> Holatni yangilash
                         </button>
@@ -377,7 +377,7 @@ const ServicesContent = React.memo(({
                             )
                             // setUploadModalDatas({userId: })
                           }}
-                          className="px-4 py-2 items-center  flex gap-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-500"
+                          className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-500"
                         >
                           <Upload className="h-4 w-4" /> Rasm/Video Yuklash
                         </button>
@@ -386,7 +386,7 @@ const ServicesContent = React.memo(({
                             e.stopPropagation();
                             window.open(`tel:${request.phone}`)
                           }}
-                          className="px-4 py-2 border items-center  flex gap-2 border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+                          className="px-4 py-2 border items-center active:scale-103 active:opacity-75 flex gap-2 border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
                         >
                           <PhoneForwarded className="h-4 w-4" /> Mijozga qo‘ng‘iroq qilish
                         </button>
@@ -395,7 +395,7 @@ const ServicesContent = React.memo(({
                             e.stopPropagation();
                             triggerPrint(request)
                           }}
-                          className="px-4 py-2 flex gap-2 items-center  bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                          className="px-4 py-2 flex gap-2 items-center  active:scale-103 active:opacity-75 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
                         >
                           <Printer className="h-4 w-4" /> Chop etish
                         </button>
@@ -404,7 +404,7 @@ const ServicesContent = React.memo(({
                             e.stopPropagation();
                             handlePackedUp(request._id, request.userId, request.packedUp)
                           }}
-                          className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 hover:opacity-75 flex gap-2 py-2 border-gray-300 border  text-gray-700 text-sm font-medium rounded-lg`}
+                          className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 active:scale-103 active:opacity-75 hover:opacity-75 flex gap-2 py-2 border-gray-300 border  text-gray-700 text-sm font-medium rounded-lg`}
                         >
                           <img
                             className={"w-5"}
@@ -419,7 +419,7 @@ const ServicesContent = React.memo(({
                             <Check className="w-4 h-4 text-green-600" />}
                         </button>
                         <button
-                          className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
+                          className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 active:scale-103 hover:bg-red-50 rounded-lg"
                           onClick={e => {
                             e.stopPropagation();
                             setEditingService(request);
