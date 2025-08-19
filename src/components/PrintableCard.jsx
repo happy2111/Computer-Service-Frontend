@@ -8,11 +8,11 @@ const PrintableCard = React.forwardRef(({request}, ref) => (
     className="relative w-[80mm] h-[60mm] p-2 text-[10px] bg-white text-black border print-content hidden print:block "
   >
     {/* Логотип на фоне */}
-    <img
-      src="/logo.PNG"
-      alt="logo"
-      className="absolute inset-0 w-full h-full object-contain opacity-10 pointer-events-none"
-    />
+    {/*<img*/}
+    {/*  src="/logo.PNG"*/}
+    {/*  alt="logo"*/}
+    {/*  className="absolute inset-0 w-full h-full object-contain opacity-10 pointer-events-none"*/}
+    {/*/>*/}
 
     {/* Контент поверх */}
     <div className="relative z-10">
