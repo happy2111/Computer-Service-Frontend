@@ -31,6 +31,7 @@ import UploadModal from "../../components/UploadModal.jsx";
 import DeviceFilesSwiper from "../../components/DeviceFilesSwiper.jsx";
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import PrintButton from "../../components/PrintButton.jsx";
+import PrintModal from "../../components/print/PrintModal.jsx";
 
 const ServicesContent = React.memo(({
                                       filteredServiceRequests,
@@ -57,10 +58,11 @@ const ServicesContent = React.memo(({
   const [showFileSwiper, setShowFileSwiper] = useState(false);
 
 
-  // PRINT -----------------------------------------------
 
-  const componentRef = useRef(null);
+  // PRINT -----------------------------------------------
+  const [showPrintModal, setShowPrintModal] = useState(false);
   const [printData, setPrintData] = useState(null);
+  const componentRef = useRef(null);
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
@@ -72,7 +74,7 @@ const ServicesContent = React.memo(({
     //   }
     // },
     pageStyle: `
-      @page { size: 80mm 60mm; margin: 0; }
+      @page { size: 55mm 40mm; margin: 0; }
       @media print {
         html, body {
           width: auto !important;
@@ -406,6 +408,15 @@ const ServicesContent = React.memo(({
                           <Printer className="h-4 w-4" /> Chop etish
                         </button>
                         <button
+                          onClick={() => {
+                            setShowPrintModal(true);
+                            setPrintData(request)
+                          }}
+                          className="px-4 py-2 flex gap-2 items-center  active:scale-103 active:opacity-75 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                        >
+                          <Printer className="h-4 w-4" /> Chop etish
+                        </button>
+                        <button
                           onClick={e => {
                             e.stopPropagation();
                             handlePackedUp(request._id, request.userId, request.packedUp)
@@ -488,6 +499,8 @@ const ServicesContent = React.memo(({
           </div>
         )
       }
+    <PrintModal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} data={printData}/>
+
 
     </div>
   );

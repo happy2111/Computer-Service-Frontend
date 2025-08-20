@@ -48,7 +48,7 @@ input::placeholder {
 }
 @media print {
   @page {
-    size: 80mm 60mm; /* фиксируем размер страницы */
+    size: 50mm 40mm; /* фиксируем размер страницы */
     margin: 0;       /* убираем поля */
   }
 
