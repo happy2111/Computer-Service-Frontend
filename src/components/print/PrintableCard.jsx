@@ -81,18 +81,20 @@ const PrintableCard = React.forwardRef(({
 
         {visibleFields.contacts && (
           <div className="!text-[11px] flex flex-wrap items-center mt-2">
-            <p className="font-bold text-gray-500">
-              Tel: <a
-              href="tel:+998998888888"
-              className="text-blue-500"
-            >+998998888888</a>
-            </p>
-            <p className="font-bold text-gray-500 mx-2">
-              Web: <a
-              href="https://applepark.uz"
-              className="text-blue-500"
-            >applepark.uz</a>
-            </p>
+            <div className={""}>
+              <p className="font-bold text-gray-500">
+                Tel: <a
+                href="tel:+998998888888"
+                className="text-blue-500"
+              >+998998888888</a>
+              </p>
+              <p className="font-bold text-gray-500">
+                Web: <a
+                href="https://applepark.uz"
+                className="text-blue-500"
+              >applepark.uz</a>
+              </p>
+            </div>
             <CreaterQRCode
               link={`https://applepark.uz`}
               size={50}

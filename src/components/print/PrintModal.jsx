@@ -9,7 +9,7 @@ export default function PrintModal({isOpen, onClose, data}) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [width, setWidth] = useState(80);
-  const [height, setHeight] = useState(40);
+  const [height, setHeight] = useState(65);
   const [rotation, setRotation] = useState(0);
   const cardRef = useRef();
 
@@ -180,15 +180,12 @@ export default function PrintModal({isOpen, onClose, data}) {
 
   // Handle width change
   const handleWidthChange = (e) => {
-    const newWidth = Math.max(10, Math.min(300, Number(e.target.value))); // Limit range
-    // setWidth(newWidth);
     setWidth(e.target.value)
   };
 
   // Handle height change
   const handleHeightChange = (e) => {
-    const newHeight = Math.max(10, Math.min(300, Number(e.target.value))); // Limit range
-    setHeight(newHeight);
+    setHeight(e.target.value);
   };
 
   // Handle rotation change
@@ -443,21 +440,21 @@ export default function PrintModal({isOpen, onClose, data}) {
             }`}
           >
             <ArrowDownToLine className="h-6 w-6" />
-            {loading ? 'Processing...' : 'PNG Download'}
+            {loading ? 'Processing...' : 'Rasmni yuklab olish (PNG)'}
           </button>
 
           <button
             onClick={handlePrintDirect}
             className="w-full py-3 flex justify-center gap-2 items-center active:scale-103 active:opacity-75 bg-green-600 text-white text-lg rounded-lg hover:bg-green-700"
           >
-            <Printer className="h-6 w-6" /> Ushbu Sahifani Chop Etish
+            <Printer className="h-6 w-6" /> Ushbu Sahifada Chop Etish
           </button>
 
           <button
             onClick={handlePrint2}
             className="w-full py-3 flex justify-center gap-2 items-center active:scale-103 active:opacity-75 bg-blue-600 text-white text-lg rounded-lg hover:bg-blue-700"
           >
-            <Printer className="h-6 w-6" /> Bosh Sahifada Chop Etish
+            <Printer className="h-6 w-6" /> Boshqa Sahifada Chop Etish
           </button>
         </main>
 
