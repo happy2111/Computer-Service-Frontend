@@ -10,11 +10,11 @@ input::placeholder {
 }
 
 @theme {
-  --color-primary: oklch(54.6% 0.245 262.881);
+  --color-primary: #155dfc;
   /*--color-primary-dark: #b94e0a;*/
   /*--color-primary-light: #fc9e56;*/
-  --color-primary-dark: oklch(37.9% 0.146 265.522);
-  --color-primary-light: oklch(80.9% 0.105 251.813);
+  --color-primary-dark: #1c398e;
+  --color-primary-light: #8ec5ff;
 }
 .masters-swiper {
   .swiper {
@@ -35,6 +35,7 @@ input::placeholder {
   }
 
 }
+
 .device-swiper {
   .swiper {
     width: 100%;
@@ -46,18 +47,142 @@ input::placeholder {
     overflow: hidden;
   }
 }
+
+/* Print styles - This file can be used as fallback */
 @media print {
+  /* Default fallback page size */
   @page {
-    size: 50mm 40mm; /* фиксируем размер страницы */
-    margin: 0;       /* убираем поля */
+    size: auto;
+    margin: 0;
+  }
+
+  .block-transform {
+      transform: none !important;
+  }
+  /* Reset all elements */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Page setup */
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: white;
+  }
+
+  /* Hide everything by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only print content */
+  .print-content,
+  .print-content * {
+    visibility: visible;
+  }
+
+  /* Default content positioning and sizing */
+  .print-content {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    transform-origin: center center !important;
+    background: white !important;
+    page-break-inside: avoid !important;
+    page-break-before: avoid !important;
+    page-break-after: avoid !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure content fits properly */
+  .print-content * {
+    max-width: 100% !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Color and background adjustments */
+  .print-content {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Text scaling for small cards */
+  .print-content[data-size="small"] {
+    font-size: 0.8em;
+  }
+
+  .print-content[data-size="medium"] {
+    font-size: 1em;
+  }
+
+  .print-content[data-size="large"] {
+    font-size: 1.2em;
+  }
+
+  /* QR code scaling */
+  .print-content[data-size="small"] .qr-code {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .print-content[data-size="medium"] .qr-code {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .print-content[data-size="large"] .qr-code {
+    width: 50px !important;
+    height: 50px !important;
+  }
+}
+
+/* Screen preview styles */
+@media screen {
+  .print-preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f5f5f5;
+    padding: 20px;
   }
 
   .print-content {
-    width: 80mm !important;
-    height: 60mm !important;
-    page-break-inside: avoid;
-    page-break-before: avoid;
-    page-break-after: avoid;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+    background: white;
+  }
+}
+
+/* Browser-specific print optimizations */
+@media print and (-webkit-min-device-pixel-ratio: 0) {
+  /* Chrome/Safari specific */
+  .print-content {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+}
+
+@media print and (min-resolution: 150dpi) {
+  /* High DPI printing */
+  .print-content {
+    font-size: 1.1em;
+  }
+}
+
+/* Firefox specific fixes */
+@-moz-document url-prefix() {
+  @media print {
+    .print-content {
+      -moz-print-color-adjust: exact;
+    }
   }
 }
 
@@ -67,6 +192,7 @@ input::placeholder {
   .center-y {
     @apply absolute top-1/2 -translate-y-1/2;
   }
+
   .center-x {
     @apply absolute left-1/2 -translate-x-1/2;
   }

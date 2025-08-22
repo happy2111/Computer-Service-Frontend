@@ -383,7 +383,6 @@ const ServicesContent = React.memo(({
                                 deviceId: request._id
                               }
                             )
-                            // setUploadModalDatas({userId: })
                           }}
                           className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-500"
                         >
@@ -398,15 +397,7 @@ const ServicesContent = React.memo(({
                         >
                           <PhoneForwarded className="h-4 w-4" /> Mijozga qo‘ng‘iroq qilish
                         </button>
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            triggerPrint(request)
-                          }}
-                          className="px-4 py-2 flex gap-2 items-center  active:scale-103 active:opacity-75 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
-                        >
-                          <Printer className="h-4 w-4" /> Chop etish
-                        </button>
+
                         <button
                           onClick={() => {
                             setShowPrintModal(true);
@@ -435,7 +426,6 @@ const ServicesContent = React.memo(({
                           {request.packedUp &&
                             <Check className="w-4 h-4 text-green-600" />}
                         </button>
-                        <PrintButton request={request} />
                         <button
                           className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 active:scale-103 hover:bg-red-50 rounded-lg"
                           onClick={e => {

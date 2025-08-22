@@ -1,35 +1,106 @@
 import React from "react";
 import CreaterQRCode from "../CreaterQRCode.jsx";
 
-const PrintableCard = ({ request , width, height, ref}) => (
-  <div
-    ref={ref}
-    className={`relative w-[${width}mm] h-[${height}mm] p-2 text-[10px] bg-white text-black border print-content`}
-  >
-    <img
-      src="/logo.PNG"
-      alt="logo"
-      className="absolute inset-0 w-full h-full object-contain opacity-10 pointer-events-none"
-    />
-    <h1 className="text-center text-[14px] font-bold">Apple Park</h1>
-    <p>Ariza raqami: <b>{request.orderNumber}</b></p>
-    <p>Mijoz: <b>{request.userName}</b></p>
-    <p>Telefon: <b>{request.phone}</b></p>
-    <p>Qoshimcha Ma'l: <b>{request.additionalInfo}</b></p>
-    <p>Narxi: <b>{request.cost} so'm - {request.costOr} so'm</b></p>
-    <p>Javobgar Shaxs: <b>{request.masterName}</b></p>
+const PrintableCard = React.forwardRef(({
+                                          request,
+                                          visibleFields,
+                                          width,
+                                          height,
+                                          rotation = 0
+                                        }, ref) => {
+  // Generate size class name for CSS targeting
+  const getSizeClass = (w, h) => {
+    return `print-size-${w}x${h}`;
+  };
 
+  // Determine size category
+  const getSizeCategory = (w, h) => {
+    const area = w * h;
+    if (area <= 1600) return 'small';
+    if (area <= 3600) return 'medium';
+    return 'large';
+  };
 
-    <div className="!text-[11px] flex items-center mt-2">
-      <p className="font-bold text-gray-500">
-        Tel: <a href="tel:+998998888888" className="text-blue-500">+998998888888</a>
-      </p>
-      <p className="font-bold text-gray-500 mx-2">
-        Web: <a href="https://applepark.uz" className="text-blue-500">applepark.uz</a>
-      </p>
-      <CreaterQRCode link={`https://applepark.uz`} size={50}/>
+  return (
+    <div
+      ref={ref}
+      className={`inline-block block-transform ${getSizeClass(width, height)}`}
+      style={{
+        // Применяем поворот только для предварительного просмотра на экране
+        // При печати CSS @media print перезапишет этот стиль
+        transform: window.matchMedia && window.matchMedia('print').matches
+          ? 'none'
+          : `rotate(${rotation}deg)`,
+        transformOrigin: 'center center'
+      }}
+    >
+      <div
+        data-card-content="true"
+        data-rotation={rotation}
+        data-size={getSizeCategory(width, height)}
+        style={{
+          "--print-width": `${width}mm`,
+          "--print-height": `${height}mm`,
+          width: `${width}mm`,
+          height: `${height}mm`,
+        }}
+        className="relative p-2 text-[10px] bg-white text-black border print-content"
+      >
+        <img
+          src="/logo.PNG"
+          alt="logo"
+          className="absolute inset-0 w-full h-full object-contain opacity-10 pointer-events-none"
+        />
+
+        <h1 className="text-center text-[14px] font-bold">Apple Park</h1>
+
+        {visibleFields.orderNumber && (
+          <p>Ariza raqami: <b>{request.orderNumber}</b></p>
+        )}
+
+        {visibleFields.userName && (
+          <p>Mijoz: <b>{request.userName}</b></p>
+        )}
+
+        {visibleFields.phone && (
+          <p>Telefon: <b>{request.phone}</b></p>
+        )}
+
+        {visibleFields.additionalInfo && (
+          <p>Qoshimcha Ma'l: <b>{request.additionalInfo}</b></p>
+        )}
+
+        {visibleFields.cost && (
+          <p>Narx: <b>{request.cost || 'N/A'}</b></p>
+        )}
+
+        {visibleFields.masterName && (
+          <p>Javobgar: <b>{request.masterName || 'N/A'}</b></p>
+        )}
+
+        {visibleFields.contacts && (
+          <div className="!text-[11px] flex flex-wrap items-center mt-2">
+            <p className="font-bold text-gray-500">
+              Tel: <a
+              href="tel:+998998888888"
+              className="text-blue-500"
+            >+998998888888</a>
+            </p>
+            <p className="font-bold text-gray-500 mx-2">
+              Web: <a
+              href="https://applepark.uz"
+              className="text-blue-500"
+            >applepark.uz</a>
+            </p>
+            <CreaterQRCode
+              link={`https://applepark.uz`}
+              size={50}
+            />
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+});
 
 export default PrintableCard;
