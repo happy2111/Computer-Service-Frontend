@@ -51,8 +51,9 @@ const PrintableCard = React.forwardRef(({
           alt="logo"
           className="absolute inset-0 w-full h-full object-contain opacity-10 pointer-events-none"
         />
-
-        <h1 className="text-center text-[14px] font-bold">Apple Park</h1>
+        {visibleFields.logo && (
+          <h1 className="text-center text-[14px] font-bold">Apple Park</h1>
+        )}
 
         {visibleFields.orderNumber && (
           <p>Ariza raqami: <b>{request.orderNumber}</b></p>

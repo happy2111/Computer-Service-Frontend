@@ -9,7 +9,7 @@ const FieldSelector = ({toggleField, visibleFields, fields}) => {
         className={"border flex gap-5 items-center border-gray-300 rounded p-2"}
         onClick={() => setOpened(!isOpen)}
       >
-        <p>Field Selector</p>
+        <p>Qaysi maydonlarni chiqarish</p>
         {isOpen ? <ChevronUp className={"h-5 w-5"} /> : <ChevronDown className={"h-5 w-5"}/> }
 
       </button>

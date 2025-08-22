@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Printer, ArrowDownToLine, X, RotateCw} from "lucide-react";
 import PrintableCard from "./PrintableCard.jsx";
-import { domToPng} from 'modern-screenshot';
+import {domToPng} from 'modern-screenshot';
 import FieldSelector from "./FieldSelector.jsx";
 
 export default function PrintModal({isOpen, onClose, data}) {
@@ -303,6 +303,7 @@ export default function PrintModal({isOpen, onClose, data}) {
   };
 
   const [visibleFields, setVisibleFields] = useState({
+    logo: true,
     orderNumber: true,
     userName: true,
     phone: false,
@@ -313,6 +314,7 @@ export default function PrintModal({isOpen, onClose, data}) {
   });
 
   const fields = [
+    {key: "logo", label: "Logotip"},
     {key: "orderNumber", label: "Ariza raqami"},
     {key: "userName", label: "Mijoz"},
     {key: "phone", label: "Telefon"},
@@ -352,7 +354,7 @@ export default function PrintModal({isOpen, onClose, data}) {
           >
             <X className="w-5 h-5" />
           </button>
-          <h2 className="text-2xl font-bold">Print Document</h2>
+          <h2 className="text-2xl font-bold">Chop etish usuli</h2>
         </div>
 
         {error && (
@@ -373,29 +375,49 @@ export default function PrintModal({isOpen, onClose, data}) {
           fields={fields}
         />
 
-        <section className="flex gap-3 items-center h-10 my-5">
-          <input
-            className="w-1/3 min-h-full border border-gray-300 rounded p-2"
-            type="number"
-            placeholder="Width (mm)"
-            value={width}
-            onChange={handleWidthChange}
-            min="10"
-            max="300"
-            id="width"
-            name="width"
-          />
-          <input
-            className="w-1/3 min-h-full border border-gray-300 rounded p-2"
-            type="number"
-            placeholder="Height (mm)"
-            value={height}
-            onChange={handleHeightChange}
-            min="10"
-            max="300"
-            id="height"
-            name="height"
-          />
+        <section className="flex gap-3 items-end my-5">
+          <label
+            className="w-1/3 font-medium text-gray-600"
+            htmlFor="width"
+          >
+            Kengligi (mm)
+
+            <input
+              className="w-full min-h-full border border-gray-300 rounded p-2"
+              type="number"
+              placeholder="Width (mm)"
+              value={width}
+              onChange={handleWidthChange}
+              min="10"
+              max="300"
+              id="width"
+              name="width"
+            />
+          </label>
+
+          <label
+            className="w-1/3 font-medium text-gray-600"
+            htmlFor="width"
+          >
+            Balandligi (mm)
+
+            <input
+              className="w-full min-h-full border border-gray-300 rounded p-2"
+              type="number"
+              placeholder="Height (mm)"
+              value={height}
+              onChange={handleHeightChange}
+              min="10"
+              max="300"
+              id="height"
+              name="height"
+            />
+          </label>
+          <label
+            className="w-1/3 font-medium text-gray-600"
+            htmlFor="width"
+          >
+            Aylantirish
           <div className="w-1/3 flex items-center min-h-full gap-2">
             <button
               onClick={handleRotationChange}
@@ -406,6 +428,8 @@ export default function PrintModal({isOpen, onClose, data}) {
             </button>
             <span className="text-xs text-gray-500">{rotation}°</span>
           </div>
+
+          </label>
         </section>
 
         <main className="flex flex-col gap-3">
@@ -426,19 +450,20 @@ export default function PrintModal({isOpen, onClose, data}) {
             onClick={handlePrintDirect}
             className="w-full py-3 flex justify-center gap-2 items-center active:scale-103 active:opacity-75 bg-green-600 text-white text-lg rounded-lg hover:bg-green-700"
           >
-            <Printer className="h-6 w-6" /> Print This Page
+            <Printer className="h-6 w-6" /> Ushbu Sahifani Chop Etish
           </button>
 
           <button
             onClick={handlePrint2}
             className="w-full py-3 flex justify-center gap-2 items-center active:scale-103 active:opacity-75 bg-blue-600 text-white text-lg rounded-lg hover:bg-blue-700"
           >
-            <Printer className="h-6 w-6" /> Print External Page
+            <Printer className="h-6 w-6" /> Bosh Sahifada Chop Etish
           </button>
         </main>
 
-        <div className="flex justify-center items-center  mt-6 fit-content"
-          style={{height: `${rotation == 90 || rotation == 270 ? width * 3.77 : height * 3.77 }px`}}
+        <div
+          className="flex justify-center items-center  mt-6 fit-content"
+          style={{height: `${rotation == 90 || rotation == 270 ? width * 3.77 : height * 3.77}px`}}
         >
 
           <PrintableCard
