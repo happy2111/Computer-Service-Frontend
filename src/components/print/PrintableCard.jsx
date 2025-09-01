@@ -6,7 +6,8 @@ const PrintableCard = React.forwardRef(({
                                           visibleFields,
                                           width,
                                           height,
-                                          rotation = 0
+                                          rotation = 0,
+                                          fontSize
                                         }, ref) => {
   // Generate size class name for CSS targeting
   const getSizeClass = (w, h) => {
@@ -26,6 +27,8 @@ const PrintableCard = React.forwardRef(({
       ref={ref}
       className={`inline-block block-transform ${getSizeClass(width, height)}`}
       style={{
+        "--card-font-size": `${fontSize}px`,
+        fontSize: "var(--card-font-size)",
         // Применяем поворот только для предварительного просмотра на экране
         // При печати CSS @media print перезапишет этот стиль
         transform: window.matchMedia && window.matchMedia('print').matches
@@ -44,7 +47,7 @@ const PrintableCard = React.forwardRef(({
           width: `${width}mm`,
           height: `${height}mm`,
         }}
-        className="relative p-2 text-[10px] bg-white text-black border print-content"
+        className="relative p-2 bg-white text-black border print-content"
       >
         <img
           src="/logo.PNG"
@@ -52,7 +55,7 @@ const PrintableCard = React.forwardRef(({
           className="absolute inset-0 w-full h-full object-contain opacity-10 pointer-events-none"
         />
         {visibleFields.logo && (
-          <h1 className="text-center text-[14px] font-bold">Apple Park</h1>
+        <h1 className="text-center font-bold">Apple Park</h1>
         )}
 
         {visibleFields.orderNumber && (

@@ -3,6 +3,7 @@ import {Printer, ArrowDownToLine, X, RotateCw} from "lucide-react";
 import PrintableCard from "./PrintableCard.jsx";
 import {domToPng} from 'modern-screenshot';
 import FieldSelector from "./FieldSelector.jsx";
+import FontSizeSlider from "./FontSizeSlider.jsx";
 
 export default function PrintModal({isOpen, onClose, data}) {
   const [loading, setLoading] = useState(false);
@@ -11,6 +12,7 @@ export default function PrintModal({isOpen, onClose, data}) {
   const [width, setWidth] = useState(80);
   const [height, setHeight] = useState(65);
   const [rotation, setRotation] = useState(0);
+  const [fontSize, setFontSize] = useState(16);
   const cardRef = useRef();
 
   // Function to update @page size dynamically
@@ -80,6 +82,7 @@ export default function PrintModal({isOpen, onClose, data}) {
         
         /* Rotation wrapper - используем absolute позиционирование для точного центрирования */
         .print-content {
+          font-size: ${fontSize}px !important;
           position: absolute !important;
           top: 50% !important;
           left: 50% !important;
@@ -109,14 +112,14 @@ export default function PrintModal({isOpen, onClose, data}) {
         
         /* Scale elements based on card size */
         .print-content h1 {
-          font-size: ${Math.max(12, Math.min(18, w * h / 250))}px !important;
+          font-size: calc(${fontSize}px * 1.2) !important;
           margin: 0 0 1mm 0 !important;
           text-align: center !important;
           font-weight: bold !important;
         }
         
         .print-content p {
-          font-size: ${Math.max(8, Math.min(14, w * h / 350))}px !important;
+          font-size: ${fontSize}px !important;
           margin: 0.5mm 0 !important;
           line-height: 1.3 !important;
         }
@@ -194,6 +197,7 @@ export default function PrintModal({isOpen, onClose, data}) {
     setRotation(newRotation);
   };
 
+
   // Enhanced print function for external page
   const handlePrint2 = () => {
     // Save current settings to localStorage for the external page
@@ -204,6 +208,7 @@ export default function PrintModal({isOpen, onClose, data}) {
         width,
         height,
         rotation,
+        fontSize,
         version: 1,
       })
     );
@@ -300,14 +305,14 @@ export default function PrintModal({isOpen, onClose, data}) {
   };
 
   const [visibleFields, setVisibleFields] = useState({
-    logo: true,
+    logo: false,
     orderNumber: true,
     userName: true,
-    phone: false,
+    phone: true,
     additionalInfo: true,
     cost: true,
-    masterName: false,
-    contacts: true,
+    masterName: true,
+    contacts: false,
   });
 
   const fields = [
@@ -333,10 +338,11 @@ export default function PrintModal({isOpen, onClose, data}) {
         width,
         height,
         rotation,
+        fontSize,
         version: 1,
       })
     );
-  }, [visibleFields, width, height, rotation]);
+  }, [visibleFields, width, height, rotation, fontSize]);
 
   if (!isOpen) return null;
 
@@ -429,6 +435,11 @@ export default function PrintModal({isOpen, onClose, data}) {
           </label>
         </section>
 
+        <section className="flex gap-3 items-end my-5">
+          <FontSizeSlider fontSize={fontSize} setFontSize={setFontSize} />
+
+        </section>
+
         <main className="flex flex-col gap-3">
           <button
             onClick={handleDownloadImageModern}
@@ -470,6 +481,7 @@ export default function PrintModal({isOpen, onClose, data}) {
             height={height}
             ref={cardRef}
             rotation={rotation}
+            fontSize={fontSize}
           />
         </div>
       </div>

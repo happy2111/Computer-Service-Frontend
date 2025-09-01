@@ -12,12 +12,13 @@ export default function PrintPage() {
       visibleFields: {},
       width: 60,
       height: 40,
-      rotation: 0
+      rotation: 0,
+      fontSize: 12
     };
     setPrintConf(conf);
 
     // Create dynamic print styles
-    const createPrintStyles = (w, h, rotation) => {
+    const createPrintStyles = (w, h, rotation, fontSize) => {
       // Remove existing print styles
       const existingStyle = document.getElementById('print-page-styles');
       if (existingStyle) {
@@ -83,6 +84,7 @@ export default function PrintPage() {
           
           /* Rotation wrapper - убираем лишние отступы */
           .print-content {
+            font-size: ${fontSize}px !important;
             position: absolute !important;
             top: 50% !important;
             left: 50% !important;
@@ -112,6 +114,7 @@ export default function PrintPage() {
           
           /* Scale elements based on card size */
           .print-content h1 {
+            font-size: calc(${fontSize}px * 1.2);
             font-size: ${Math.max(12, Math.min(18, w * h / 250))}px !important;
             margin: 0 0 1mm 0 !important;
             text-align: center !important;
@@ -119,7 +122,7 @@ export default function PrintPage() {
           }
           
           .print-content p {
-            font-size: ${Math.max(8, Math.min(14, w * h / 350))}px !important;
+            font-size: ${fontSize}px !important;
             margin: 0.5mm 0 !important;
             line-height: 1.3 !important;
           }
@@ -165,6 +168,7 @@ export default function PrintPage() {
         @media screen {
           /* Screen preview styles */
           .print-preview-container {
+            font-size: ${fontSize}px !important;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -174,6 +178,7 @@ export default function PrintPage() {
           }
           
           .print-content {
+            font-size: ${fontSize}px !important;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             border: 1px solid #ddd;
             background: white;
@@ -185,7 +190,7 @@ export default function PrintPage() {
     };
 
     // Apply print styles immediately
-    createPrintStyles(conf.width, conf.height, conf.rotation);
+    createPrintStyles(conf.width, conf.height, conf.rotation, conf.fontSize);
 
     // получаем данные из API
     fetch(`${import.meta.env.VITE_API_BASE_URL}/services/${id}`)
@@ -226,6 +231,7 @@ export default function PrintPage() {
         width={printConf.width}
         height={printConf.height}
         rotation={printConf.rotation}
+        fontSize={printConf.fontSize}
       />
     </div>
   );

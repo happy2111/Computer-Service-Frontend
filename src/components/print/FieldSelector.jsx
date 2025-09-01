@@ -11,7 +11,6 @@ const FieldSelector = ({toggleField, visibleFields, fields}) => {
       >
         <p>Qaysi maydonlarni chiqarish</p>
         {isOpen ? <ChevronUp className={"h-5 w-5"} /> : <ChevronDown className={"h-5 w-5"}/> }
-
       </button>
 
       <div className={`${isOpen ? "" : "hidden"} flex flex-wrap gap-2 mt-2`}>
