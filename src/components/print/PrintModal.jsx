@@ -9,11 +9,66 @@ export default function PrintModal({isOpen, onClose, data}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [width, setWidth] = useState(80);
-  const [height, setHeight] = useState(65);
-  const [rotation, setRotation] = useState(0);
-  const [fontSize, setFontSize] = useState(16);
+  const [width, setWidth] = useState(45);
+  const [height, setHeight] = useState(45);
+  const [rotation, setRotation] = useState(90);
+  const [fontSize, setFontSize] = useState(13);
   const cardRef = useRef();
+
+  const presets = [
+    {
+      id: '1234567654',
+      name: 'Airprint 2,2x2,2',
+      width: 45,
+      height: 45,
+      rotation: 90,
+      fontSize: 13,
+      visibleFields: {
+        logo: false,
+        orderNumber: true,
+        userName: true,
+        phone: true,
+        additionalInfo: true,
+        cost: true,
+        masterName: true,
+        contacts: false,
+      },
+    },
+    {
+      id: '987654567',
+      name: 'Airprint 3x2',
+      width: 78,
+      height: 35,
+      rotation: 0,
+      fontSize: 13,
+      visibleFields: {
+        logo: false,
+        orderNumber: true,
+        userName: true,
+        phone: true,
+        additionalInfo: true,
+        cost: true,
+        masterName: true,
+        contacts: false,
+      },
+    }
+  ];
+
+  // Selected preset id
+  const [selectedPreset, setSelectedPreset] = useState(presets[0].id);
+
+  // Apply preset to current settings
+  const applyPreset = (presetId) => {
+    const p = presets.find((x) => x.id === presetId);
+    if (!p) return;
+    setWidth(p.width);
+    setHeight(p.height);
+    setRotation(p.rotation);
+    setFontSize(p.fontSize);
+    setVisibleFields((prev) => ({ ...prev, ...p.visibleFields }));
+    // update print styles immediately
+    updatePageSize(p.width, p.height);
+  };
 
   // Function to update @page size dynamically
   const updatePageSize = (w, h) => {
@@ -183,12 +238,12 @@ export default function PrintModal({isOpen, onClose, data}) {
 
   // Handle width change
   const handleWidthChange = (e) => {
-    setWidth(e.target.value)
+    setWidth(Number(e.target.value));
   };
 
   // Handle height change
   const handleHeightChange = (e) => {
-    setHeight(e.target.value);
+    setHeight(Number(e.target.value));
   };
 
   // Handle rotation change
@@ -372,6 +427,36 @@ export default function PrintModal({isOpen, onClose, data}) {
           </div>
         )}
 
+
+
+        {/* Preset selector (mocked - replace with server data later) */}
+        <div className="flex gap-3 items-center mb-4">
+          <div className="flex-1">
+            <label className="font-medium text-gray-600 block mb-1">Tayyor shablonlar</label>
+            <div className="flex gap-2">
+              <select
+                value={selectedPreset}
+                onChange={(e) => setSelectedPreset(e.target.value)}
+                className="flex-1 border border-gray-300 rounded p-2"
+              >
+                {presets.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} — {p.width}x{p.height}mm
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={() => applyPreset(selectedPreset)}
+                className="px-3 py-2 bg-gray-100 border border-gray-300 rounded"
+                title="Применить выбранный пресет"
+              >
+                Qo'llash
+              </button>
+            </div>
+          </div>
+        </div>
+
+
         <FieldSelector
           visibleFields={visibleFields}
           toggleField={toggleField}
@@ -471,7 +556,7 @@ export default function PrintModal({isOpen, onClose, data}) {
 
         <div
           className="flex justify-center items-center  mt-6 fit-content"
-          style={{height: `${rotation == 90 || rotation == 270 ? width * 3.77 : height * 3.77}px`}}
+          style={{height: `${rotation === 90 || rotation === 270 ? width * 3.77 : height * 3.77}px`}}
         >
 
           <PrintableCard

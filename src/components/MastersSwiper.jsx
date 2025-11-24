@@ -41,7 +41,7 @@ export default function MastersSwiper({masters}) {
         modules={[Autoplay,FreeMode, Pagination, Mousewheel]}
         className="masters-Swiper min-h-105"
       >
-        {masters.map((master) => (
+        {masters.length > 0 ?? masters.map((master) => (
           <SwiperSlide className={"select-none "} >
             <TeamMember
               key={master._id }
