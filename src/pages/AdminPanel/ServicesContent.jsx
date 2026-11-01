@@ -532,52 +532,89 @@ const ServicesContent = React.memo(({
                   >
                     <div className="overflow-hidden min-h-0">
                       <div className="pt-3 border-t border-gray-200/60">
-                        <div className={"gap-2 flex flex-wrap"}>
-                        {request?.images?.map((image, index) => (
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowFileSwiper(true);
-                              setSwiperData(request.images);
-                            }}
-                            key={index}
-                            className={"h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90 border border-gray-200"}
-                          >
-                            <img
-                              className={"object-cover w-full h-full"}
-                              loading={"lazy"}
-                              src={`${import.meta.env.VITE_STATIC_BASE_URL}${image}`}
-                              alt="device image"
-                            />
-                          </div>
-                        ))}
-                        {request?.videos?.map((video, index) => (
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowFileSwiper(true);
-                              setSwiperData(request.videos);
-                            }}
-                            key={index}
-                            className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90 border border-gray-200"
-                          >
-                            <video className="w-full h-full object-cover" muted>
-                              <source
-                                src={`${import.meta.env.VITE_STATIC_BASE_URL}${video}`}
-                                type="video/mp4"
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          {request?.images?.map((image, index) => (
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowFileSwiper(true);
+                                setSwiperData(request.images);
+                              }}
+                              key={`img-${index}`}
+                              className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-85 active:scale-95 border border-gray-200 cursor-pointer shadow-xs"
+                            >
+                              <img
+                                className="object-cover w-full h-full"
+                                loading="lazy"
+                                src={`${import.meta.env.VITE_STATIC_BASE_URL}${image}`}
+                                alt="device image"
                               />
-                            </video>
-                          </div>
-                        ))}
-                        {!request?.images?.length && !request?.videos?.length && (
-                          <p className="text-sm text-gray-500 italic">Rasm yoki video mavjud emas.</p>
-                        )}
-                      </div>
+                            </div>
+                          ))}
+                          {request?.videos?.map((video, index) => (
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowFileSwiper(true);
+                                setSwiperData(request.videos);
+                              }}
+                              key={`vid-${index}`}
+                              className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-85 active:scale-95 border border-gray-200 cursor-pointer shadow-xs"
+                            >
+                              <video className="w-full h-full object-cover" muted>
+                                <source
+                                  src={`${import.meta.env.VITE_STATIC_BASE_URL}${video}`}
+                                  type="video/mp4"
+                                />
+                              </video>
+                            </div>
+                          ))}
 
-                      <div className={"max-md:hidden absolute right-1 top-1"}>
-                        <CreaterQRCode link={`https://applepark.uz/admin/services#${request.orderNumber}`} />
-                      </div>
-                      <br />
+                          {/* Rasm/video yuklash maydoni */}
+                          {Boolean(request?.images?.length || request?.videos?.length) ? (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowUploadModal(true);
+                                setUploadData({
+                                  userId: request.userId,
+                                  deviceId: request._id
+                                });
+                              }}
+                              title="Yana rasm yoki video qo‘shish"
+                              className="h-20 w-20 rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-500 hover:bg-orange-50/50 active:scale-95 flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-all cursor-pointer"
+                            >
+                              <Upload className="w-5 h-5 mb-1 text-orange-500" />
+                              <span className="text-[11px] font-semibold">+ Yuklash</span>
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowUploadModal(true);
+                                setUploadData({
+                                  userId: request.userId,
+                                  deviceId: request._id
+                                });
+                              }}
+                              className="px-3.5 py-2 rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-500 hover:bg-orange-50/60 active:scale-98 flex items-center gap-2.5 text-gray-600 hover:text-orange-600 transition-all cursor-pointer"
+                            >
+                              <div className="p-1.5 bg-orange-100 rounded-lg text-orange-600">
+                                <Upload className="w-4 h-4" />
+                              </div>
+                              <div className="text-left">
+                                <p className="text-xs font-semibold text-gray-900 hover:text-orange-600">Rasm yoki video yuklash</p>
+                                <p className="text-[11px] text-gray-400">Hozircha biriktirilmagan</p>
+                              </div>
+                            </button>
+                          )}
+                        </div>
+
+                        <div className={"max-md:hidden absolute right-1 top-1"}>
+                          <CreaterQRCode link={`https://applepark.uz/admin/services#${request.orderNumber}`} />
+                        </div>
 
                       <p className="text-gray-600 text-sm flex items-center mb-1">
                         <AlertCircle className="h-4 w-4 mr-1 text-red-500 flex-shrink-0" />
@@ -678,19 +715,6 @@ const ServicesContent = React.memo(({
                           <RefreshCcwDot className="w-4 h-4 text-white absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                           <ChevronDown className="w-4 h-4 text-white/80 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                         </div>
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            setShowUploadModal(true);
-                            setUploadData({
-                              userId: request.userId,
-                              deviceId: request._id
-                            });
-                          }}
-                          className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-500"
-                        >
-                          <Upload className="h-4 w-4" /> Rasm/Video Yuklash
-                        </button>
                         <button
                           onClick={e => {
                             e.stopPropagation();
