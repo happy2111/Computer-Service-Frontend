@@ -631,9 +631,9 @@ const ServicesContent = React.memo(({
                         </div>
 
                         {/* 2. Asosiy parametrlar (Aniq tekislangan Key-Value) */}
-                        <div className="bg-white/60 rounded-lg py-3 sm:py-4 px-1 my-2">
+                        <div className="space-y-1 bg-white/80 rounded-xl px-3 sm:px-4 py-2 border border-gray-100/90">
                           {/* IMEI */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-3 border-b border-gray-100">
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
                             <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
                               <Hash className="w-4 h-4 text-gray-400 flex-shrink-0" />
                               <span>IMEI:</span>
@@ -660,7 +660,7 @@ const ServicesContent = React.memo(({
                           </div>
 
                           {/* Javobgar usta */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-3 border-b border-gray-100">
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
                             <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
                               <UserCog className="w-4 h-4 text-gray-400 flex-shrink-0" />
                               <span>Javobgar:</span>
@@ -671,7 +671,7 @@ const ServicesContent = React.memo(({
                           </div>
 
                           {/* Xizmat narxi */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-3 border-b border-gray-100">
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
                             <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
                               <DollarSign className="w-4 h-4 text-gray-400 flex-shrink-0" />
                               <span>Xizmat narxi:</span>
@@ -687,7 +687,7 @@ const ServicesContent = React.memo(({
                           </div>
 
                           {/* Telefon */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-3 border-b border-gray-100">
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
                             <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
                               <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
                               <span>Telefon:</span>
@@ -702,7 +702,7 @@ const ServicesContent = React.memo(({
                           </div>
 
                           {/* Yaratilgan sana */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-3">
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5">
                             <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
                               <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
                               <span>Yaratilgan:</span>
