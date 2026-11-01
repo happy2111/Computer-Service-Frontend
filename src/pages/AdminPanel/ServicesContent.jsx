@@ -19,7 +19,8 @@ import {
   AlertTriangle,
   CreditCard,
   Clock,
-  ChevronDown
+  ChevronDown,
+  Copy
 } from 'lucide-react';
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -616,86 +617,153 @@ const ServicesContent = React.memo(({
                           <CreaterQRCode link={`https://applepark.uz/admin/services#${request.orderNumber}`} />
                         </div>
 
-                      <p className="text-gray-600 text-sm flex items-center mb-1">
-                        <AlertCircle className="h-4 w-4 mr-1 text-red-500 flex-shrink-0" />
-                        <span className="font-bold">Muammo:</span>&nbsp;
-                        <span className="font-bold text-gray-900">{request.issueDescription}</span>
-                      </p>
-                      <p className="text-gray-600 text-sm flex items-center mb-1">
-                        <Hash className="h-4 w-4 mr-1 text-purple-500 flex-shrink-0" />
-                        <span className="font-bold">IMEI:</span>&nbsp;
-                        <span className="font-bold inline-block bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-mono break-all">{request.imei || "Yo'q"}</span>
-                      </p>
-                      <p className="text-gray-600 text-sm flex items-center mb-1">
-                        <Info className="h-4 w-4 mr-1 text-cyan-500 flex-shrink-0" />
-                        <span className="font-bold break-all">Qo'shimcha ma'lumotlar:</span>&nbsp;
-                        <span className="font-bold break-all inline-block bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-mono">{request.additionalInfo || "Yo'q"}</span>
-                      </p>
-                      <p className="text-gray-600 text-sm flex items-center mb-1">
-                        <UserCog className="h-4 w-4 mr-1 text-orange-500 flex-shrink-0" />
-                        <span className="font-bold">Javobgar:</span>&nbsp;
-                        <span className="font-bold text-gray-900">{request.masterName || "Belgilanmagan"}</span>
-                      </p>
-                      <p className="text-gray-600 text-sm flex items-center mb-1">
-                        <DollarSign className="h-4 w-4 mr-1 text-green-600 flex-shrink-0" />
-                        <span className="font-bold">Xizmat narxi:</span>&nbsp;
-                        <span className="font-bold text-gray-900">
-                          {totalCost ? `${totalCost.toLocaleString("ru-RU")} so'm` : "Ko'rsatilmagan"}
-                          {request.costOr ? ` yoki ${Number(request.costOr).toLocaleString("ru-RU")} so'm` : ""}
-                        </span>
-                      </p>
+                      {/* Ma'lumotlar ro'yxati (Key-Value) */}
+                      <div className="space-y-2.5 my-3 text-sm">
+                        {/* 1. Muammo (Stacked Layout - uzun matnlar uchun) */}
+                        <div className="bg-gray-50/80 rounded-lg p-2.5 border border-gray-100">
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mb-1">
+                            <AlertCircle className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                            <span>Muammo ta'rifi:</span>
+                          </div>
+                          <p className="text-xs sm:text-sm font-semibold text-gray-900 pl-5">
+                            {request.issueDescription || "Ko'rsatilmagan"}
+                          </p>
+                        </div>
 
-                      {request.paymentStatus === "debt" && (
-                        <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 my-2 bg-red-50/90 border border-red-200 rounded-lg text-sm">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
-                            <span className="text-red-700">Qarz: <strong className="font-bold text-red-950">{debtRemain.toLocaleString("ru-RU")} so‘m</strong></span>
-                            {request.debtDueDate && (
-                              <span className="text-xs text-red-600 font-medium">
-                                ({new Date(request.debtDueDate).toLocaleDateString("ru-RU")} gacha)
+                        {/* 2. Asosiy parametrlar (Aniq tekislangan Key-Value) */}
+                        <div className="space-y-1.5 bg-white/60 rounded-lg">
+                          {/* IMEI */}
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                              <Hash className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                              <span>IMEI:</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-xs sm:text-sm font-semibold text-gray-800 tracking-wide select-all">
+                                {request.imei || "Yo'q"}
                               </span>
-                            )}
-                            {paidAmount > 0 && (
-                              <span className="text-xs text-gray-500">
-                                • Avans: {paidAmount.toLocaleString("ru-RU")} so‘m
-                              </span>
-                            )}
-                            {request.paymentComment && (
-                              <span className="text-xs text-gray-500 italic">
-                                • "{request.paymentComment}"
-                              </span>
-                            )}
+                              {request.imei && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard?.writeText(request.imei);
+                                    alert("IMEI nusxalandi: " + request.imei);
+                                  }}
+                                  title="IMEIni nusxalash"
+                                  className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition"
+                                >
+                                  <Copy className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
                           </div>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedPaymentService(request);
-                              setPaymentDefaultAction('debt');
-                              setPaymentModalOpen(true);
-                            }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-semibold shadow-xs transition-colors"
-                          >
-                            <Edit className="w-3.5 h-3.5" /> Qarzni o‘zgartirish
-                          </button>
-                        </div>
-                      )}
 
-                      <div className="max-sm:order-2 grid grid-cols-1 md:grid-cols-2 gap-4 my-3">
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Phone className="h-4 w-4 text-gray-500" />
-                            <span className="text-sm text-gray-600 font-bold">Telefon:</span>
-                            <span className="text-sm font-bold text-gray-900">{request.phone}</span>
+                          {/* Javobgar usta */}
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                              <UserCog className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                              <span>Javobgar:</span>
+                            </div>
+                            <span className="text-xs sm:text-sm font-semibold text-gray-900">
+                              {request.masterName || "Belgilanmagan"}
+                            </span>
+                          </div>
+
+                          {/* Xizmat narxi */}
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                              <DollarSign className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                              <span>Xizmat narxi:</span>
+                            </div>
+                            <div className="text-xs sm:text-sm font-bold text-gray-900 text-right sm:text-left">
+                              {totalCost ? `${totalCost.toLocaleString("ru-RU")} so'm` : "Ko'rsatilmagan"}
+                              {request.costOr ? (
+                                <span className="text-xs font-normal text-gray-500 ml-1.5 block sm:inline">
+                                  (yoki {Number(request.costOr).toLocaleString("ru-RU")} so'm)
+                                </span>
+                              ) : ""}
+                            </div>
+                          </div>
+
+                          {/* Telefon */}
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                              <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                              <span>Telefon:</span>
+                            </div>
+                            <a
+                              href={`tel:${request.phone}`}
+                              onClick={e => e.stopPropagation()}
+                              className="text-xs sm:text-sm font-semibold text-blue-600 hover:underline"
+                            >
+                              {request.phone || "—"}
+                            </a>
+                          </div>
+
+                          {/* Yaratilgan sana */}
+                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5">
+                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                              <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                              <span>Yaratilgan:</span>
+                            </div>
+                            <span className="text-xs sm:text-sm text-gray-600 font-medium">
+                              {formatDate(request.createdAt)}
+                            </span>
                           </div>
                         </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="h-4 w-4 text-gray-500" />
-                            <span className="text-sm text-gray-600 font-bold">Yaratilgan:</span>
-                            <span className="text-sm font-bold text-gray-900">{formatDate(request.createdAt)}</span>
+
+                        {/* Qo'shimcha ma'lumotlar (agar mavjud bo'lsa - Stacked layout) */}
+                        {request.additionalInfo && (
+                          <div className="bg-gray-50/80 rounded-lg p-2.5 border border-gray-100">
+                            <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mb-1">
+                              <Info className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                              <span>Qo‘shimcha ma'lumotlar:</span>
+                            </div>
+                            <p className="text-xs sm:text-sm text-gray-700 pl-5 whitespace-pre-wrap">
+                              {request.additionalInfo}
+                            </p>
                           </div>
-                        </div>
+                        )}
+
+                        {/* Nasiya (Qarz) bloki */}
+                        {request.paymentStatus === "debt" && (
+                          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-red-50/90 border border-red-200 rounded-lg text-sm">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                              <span className="text-red-700 text-xs sm:text-sm">
+                                Qarz: <strong className="font-bold text-red-950">{debtRemain.toLocaleString("ru-RU")} so‘m</strong>
+                              </span>
+                              {request.debtDueDate && (
+                                <span className="text-xs text-red-600 font-medium">
+                                  ({new Date(request.debtDueDate).toLocaleDateString("ru-RU")} gacha)
+                                </span>
+                              )}
+                              {paidAmount > 0 && (
+                                <span className="text-xs text-gray-500">
+                                  • Avans: {paidAmount.toLocaleString("ru-RU")} so‘m
+                                </span>
+                              )}
+                              {request.paymentComment && (
+                                <span className="text-xs text-gray-500 italic">
+                                  • "{request.paymentComment}"
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedPaymentService(request);
+                                setPaymentDefaultAction('debt');
+                                setPaymentModalOpen(true);
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-semibold shadow-xs transition-colors"
+                            >
+                              <Edit className="w-3.5 h-3.5" /> Qarzni o‘zgartirish
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                       <div className="space-y-2 mt-4 pt-3 border-t border-gray-200/60">
