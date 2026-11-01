@@ -778,37 +778,32 @@ const ServicesContent = React.memo(({
                           </button>
                         )}
 
-                        {/* Pastki yordamchi qator: Buyurtma ID, Tahrirlash va O'chirish */}
-                        <div className="flex items-center justify-between pt-1 text-xs">
-                          <span className="text-gray-400 font-mono">
-                            ID: #{request.orderNumber}
-                          </span>
-                          <div className="flex items-center gap-1.5">
-                            <button
-                              type="button"
-                              title="Tahrirlash"
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-lg active:scale-95 transition-all"
-                              onClick={e => {
-                                e.stopPropagation();
-                                setEditingService(request);
-                              }}
-                            >
-                              <Edit className="h-3.5 w-3.5" />
-                              <span>Tahrirlash</span>
-                            </button>
-                            <button
-                              type="button"
-                              title="O‘chirish"
-                              onClick={e => {
-                                e.stopPropagation();
-                                deleteServiceRequest(request._id, request.userId);
-                              }}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/80 rounded-lg active:scale-95 transition-all"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                              <span>O‘chirish</span>
-                            </button>
-                          </div>
+                        {/* Pastki yordamchi qator: Tahrirlash va O'chirish */}
+                        <div className="flex items-center justify-end pt-1 text-xs gap-1.5">
+                          <button
+                            type="button"
+                            title="Tahrirlash"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-lg active:scale-95 transition-all"
+                            onClick={e => {
+                              e.stopPropagation();
+                              setEditingService(request);
+                            }}
+                          >
+                            <Edit className="h-3.5 w-3.5" />
+                            <span>Tahrirlash</span>
+                          </button>
+                          <button
+                            type="button"
+                            title="O‘chirish"
+                            onClick={e => {
+                              e.stopPropagation();
+                              deleteServiceRequest(request._id, request.userId);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/80 rounded-lg active:scale-95 transition-all"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>O‘chirish</span>
+                          </button>
                         </div>
                       </div>
                     </div>
