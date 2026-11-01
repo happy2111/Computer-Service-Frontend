@@ -295,10 +295,10 @@ const ServicesContent = React.memo(({
                 title="To'lov holati"
               >
                 <option value="all">To‘lov: Barchasi</option>
-                <option value="debt">To‘lov: 🔴 Nasiyalar</option>
-                <option value="overdue">To‘lov: ⚠️ Muddati o‘tgan</option>
-                <option value="paid">To‘lov: ✅ To‘langan</option>
-                <option value="unpaid">To‘lov: ⏳ To‘lanmagan</option>
+                <option value="debt">To‘lov: Nasiyalar</option>
+                <option value="overdue">To‘lov: Muddati o‘tgan</option>
+                <option value="paid">To‘lov: To‘langan</option>
+                <option value="unpaid">To‘lov: To‘lanmagan</option>
               </select>
             </div>
 
