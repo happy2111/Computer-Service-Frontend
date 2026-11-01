@@ -18,7 +18,8 @@ import {
   RefreshCcwDot,
   AlertTriangle,
   CreditCard,
-  Clock
+  Clock,
+  ChevronDown
 } from 'lucide-react';
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -367,7 +368,7 @@ const ServicesContent = React.memo(({
                     }
                   }}
                 >
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                  <div className={`flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all duration-300 ${isExpanded ? 'mb-4' : 'mb-0'}`}>
                     <div className="flex flex-col items-start gap-1">
                       <div className="flex items-center gap-2">
                         <span className="inline-flex items-center px-2 py-1 rounded bg-blue-100 text-blue-800 font-bold text-sm">
@@ -471,12 +472,29 @@ const ServicesContent = React.memo(({
                           Olib ketilgan
                         </span>
                       )}
+
+                      {/* Smooth Chevron Indicator */}
+                      <div className="flex items-center gap-1 ml-auto md:ml-1 pl-1 text-gray-400">
+                        <ChevronDown
+                          className={`w-5 h-5 transition-transform duration-300 ease-in-out ${
+                            isExpanded ? "rotate-180 text-blue-600" : "text-gray-400 hover:text-gray-600"
+                          }`}
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  {isExpanded && (
-                    <div className="animate-fade-in">
-                      <div className={"gap-2 flex flex-wrap"}>
+                  {/* Smooth Collapsible Content Container */}
+                  <div
+                    className={`grid transition-all duration-300 ease-in-out ${
+                      isExpanded
+                        ? "grid-rows-[1fr] opacity-100"
+                        : "grid-rows-[0fr] opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    <div className="overflow-hidden min-h-0">
+                      <div className="pt-3 border-t border-gray-200/60">
+                        <div className={"gap-2 flex flex-wrap"}>
                         {request?.images?.map((image, index) => (
                           <div
                             onClick={(e) => {
@@ -709,7 +727,8 @@ const ServicesContent = React.memo(({
                         </button>
                       </div>
                     </div>
-                  )}
+                  </div>
+                </div>
                 </div>
               );
             })}
