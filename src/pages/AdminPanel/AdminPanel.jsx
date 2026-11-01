@@ -550,7 +550,7 @@ const AdminPanel = () => {
         </header>
 
         {/* Content */}
-        <main className="p-6">
+        <main className="p-1.5 sm:p-4 md:p-6">
           {/*{renderContent()}*/}
           <Routes>
             <Route path="" element={<Navigate to="dashboard" replace />} />

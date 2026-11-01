@@ -232,8 +232,8 @@ const ServicesContent = React.memo(({
   }, [filteredServiceRequests, paymentFilter]);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
-      <div className="p-4 sm:p-6 border-b border-gray-200">
+    <div className="bg-white rounded-xl shadow-xs sm:shadow-sm">
+      <div className="p-3 sm:p-6 border-b border-gray-100 sm:border-gray-200">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           {/* Sarlavha va Mobile Refresh */}
           <div className="flex items-center justify-between">
@@ -358,8 +358,8 @@ const ServicesContent = React.memo(({
       {loading.services ? (
         <LoadingSpinner />
       ) : (
-        <div className="p-6">
-          <div className="space-y-6">
+        <div className="p-2 sm:p-5 md:p-6">
+          <div className="space-y-2.5 sm:space-y-4">
             {getSortedRequests(displayedRequests, sortOrder).map((request) => {
               const isExpanded = expandedId === request._id || (expandedId === null && hash === `#${request.orderNumber}`);
               const totalCost = Number(request.cost) || 0;
@@ -395,7 +395,7 @@ const ServicesContent = React.memo(({
                 <div
                   id={request.orderNumber}
                   key={request._id}
-                  className={`relative border rounded-lg p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${isExpanded ? 'shadow-lg' : ''}`}
+                  className={`relative border rounded-xl p-3 sm:p-5 md:p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${isExpanded ? 'shadow-lg' : ''}`}
                   onClick={() => {
                     if (isExpanded) {
                       setExpandedId("");
