@@ -644,21 +644,7 @@ const ServicesContent = React.memo(({
                         </div>
                       )}
 
-                      <div className="max-sm:order-3 flex items-center space-x-2 my-4">
-                        <select
-                          value={request.status}
-                          onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
-                          className={`px-3 py-1 text-sm font-medium rounded-full border-0 ${getStatusBadge(request.status)}`}
-                          onClick={e => e.stopPropagation()}
-                        >
-                          <option value="pending">Kutilmoqda</option>
-                          <option value="in-progress">Jarayonda</option>
-                          <option value="completed">Bajarildi</option>
-                          <option value="unrepairable">Tamirlab Bolmaydi</option>
-                        </select>
-                      </div>
-
-                      <div className="max-sm:order-2 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="max-sm:order-2 grid grid-cols-1 md:grid-cols-2 gap-4 my-3">
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
                             <Phone className="h-4 w-4 text-gray-500" />
@@ -675,18 +661,23 @@ const ServicesContent = React.memo(({
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-3.5 items-center space-x-3">
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            const newStatus = request.status === 'pending' ? 'in-progress' :
-                              request.status === 'in-progress' ? 'completed' : 'pending';
-                            updateServiceRequestStatus(request._id, newStatus, request.userId);
-                          }}
-                          className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
-                        >
-                          <RefreshCcwDot className="h-4 w-4" /> Holatni yangilash
-                        </button>
+                      <div className="flex flex-wrap gap-2.5 sm:gap-3.5 items-center">
+                        {/* Birlashgan Holat tanlash / yangilash */}
+                        <div className="relative inline-flex items-center" onClick={e => e.stopPropagation()}>
+                          <select
+                            value={request.status}
+                            onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
+                            className="appearance-none pl-9 pr-8 py-2 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white text-sm font-medium rounded-lg cursor-pointer transition-all shadow-xs focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                            title="Xizmat holatini o‘zgartirish"
+                          >
+                            <option value="pending" className="bg-white text-gray-900 font-normal">Holat: Kutilmoqda</option>
+                            <option value="in-progress" className="bg-white text-gray-900 font-normal">Holat: Jarayonda</option>
+                            <option value="completed" className="bg-white text-gray-900 font-normal">Holat: Bajarildi</option>
+                            <option value="unrepairable" className="bg-white text-gray-900 font-normal">Holat: Tamirlab bo‘lmaydi</option>
+                          </select>
+                          <RefreshCcwDot className="w-4 h-4 text-white absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          <ChevronDown className="w-4 h-4 text-white/80 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        </div>
                         <button
                           onClick={e => {
                             e.stopPropagation();
