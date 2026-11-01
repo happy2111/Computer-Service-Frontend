@@ -233,61 +233,99 @@ const ServicesContent = React.memo(({
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2 md:mb-0">Xizmat so‘rovlari</h2>
-          <div className="flex flex-col md:flex-row flex-wrap gap-2 md:gap-3 w-full md:w-auto">
-            <button
-              onClick={() => setShowAddServiceModal(true)}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Qo‘shish
-            </button>
-            <div className="relative w-full md:w-56">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="So‘rovlarni qidiring..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full text-sm"
+      <div className="p-4 sm:p-6 border-b border-gray-200">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          {/* Sarlavha va Mobile Refresh */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Xizmat so‘rovlari</h2>
+            <div className="flex items-center gap-2 md:hidden">
+              <button
+                onClick={fetchServiceRequests}
+                title="Yangilash"
+                className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-95 transition"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Boshqaruv elementlari: Qidiruv, Filterlar, Saralash */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-2.5 w-full md:w-auto">
+            {/* Qidiruv + Mobile Saralash */}
+            <div className="flex items-center gap-2 w-full md:w-auto">
+              <div className="relative flex-1 md:w-56">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Qidirish (ism, IMEI, model)..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full text-xs sm:text-sm"
+                />
+              </div>
+              <div className="md:hidden">
+                <SortOrderSelect
+                  sortOrder={sortOrder}
+                  setSortOrder={setSortOrder}
+                />
+              </div>
+            </div>
+
+            {/* Filterlar: Mobil qurilmalarda 2 ustun, kompyuterda inline */}
+            <div className="grid grid-cols-2 md:flex md:items-center gap-2 w-full md:w-auto">
+              {/* Ta'mirlash holati filter */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-2.5 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm font-medium bg-white text-gray-700 w-full md:w-auto truncate"
+                title="Ta'mirlash holati"
+              >
+                <option value="all">Holat: Barchasi</option>
+                <option value="pending">Holat: Kutilmoqda</option>
+                <option value="in-progress">Holat: Jarayonda</option>
+                <option value="completed">Holat: Bajarildi</option>
+                <option value="unrepairable">Holat: Tuzalmaydi</option>
+              </select>
+
+              {/* To'lov holati filter */}
+              <select
+                value={paymentFilter}
+                onChange={(e) => setPaymentFilter(e.target.value)}
+                className="px-2.5 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm font-medium bg-white text-gray-700 w-full md:w-auto truncate"
+                title="To'lov holati"
+              >
+                <option value="all">To‘lov: Barchasi</option>
+                <option value="debt">To‘lov: 🔴 Nasiyalar</option>
+                <option value="overdue">To‘lov: ⚠️ Muddati o‘tgan</option>
+                <option value="paid">To‘lov: ✅ To‘langan</option>
+                <option value="unpaid">To‘lov: ⏳ To‘lanmagan</option>
+              </select>
+            </div>
+
+            {/* Desktop Saralash */}
+            <div className="hidden md:block">
+              <SortOrderSelect
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
               />
             </div>
-            {/* Ta'mirlash holati filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto flex items-center text-sm font-medium"
-            >
-              <option value="all">Barcha holatlar</option>
-              <option value="pending">Kutilmoqda</option>
-              <option value="in-progress">Jarayonda</option>
-              <option value="completed">Bajarildi</option>
-              <option value="unrepairable">Tamirlab Bolmaydi</option>
-            </select>
-            {/* To'lov holati filter */}
-            <select
-              value={paymentFilter}
-              onChange={(e) => setPaymentFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto flex items-center text-sm font-medium"
-            >
-              <option value="all">Barcha to‘lovlar</option>
-              <option value="debt">🔴 Nasiyalar (Qarzdorlar)</option>
-              <option value="overdue">⚠️ Muddati o‘tgan qarzlar</option>
-              <option value="paid">✅ To‘langan</option>
-              <option value="unpaid">⏳ To‘lanmagan</option>
-            </select>
-            <SortOrderSelect
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
-            />
+
+            {/* Desktop Yangilash tugmasi (faqat ixcham icon) */}
             <button
               onClick={fetchServiceRequests}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 w-full md:w-auto"
+              title="Ro'yxatni yangilash"
+              className="hidden md:inline-flex items-center justify-center p-2 border border-gray-300 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:scale-95 transition"
             >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Yangilash
+              <RefreshCw className="h-4 w-4" />
+            </button>
+
+            {/* Desktop Qo'shish tugmasi (mobilda pastki fixed + tugmasi bor) */}
+            <button
+              onClick={() => setShowAddServiceModal(true)}
+              className="hidden md:inline-flex items-center px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold shadow-xs transition-colors"
+            >
+              <Plus className="h-4 w-4 mr-1.5" />
+              Qo‘shish
             </button>
           </div>
         </div>
