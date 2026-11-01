@@ -698,86 +698,118 @@ const ServicesContent = React.memo(({
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-2.5 sm:gap-3.5 items-center">
-                        {/* Birlashgan Holat tanlash / yangilash */}
-                        <div className="relative inline-flex items-center" onClick={e => e.stopPropagation()}>
-                          <select
-                            value={request.status}
-                            onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
-                            className="appearance-none pl-9 pr-8 py-2 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white text-sm font-medium rounded-lg cursor-pointer transition-all shadow-xs focus:ring-2 focus:ring-blue-300 focus:outline-none"
-                            title="Xizmat holatini o‘zgartirish"
+                      <div className="space-y-2 mt-4 pt-3 border-t border-gray-200/60">
+                        {/* Asosiy amallar to'plami (2 ustun mobilda, 4 ustun kompyuterda) */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                          {/* 1. Holat (Status select) */}
+                          <div className="relative" onClick={e => e.stopPropagation()}>
+                            <select
+                              value={request.status}
+                              onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
+                              className="w-full h-10 appearance-none pl-8 pr-7 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white text-xs sm:text-sm font-medium rounded-lg cursor-pointer transition-all shadow-xs focus:ring-2 focus:ring-blue-300 focus:outline-none truncate"
+                              title="Xizmat holatini o‘zgartirish"
+                            >
+                              <option value="pending" className="bg-white text-gray-900 font-normal">Kutilmoqda</option>
+                              <option value="in-progress" className="bg-white text-gray-900 font-normal">Jarayonda</option>
+                              <option value="completed" className="bg-white text-gray-900 font-normal">Bajarildi</option>
+                              <option value="unrepairable" className="bg-white text-gray-900 font-normal">Tamirlab bo‘lmaydi</option>
+                            </select>
+                            <RefreshCcwDot className="w-4 h-4 text-white absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            <ChevronDown className="w-3.5 h-3.5 text-white/80 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                          </div>
+
+                          {/* 2. Chop etish */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowPrintModal(true);
+                              setPrintData(request);
+                            }}
+                            className="h-10 flex items-center justify-center gap-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-medium rounded-lg shadow-xs transition-all"
                           >
-                            <option value="pending" className="bg-white text-gray-900 font-normal">Holat: Kutilmoqda</option>
-                            <option value="in-progress" className="bg-white text-gray-900 font-normal">Holat: Jarayonda</option>
-                            <option value="completed" className="bg-white text-gray-900 font-normal">Holat: Bajarildi</option>
-                            <option value="unrepairable" className="bg-white text-gray-900 font-normal">Holat: Tamirlab bo‘lmaydi</option>
-                          </select>
-                          <RefreshCcwDot className="w-4 h-4 text-white absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                          <ChevronDown className="w-4 h-4 text-white/80 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            <Printer className="h-4 w-4 flex-shrink-0" />
+                            <span>Chop etish</span>
+                          </button>
+
+                          {/* 3. Olib ketilgan */}
+                          <button
+                            type="button"
+                            onClick={e => handlePackedUpClick(e, request)}
+                            className={`h-10 flex items-center justify-center gap-1.5 px-3 border text-xs sm:text-sm font-medium rounded-lg active:scale-98 transition-all ${
+                              request.packedUp
+                                ? "bg-blue-50 border-blue-300 text-blue-700 font-semibold"
+                                : "bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                            }`}
+                          >
+                            <img
+                              className="w-4 h-4 flex-shrink-0"
+                              src={pickedUp}
+                              alt="picked up"
+                              loading="lazy"
+                            />
+                            <span className="truncate">Olib ketilgan</span>
+                            {request.packedUp && <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />}
+                          </button>
+
+                          {/* 4. Qo‘ng‘iroq qilish */}
+                          <button
+                            type="button"
+                            onClick={e => {
+                              e.stopPropagation();
+                              window.open(`tel:${request.phone}`);
+                            }}
+                            className="h-10 flex items-center justify-center gap-1.5 px-3 border border-gray-300 hover:bg-gray-50 bg-white text-gray-700 text-xs sm:text-sm font-medium rounded-lg active:scale-98 transition-all truncate"
+                          >
+                            <PhoneForwarded className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                            <span className="truncate">Qo‘ng‘iroq</span>
+                          </button>
                         </div>
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            window.open(`tel:${request.phone}`);
-                          }}
-                          className="px-4 py-2 border items-center active:scale-103 active:opacity-75 flex gap-2 border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
-                        >
-                          <PhoneForwarded className="h-4 w-4" /> Mijozga qo‘ng‘iroq qilish
-                        </button>
 
-                        <button
-                          onClick={() => {
-                            setShowPrintModal(true);
-                            setPrintData(request);
-                          }}
-                          className="px-4 py-2 flex gap-2 items-center active:scale-103 active:opacity-75 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
-                        >
-                          <Printer className="h-4 w-4" /> Chop etish
-                        </button>
-
-                        {/* Погасить долг (показывается только когда техника отдана и висит долг) */}
+                        {/* Agar nasiya (qarz) bo'lsa: Qarzni yopish alohida keng tugma */}
                         {request.paymentStatus === "debt" && (
                           <button
+                            type="button"
                             onClick={e => handleQuickPay(e, request)}
-                            className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shadow-sm"
+                            className="w-full h-10 flex items-center justify-center gap-2 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-lg shadow-xs transition-all"
                           >
-                            <Check className="h-4 w-4" /> Qarzni yopish
+                            <Check className="h-4 w-4" />
+                            <span>Qarzni yopish ({debtRemain.toLocaleString("ru-RU")} so‘m)</span>
                           </button>
                         )}
-                        {/* Кнопка "Olib ketilgan" (если не оплачено - открывает окно оформления долга/оплаты) */}
-                        <button
-                          onClick={e => handlePackedUpClick(e, request)}
-                          className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600 text-white" : "text-gray-700"} px-4 active:scale-103 active:opacity-75 hover:opacity-75 flex gap-2 py-2 border-gray-300 border text-sm font-medium rounded-lg`}
-                        >
-                          <img
-                            className={"w-5"}
-                            src={pickedUp}
-                            alt="taked away"
-                            loading="lazy"
-                          />
-                          Olib Ketilgan
-                          {request.packedUp &&
-                            <Check className="w-4 h-4 text-green-600" />}
-                        </button>
 
-                        <button
-                          className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 active:scale-103 hover:bg-red-50 rounded-lg"
-                          onClick={e => {
-                            e.stopPropagation();
-                            setEditingService(request);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            deleteServiceRequest(request._id, request.userId);
-                          }}
-                          className="p-2 text-red-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {/* Pastki yordamchi qator: Buyurtma ID, Tahrirlash va O'chirish */}
+                        <div className="flex items-center justify-between pt-1 text-xs">
+                          <span className="text-gray-400 font-mono">
+                            ID: #{request.orderNumber}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              title="Tahrirlash"
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-lg active:scale-95 transition-all"
+                              onClick={e => {
+                                e.stopPropagation();
+                                setEditingService(request);
+                              }}
+                            >
+                              <Edit className="h-3.5 w-3.5" />
+                              <span>Tahrirlash</span>
+                            </button>
+                            <button
+                              type="button"
+                              title="O‘chirish"
+                              onClick={e => {
+                                e.stopPropagation();
+                                deleteServiceRequest(request._id, request.userId);
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/80 rounded-lg active:scale-95 transition-all"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>O‘chirish</span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
