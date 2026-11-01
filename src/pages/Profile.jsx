@@ -576,8 +576,8 @@ export default function Profile() {
                     >
                       <div className="flex-1 w-full">
                         <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                          <span className="text-base sm:text-lg font-bold text-gray-900 break-all leading-tight">{d.deviceType}</span>
-                          <span className="text-gray-500 text-sm sm:text-base font-normal">{d.deviceModel}</span>
+                          <span className="text-base sm:text-lg font-bold text-gray-900 break-all leading-tight">{d.deviceModel}</span>
+                          <span className="text-gray-500 text-sm sm:text-base font-normal">({d.deviceType})</span>
                         </div>
                         <div className="text-gray-700 mb-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                           <span className="flex items-center gap-1 text-sm sm:text-base"><Info className="h-4 w-4 text-gray-400" /><span className="font-medium">Muammo:</span></span>
@@ -622,6 +622,26 @@ export default function Profile() {
                           {d.masterName && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-gray-100 text-gray-700 whitespace-nowrap tracking-tight">
                               Javobgar: {d.masterName}
+                            </span>
+                          )}
+                          {d.paymentStatus === 'paid' && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-green-100 text-green-800 whitespace-nowrap tracking-tight">
+                              To'langan
+                            </span>
+                          )}
+                          {d.paymentStatus === 'debt' && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-red-100 text-red-800 whitespace-nowrap tracking-tight font-semibold">
+                              Nasiya: {Math.max(0, (d.cost || 0) - (d.paidAmount || 0)).toLocaleString('ru-RU')} so'm{d.debtDueDate ? ` (${new Date(d.debtDueDate).toLocaleDateString('ru-RU')} gacha)` : ''}
+                            </span>
+                          )}
+                          {d.paymentStatus === 'partial' && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-yellow-100 text-yellow-800 whitespace-nowrap tracking-tight">
+                              Qisman to'langan ({(d.paidAmount || 0).toLocaleString('ru-RU')} so'm)
+                            </span>
+                          )}
+                          {d.packedUp && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-sm font-medium bg-blue-100 text-blue-800 whitespace-nowrap tracking-tight">
+                              Olib ketilgan
                             </span>
                           )}
                         </div>

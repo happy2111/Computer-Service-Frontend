@@ -15,49 +15,65 @@ import {
   Upload,
   Printer,
   PhoneForwarded,
-  RefreshCcwDot
+  RefreshCcwDot,
+  AlertTriangle,
+  CreditCard,
+  Clock
 } from 'lucide-react';
 
-import React, {useEffect, useRef, useState} from "react";
-import {useReactToPrint} from "react-to-print";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useReactToPrint } from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
 import CreaterQRCode from "../../components/CreaterQRCode";
 import SortOrderSelect from "../../components/SortOrderSelect";
-import pickedUp from "../../assets/food-delivery.png"
+import pickedUp from "../../assets/food-delivery.png";
 import EditServiceModal from "../../components/EditServiceModal";
+import PaymentModal from "../../components/PaymentModal.jsx";
 import api from "../../api/simpleApi.js";
-import {FcFinePrint} from "react-icons/fc";
+import { FcFinePrint } from "react-icons/fc";
 import UploadModal from "../../components/UploadModal.jsx";
 import DeviceFilesSwiper from "../../components/DeviceFilesSwiper.jsx";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import PrintButton from "../../components/PrintButton.jsx";
 import PrintModal from "../../components/print/PrintModal.jsx";
 
 const ServicesContent = React.memo(({
-                                      filteredServiceRequests,
-                                      searchTerm,
-                                      setSearchTerm,
-                                      statusFilter,
-                                      setStatusFilter,
-                                      loading,
-                                      fetchServiceRequests,
-                                      updateServiceRequestStatus,
-                                      deleteServiceRequest,
-                                      formatDate,
-                                      getStatusBadge,
-                                      setShowAddServiceModal,
-                                      LoadingSpinner
-                                    }) => {
+  filteredServiceRequests,
+  searchTerm,
+  setSearchTerm,
+  statusFilter,
+  setStatusFilter,
+  loading,
+  fetchServiceRequests,
+  updateServiceRequestStatus,
+  deleteServiceRequest,
+  formatDate,
+  getStatusBadge,
+  setShowAddServiceModal,
+  LoadingSpinner
+}) => {
 
-  const [sortOrder, setSortOrder] = useState('desc')
+  const [sortOrder, setSortOrder] = useState('desc');
   const [expandedId, setExpandedId] = useState(null);
   const [editingService, setEditingService] = useState(null);
-  const [showUploadModal, setShowUploadModal] = useState(false)
-  const [uploadData, setUploadData] = useState(null)
-  const [swiperData, setSwiperData] = useState(null)
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadData, setUploadData] = useState(null);
+  const [swiperData, setSwiperData] = useState(null);
   const [showFileSwiper, setShowFileSwiper] = useState(false);
 
+  // PAYMENT MODAL & FILTERS --------------------------------
+  const [searchParams] = useSearchParams();
+  const [paymentFilter, setPaymentFilter] = useState(() => searchParams.get('payment') || 'all');
+  const [selectedPaymentService, setSelectedPaymentService] = useState(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentDefaultAction, setPaymentDefaultAction] = useState('normal');
 
+  useEffect(() => {
+    const p = searchParams.get('payment');
+    if (p) {
+      setPaymentFilter(p);
+    }
+  }, [searchParams]);
 
   // PRINT -----------------------------------------------
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -67,12 +83,6 @@ const ServicesContent = React.memo(({
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     removeAfterPrint: true,
-    // onAfterPrint: () => {
-    //   const printIframe = document.querySelector("iframe[title='print-preview']");
-    //   if (printIframe?.parentNode) {
-    //     printIframe.parentNode.removeChild(printIframe);
-    //   }
-    // },
     pageStyle: `
       @page { size: 55mm 40mm; margin: 0; }
       @media print {
@@ -106,7 +116,7 @@ const ServicesContent = React.memo(({
   const handlePackedUp = async (deviceId, userId, currentPackedUp) => {
     try {
       await api.put(
-        `/services/${deviceId}/picked?userId=${userId}`, {status: !currentPackedUp}
+        `/services/${deviceId}/picked?userId=${userId}`, { status: !currentPackedUp }
       );
       fetchServiceRequests();
     } catch (error) {
@@ -114,9 +124,39 @@ const ServicesContent = React.memo(({
     }
   };
 
+  const handlePackedUpClick = (e, request) => {
+    e.stopPropagation();
+    // Если еще не забрали и оплата не закрыта — открываем окно с предложением оформить долг / оплату
+    if (!request.packedUp && request.paymentStatus !== "paid") {
+      setSelectedPaymentService(request);
+      setPaymentDefaultAction("debt");
+      setPaymentModalOpen(true);
+    } else {
+      // Иначе просто переключаем
+      handlePackedUp(request._id, request.userId, request.packedUp);
+    }
+  };
+
+  const handleQuickPay = async (e, request) => {
+    e.stopPropagation();
+    const cost = Number(request.cost) || 0;
+    if (!window.confirm(`Buyurtma #${request.orderNumber} uchun to'lov to'liq (${cost.toLocaleString("ru-RU")} so'm) qabul qilindimi?`)) {
+      return;
+    }
+    try {
+      await api.put(`/services/${request._id}/payment?userId=${request.userId}`, {
+        paymentStatus: "paid",
+        paidAmount: cost,
+      });
+      fetchServiceRequests();
+    } catch (err) {
+      alert("Xatolik: " + (err.response?.data?.message || err.message));
+    }
+  };
+
   const handleEditService = async (serviceId, userId, updates) => {
     try {
-      const response = await api.patch(`/services/${serviceId}?userId=${userId}`, updates);
+      await api.patch(`/services/${serviceId}?userId=${userId}`, updates);
       fetchServiceRequests(); // Обновляем список сервисов
       setEditingService(null); // Закрываем модальное окно
     } catch (error) {
@@ -135,8 +175,8 @@ const ServicesContent = React.memo(({
 
   // Def -----------------------------------------------
 
-  const {hash} = useLocation()
-  const navigate = useNavigate()
+  const { hash } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!filteredServiceRequests || filteredServiceRequests.length === 0) return;
@@ -145,11 +185,50 @@ const ServicesContent = React.memo(({
       const elementId = hash.replace("#", "");
       const el = document.getElementById(elementId);
       if (el) {
-        el.scrollIntoView({behavior: "smooth", block: "center"});
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
   }, [filteredServiceRequests, hash]);
 
+  // Statistics for debts
+  const debtStats = useMemo(() => {
+    const list = filteredServiceRequests || [];
+    const debts = list.filter((r) => r.paymentStatus === "debt");
+    const totalSum = debts.reduce((sum, r) => {
+      const cost = Number(r.cost) || 0;
+      const paid = Number(r.paidAmount) || 0;
+      return sum + Math.max(0, cost - paid);
+    }, 0);
+    const now = new Date();
+    const overdueCount = debts.filter(
+      (r) => r.debtDueDate && new Date(r.debtDueDate) < now
+    ).length;
+
+    return {
+      count: debts.length,
+      totalSum,
+      overdueCount,
+    };
+  }, [filteredServiceRequests]);
+
+  // Filter requests by paymentStatus as well
+  const displayedRequests = useMemo(() => {
+    let list = filteredServiceRequests || [];
+    const now = new Date();
+
+    if (paymentFilter === "debt") {
+      list = list.filter((r) => r.paymentStatus === "debt");
+    } else if (paymentFilter === "overdue") {
+      list = list.filter((r) => r.paymentStatus === "debt" && r.debtDueDate && new Date(r.debtDueDate) < now);
+    } else if (paymentFilter === "paid") {
+      list = list.filter((r) => r.paymentStatus === "paid");
+    } else if (paymentFilter === "partial") {
+      list = list.filter((r) => r.paymentStatus === "partial");
+    } else if (paymentFilter === "unpaid") {
+      list = list.filter((r) => !r.paymentStatus || r.paymentStatus === "unpaid");
+    }
+    return list;
+  }, [filteredServiceRequests, paymentFilter]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
@@ -171,21 +250,32 @@ const ServicesContent = React.memo(({
                 placeholder="So‘rovlarni qidiring..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={() => setStatusFilter('all')}
-                onBlur={() => setStatusFilter('all')}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full text-sm"
               />
             </div>
+            {/* Ta'mirlash holati filter */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto flex items-center"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto flex items-center text-sm font-medium"
             >
               <option value="all">Barcha holatlar</option>
               <option value="pending">Kutilmoqda</option>
               <option value="in-progress">Jarayonda</option>
               <option value="completed">Bajarildi</option>
               <option value="unrepairable">Tamirlab Bolmaydi</option>
+            </select>
+            {/* To'lov holati filter */}
+            <select
+              value={paymentFilter}
+              onChange={(e) => setPaymentFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full md:w-auto flex items-center text-sm font-medium"
+            >
+              <option value="all">Barcha to‘lovlar</option>
+              <option value="debt">🔴 Nasiyalar (Qarzdorlar)</option>
+              <option value="overdue">⚠️ Muddati o‘tgan qarzlar</option>
+              <option value="paid">✅ To‘langan</option>
+              <option value="unpaid">⏳ To‘lanmagan</option>
             </select>
             <SortOrderSelect
               sortOrder={sortOrder}
@@ -200,6 +290,30 @@ const ServicesContent = React.memo(({
             </button>
           </div>
         </div>
+
+        {/* Qarzdorlik umumiy hisoblagichi */}
+        {debtStats.count > 0 && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl flex flex-wrap items-center justify-between gap-3 text-sm animate-fade-in">
+            <div className="flex items-center gap-2 text-red-900 font-medium">
+              <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
+              <span>
+                Qarzdorlikdagi buyurtmalar: <strong className="text-red-950 font-bold">{debtStats.count} ta</strong>
+                {" • "}Jami qarz summasi: <strong className="text-red-950 font-bold">{debtStats.totalSum.toLocaleString("ru-RU")} so‘m</strong>
+                {debtStats.overdueCount > 0 && (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 bg-red-600 text-white text-xs rounded-full font-bold">
+                    {debtStats.overdueCount} ta muddati o‘tgan!
+                  </span>
+                )}
+              </span>
+            </div>
+            <button
+              onClick={() => setPaymentFilter(paymentFilter === "debt" ? "all" : "debt")}
+              className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
+            >
+              {paymentFilter === "debt" ? "Barcha to‘lovlarni ko‘rish" : "Faqat qarzdorlarni ko‘rish"}
+            </button>
+          </div>
+        )}
       </div>
 
       {loading.services ? (
@@ -207,8 +321,13 @@ const ServicesContent = React.memo(({
       ) : (
         <div className="p-6">
           <div className="space-y-6">
-            {getSortedRequests(filteredServiceRequests, sortOrder).map((request) => {
-              const expanded = expandedId === request._id;
+            {getSortedRequests(displayedRequests, sortOrder).map((request) => {
+              const isExpanded = expandedId === request._id || (expandedId === null && hash === `#${request.orderNumber}`);
+              const totalCost = Number(request.cost) || 0;
+              const paidAmount = Number(request.paidAmount) || 0;
+              const debtRemain = Math.max(0, totalCost - paidAmount);
+              const isOverdue = request.paymentStatus === "debt" && request.debtDueDate && new Date(request.debtDueDate) < new Date();
+
               // Цвет фона карточки в зависимости от статуса
               let cardBg = '';
               switch (request.status) {
@@ -227,49 +346,149 @@ const ServicesContent = React.memo(({
                 default:
                   cardBg = 'bg-gray-50 border-gray-200';
               }
+
+              // Если долг просрочен, подсвечиваем рамку
+              if (isOverdue) {
+                cardBg += ' ring-2 ring-red-500/80';
+              }
+
               return (
                 <div
                   id={request.orderNumber}
                   key={request._id}
-                  className={`relative border rounded-lg p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${expanded ? 'shadow-lg' : ''}`}
+                  className={`relative border rounded-lg p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${isExpanded ? 'shadow-lg' : ''}`}
                   onClick={() => {
-                    setExpandedId(expanded ? null : request._id);
-                    navigate({
-                      hash: `${request.orderNumber}`,
-                    });
+                    if (isExpanded) {
+                      setExpandedId("");
+                      navigate({ hash: "" }, { replace: true });
+                    } else {
+                      setExpandedId(request._id);
+                      navigate({ hash: `${request.orderNumber}` }, { replace: true });
+                    }
                   }}
                 >
-                  <div className="flex  flex-col items-start justify-between mb-4">
-                    <span className="inline-flex items-center px-2 py-1 rounded bg-blue-50 text-blue-700 font-semibold">
-                        {request.orderNumber}
-                    </span>
-                    <div className={"flex items-center gap-2"}>
-
-                      <h3 className="text-lg font-semibold text-gray-900 flex flex-wrap max-sm:gap-2 items-center">
-                        <span className="">{request.deviceType}</span>
-                        <span className="text-gray-500 text-sm">({request.deviceModel})</span>
-                      </h3>
-
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center px-2 py-1 rounded bg-blue-100 text-blue-800 font-bold text-sm">
+                          #{request.orderNumber}
+                        </span>
+                        <h3 className="text-lg font-semibold text-gray-900 flex flex-wrap items-center gap-1.5">
+                          <span>{request.deviceModel}</span>
+                          <span className="text-gray-500 text-sm font-normal">({request.deviceType})</span>
+                        </h3>
+                      </div>
+                      <span className="flex items-center gap-1 text-blue-700 font-bold text-sm">
+                        <span>{request.userName}</span>
+                      </span>
                     </div>
 
-                    <span className=" flex items-center gap-1 text-blue-700 font-bold">
-                      <span className="font-bold ">{request.userName}</span>
-                    </span>
+                    {/* Quick Badges in Header */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {/* Status badge */}
+                      <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${getStatusBadge(request.status)}`}>
+                        {request.status === 'pending' ? 'Kutilmoqda' :
+                         request.status === 'in-progress' ? 'Jarayonda' :
+                         request.status === 'completed' ? 'Bajarildi' : 'Tamirlab Bo\'lmaydi'}
+                      </span>
+
+                      {/* Payment badge */}
+                      {request.paymentStatus === 'paid' && (
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPaymentService(request);
+                            setPaymentDefaultAction('normal');
+                            setPaymentModalOpen(true);
+                          }}
+                          title="To'lov holatini ko'rish"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-300 hover:scale-105 transition-transform"
+                        >
+                          <Check className="w-3.5 h-3.5 text-green-700" />
+                          To‘langan
+                        </span>
+                      )}
+
+                      {request.paymentStatus === 'debt' && (
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPaymentService(request);
+                            setPaymentDefaultAction('debt');
+                            setPaymentModalOpen(true);
+                          }}
+                          title="Qarz ma'lumotlarini ko'rish / to'lash"
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-transform hover:scale-105 ${
+                            isOverdue
+                              ? "bg-red-600 text-white shadow-sm"
+                              : "bg-red-100 text-red-800 border border-red-300"
+                          }`}
+                        >
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          Nasiya: {debtRemain.toLocaleString("ru-RU")} so‘m
+                          {request.debtDueDate && (
+                            <span className="opacity-90 font-normal">
+                              ({isOverdue ? "Muddati o‘tgan!" : new Date(request.debtDueDate).toLocaleDateString("ru-RU")})
+                            </span>
+                          )}
+                        </span>
+                      )}
+
+                      {request.paymentStatus === 'partial' && (
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPaymentService(request);
+                            setPaymentDefaultAction('normal');
+                            setPaymentModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800 border border-yellow-300 hover:scale-105 transition-transform"
+                        >
+                          <Clock className="w-3.5 h-3.5 text-yellow-700" />
+                          Qisman: {paidAmount.toLocaleString("ru-RU")} so‘m
+                        </span>
+                      )}
+
+                      {(!request.paymentStatus || request.paymentStatus === 'unpaid') && (
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPaymentService(request);
+                            setPaymentDefaultAction('normal');
+                            setPaymentModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300 hover:scale-105 transition-transform"
+                        >
+                          <Clock className="w-3.5 h-3.5 text-gray-500" />
+                          To‘lanmagan
+                        </span>
+                      )}
+
+                      {/* Picked up badge */}
+                      {request.packedUp && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                          <Check className="w-3.5 h-3.5 text-blue-600" />
+                          Olib ketilgan
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  {(hash === `#${request.orderNumber}` || expanded) && (
+
+                  {isExpanded && (
                     <div className="animate-fade-in">
                       <div className={"gap-2 flex flex-wrap"}>
                         {request?.images?.map((image, index) => (
                           <div
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setShowFileSwiper(true);
-                              setSwiperData(request.images)
+                              setSwiperData(request.images);
                             }}
                             key={index}
-                            className={"h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90"}
+                            className={"h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90 border border-gray-200"}
                           >
                             <img
-                              className={"object-cover w-full  h-full"}
+                              className={"object-cover w-full h-full"}
                               loading={"lazy"}
                               src={`${import.meta.env.VITE_STATIC_BASE_URL}${image}`}
                               alt="device image"
@@ -278,61 +497,97 @@ const ServicesContent = React.memo(({
                         ))}
                         {request?.videos?.map((video, index) => (
                           <div
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setShowFileSwiper(true);
-                              setSwiperData(request.videos)
+                              setSwiperData(request.videos);
                             }}
                             key={index}
-                            className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90"
+                            className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-75 active:opacity-90 border border-gray-200"
                           >
-                            <video
-                              className="w-full h-full object-cover"
-                              muted
-                              // loop
-                              // controls
-                            >
+                            <video className="w-full h-full object-cover" muted>
                               <source
                                 src={`${import.meta.env.VITE_STATIC_BASE_URL}${video}`}
                                 type="video/mp4"
                               />
-                              Your browser does not support the video tag.
                             </video>
                           </div>
                         ))}
                         {!request?.images?.length && !request?.videos?.length && (
                           <p className="text-sm text-gray-500 italic">Rasm yoki video mavjud emas.</p>
                         )}
-
                       </div>
+
                       <div className={"max-md:hidden absolute right-1 top-1"}>
                         <CreaterQRCode link={`https://applepark.uz/admin/services#${request.orderNumber}`} />
                       </div>
                       <br />
-                      <p className="text-gray-600 text-sm flex items-center">
-                        <AlertCircle className="h-4 w-4 mr-1 text-red-500" />
+
+                      <p className="text-gray-600 text-sm flex items-center mb-1">
+                        <AlertCircle className="h-4 w-4 mr-1 text-red-500 flex-shrink-0" />
                         <span className="font-bold">Muammo:</span>&nbsp;
                         <span className="font-bold text-gray-900">{request.issueDescription}</span>
                       </p>
-                      <p className="text-gray-600 text-sm flex items-center">
-                        <Hash className="h-4 w-4 mr-1 text-purple-500" />
+                      <p className="text-gray-600 text-sm flex items-center mb-1">
+                        <Hash className="h-4 w-4 mr-1 text-purple-500 flex-shrink-0" />
                         <span className="font-bold">IMEI:</span>&nbsp;
-                        <span className="font-bold inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900 break-all">{request.imei}</span>
+                        <span className="font-bold inline-block bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-mono break-all">{request.imei || "Yo'q"}</span>
                       </p>
-                      <p className="text-gray-600 text-sm flex items-center">
-                        <Info className="h-4 w-4 mr-1 text-cyan-500" />
-                        <span className="font-bold break-all ">Qo'shimcha ma'lumotlar:</span>&nbsp;
-                        <span className="font-bold break-all inline-block bg-gray-200 text-gray-600 rounded px-2 py-0.5 text-xs font-mono text-gray-900">{request.additionalInfo}</span>
+                      <p className="text-gray-600 text-sm flex items-center mb-1">
+                        <Info className="h-4 w-4 mr-1 text-cyan-500 flex-shrink-0" />
+                        <span className="font-bold break-all">Qo'shimcha ma'lumotlar:</span>&nbsp;
+                        <span className="font-bold break-all inline-block bg-gray-200 text-gray-700 rounded px-2 py-0.5 text-xs font-mono">{request.additionalInfo || "Yo'q"}</span>
                       </p>
-                      <p className="text-gray-600 text-sm flex items-center">
-                        <UserCog className="h-4 w-4 mr-1 text-orange-500" />
+                      <p className="text-gray-600 text-sm flex items-center mb-1">
+                        <UserCog className="h-4 w-4 mr-1 text-orange-500 flex-shrink-0" />
                         <span className="font-bold">Javobgar:</span>&nbsp;
-                        <span className="font-bold text-gray-900">{request.masterName} </span>
+                        <span className="font-bold text-gray-900">{request.masterName || "Belgilanmagan"}</span>
                       </p>
-                      <p className="text-gray-600 text-sm flex items-center">
-                        <DollarSign className="h-4 w-4 mr-1 text-green-600" />
-                        <span className="font-bold">Narx:</span>&nbsp;
-                        <span className="font-bold text-gray-900">{request.cost} so'm {request.costOr && `- ${request.costOr} so'm`}</span>
+                      <p className="text-gray-600 text-sm flex items-center mb-1">
+                        <DollarSign className="h-4 w-4 mr-1 text-green-600 flex-shrink-0" />
+                        <span className="font-bold">Xizmat narxi:</span>&nbsp;
+                        <span className="font-bold text-gray-900">
+                          {totalCost ? `${totalCost.toLocaleString("ru-RU")} so'm` : "Ko'rsatilmagan"}
+                          {request.costOr ? ` yoki ${Number(request.costOr).toLocaleString("ru-RU")} so'm` : ""}
+                        </span>
                       </p>
+
+                      {request.paymentStatus === "debt" && (
+                        <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 my-2 bg-red-50/90 border border-red-200 rounded-lg text-sm">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                            <span className="text-red-700">Qarz: <strong className="font-bold text-red-950">{debtRemain.toLocaleString("ru-RU")} so‘m</strong></span>
+                            {request.debtDueDate && (
+                              <span className="text-xs text-red-600 font-medium">
+                                ({new Date(request.debtDueDate).toLocaleDateString("ru-RU")} gacha)
+                              </span>
+                            )}
+                            {paidAmount > 0 && (
+                              <span className="text-xs text-gray-500">
+                                • Avans: {paidAmount.toLocaleString("ru-RU")} so‘m
+                              </span>
+                            )}
+                            {request.paymentComment && (
+                              <span className="text-xs text-gray-500 italic">
+                                • "{request.paymentComment}"
+                              </span>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedPaymentService(request);
+                              setPaymentDefaultAction('debt');
+                              setPaymentModalOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-semibold shadow-xs transition-colors"
+                          >
+                            <Edit className="w-3.5 h-3.5" /> Qarzni o‘zgartirish
+                          </button>
+                        </div>
+                      )}
+
                       <div className="max-sm:order-3 flex items-center space-x-2 my-4">
                         <select
                           value={request.status}
@@ -346,6 +601,7 @@ const ServicesContent = React.memo(({
                           <option value="unrepairable">Tamirlab Bolmaydi</option>
                         </select>
                       </div>
+
                       <div className="max-sm:order-2 grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
@@ -362,6 +618,7 @@ const ServicesContent = React.memo(({
                           </div>
                         </div>
                       </div>
+
                       <div className="flex flex-wrap gap-3.5 items-center space-x-3">
                         <button
                           onClick={e => {
@@ -376,13 +633,12 @@ const ServicesContent = React.memo(({
                         </button>
                         <button
                           onClick={e => {
+                            e.stopPropagation();
                             setShowUploadModal(true);
-                            setUploadData(
-                              {
-                                userId: request.userId,
-                                deviceId: request._id
-                              }
-                            )
+                            setUploadData({
+                              userId: request.userId,
+                              deviceId: request._id
+                            });
                           }}
                           className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-500"
                         >
@@ -391,7 +647,7 @@ const ServicesContent = React.memo(({
                         <button
                           onClick={e => {
                             e.stopPropagation();
-                            window.open(`tel:${request.phone}`)
+                            window.open(`tel:${request.phone}`);
                           }}
                           className="px-4 py-2 border items-center active:scale-103 active:opacity-75 flex gap-2 border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
                         >
@@ -401,31 +657,38 @@ const ServicesContent = React.memo(({
                         <button
                           onClick={() => {
                             setShowPrintModal(true);
-                            setPrintData(request)
+                            setPrintData(request);
                           }}
-                          className="px-4 py-2 flex gap-2 items-center  active:scale-103 active:opacity-75 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
+                          className="px-4 py-2 flex gap-2 items-center active:scale-103 active:opacity-75 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700"
                         >
                           <Printer className="h-4 w-4" /> Chop etish
                         </button>
+
+                        {/* Погасить долг (показывается только когда техника отдана и висит долг) */}
+                        {request.paymentStatus === "debt" && (
+                          <button
+                            onClick={e => handleQuickPay(e, request)}
+                            className="px-4 py-2 items-center active:scale-103 active:opacity-75 flex gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg shadow-sm"
+                          >
+                            <Check className="h-4 w-4" /> Qarzni yopish
+                          </button>
+                        )}
+                        {/* Кнопка "Olib ketilgan" (если не оплачено - открывает окно оформления долга/оплаты) */}
                         <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            handlePackedUp(request._id, request.userId, request.packedUp)
-                          }}
-                          className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600" : " "} px-4 active:scale-103 active:opacity-75 hover:opacity-75 flex gap-2 py-2 border-gray-300 border  text-gray-700 text-sm font-medium rounded-lg`}
+                          onClick={e => handlePackedUpClick(e, request)}
+                          className={`${request.packedUp ? "bg-blue-600/50 border-1 border-blue-600 text-white" : "text-gray-700"} px-4 active:scale-103 active:opacity-75 hover:opacity-75 flex gap-2 py-2 border-gray-300 border text-sm font-medium rounded-lg`}
                         >
                           <img
                             className={"w-5"}
                             src={pickedUp}
                             alt="taked away"
-                            width=""
-                            height=""
                             loading="lazy"
                           />
                           Olib Ketilgan
                           {request.packedUp &&
                             <Check className="w-4 h-4 text-green-600" />}
                         </button>
+
                         <button
                           className="p-2 text-yellow-600 border hover:opacity-75 active:opacity-90 active:scale-103 hover:bg-red-50 rounded-lg"
                           onClick={e => {
@@ -438,7 +701,7 @@ const ServicesContent = React.memo(({
                         <button
                           onClick={e => {
                             e.stopPropagation();
-                            deleteServiceRequest(request._id, request.userId)
+                            deleteServiceRequest(request._id, request.userId);
                           }}
                           className="p-2 text-red-600 border hover:opacity-75 active:opacity-90 hover:bg-red-50 rounded-lg"
                         >
@@ -458,8 +721,8 @@ const ServicesContent = React.memo(({
             />
           )}
         </div>
-
       )}
+
       {editingService && (
         <EditServiceModal
           isOpen={Boolean(editingService)}
@@ -469,6 +732,24 @@ const ServicesContent = React.memo(({
           onSave={handleEditService}
         />
       )}
+
+      {/* MODAL NASIYA VA TO'LOV */}
+      {paymentModalOpen && selectedPaymentService && (
+        <PaymentModal
+          isOpen={paymentModalOpen}
+          onClose={() => {
+            setPaymentModalOpen(false);
+            setSelectedPaymentService(null);
+          }}
+          service={selectedPaymentService}
+          userId={selectedPaymentService.userId}
+          defaultAction={paymentDefaultAction}
+          onSuccess={() => {
+            fetchServiceRequests();
+          }}
+        />
+      )}
+
       {showUploadModal && (
         <UploadModal
           isOpen={showUploadModal}
@@ -477,21 +758,27 @@ const ServicesContent = React.memo(({
           refresh={fetchServiceRequests}
         />
       )}
-      {
-        showFileSwiper && (
-          <div className={"device-swiper fixed inset-0 z-90"}>
-            <DeviceFilesSwiper
-              isOpen={showFileSwiper}
-              onClose={() => setShowFileSwiper(false)}
-              data={swiperData}
-              setData={setSwiperData}
-            />
-          </div>
-        )
-      }
-    <PrintModal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} data={printData}/>
+      {showFileSwiper && (
+        <div className={"device-swiper fixed inset-0 z-90"}>
+          <DeviceFilesSwiper
+            isOpen={showFileSwiper}
+            onClose={() => setShowFileSwiper(false)}
+            data={swiperData}
+            setData={setSwiperData}
+          />
+        </div>
+      )}
+      <PrintModal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} data={printData} />
 
-
+      {/* Fixed '+' button bottom-left for adding service */}
+      <button
+        type="button"
+        onClick={() => setShowAddServiceModal(true)}
+        title="Yangi xizmat qo'shish"
+        className="fixed bottom-6 left-6 lg:left-72 z-40 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all group hover:ring-4 hover:ring-blue-300/50"
+      >
+        <Plus className="w-7 h-7 transition-transform group-hover:rotate-90 duration-200" />
+      </button>
     </div>
   );
 });

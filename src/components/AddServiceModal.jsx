@@ -66,7 +66,7 @@ const appleDeviceModels = [
 ];
 
 
-export default function AddServiceModal({isOpen, onClose, showNotification}) {
+export default function AddServiceModal({isOpen, onClose, showNotification, onSuccess}) {
   const [localStorageUser, setLocalStorageUser] = useState(null)
   const [userName, setUserName] = useState("");
   const [userPhone, setUserPhone] = useState(null)
