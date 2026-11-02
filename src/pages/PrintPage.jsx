@@ -8,13 +8,17 @@ export default function PrintPage() {
   const [printConf, setPrintConf] = useState(null);
 
   useEffect(() => {
-    const conf = JSON.parse(localStorage.getItem("printConf")) || {
+    const raw = localStorage.getItem("printConf");
+    const conf = raw ? JSON.parse(raw) : {
       visibleFields: {},
       width: 60,
       height: 40,
       rotation: 0,
       fontSize: 12
     };
+    if (conf.visibleFields && conf.visibleFields.issueDescription === undefined) {
+      conf.visibleFields.issueDescription = true;
+    }
     setPrintConf(conf);
 
     // Create dynamic print styles

@@ -70,6 +70,10 @@ const PrintableCard = React.forwardRef(({
           <p>Telefon: <b>{request.phone}</b></p>
         )}
 
+        {visibleFields.issueDescription && (
+          <p>Muammo: <b>{request.issueDescription || "N/A"}</b></p>
+        )}
+
         {visibleFields.additionalInfo && (
           <p>Qoshimcha Ma'l: <b>{request.additionalInfo}</b></p>
         )}
