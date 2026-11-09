@@ -142,22 +142,20 @@ const UsersContent = React.memo(({
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-3">
                         <button
                           onClick={() => setEditingUser(user)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 rounded-lg active:scale-95 transition-all"
+                          className="text-blue-600 hover:text-blue-900 transition-colors p-1 rounded hover:bg-blue-50"
                           title="Tahrirlash"
                         >
-                          <Edit className="h-3.5 w-3.5" />
-                          <span>Tahrirlash</span>
+                          <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => deleteUser(user._id || user.id)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/80 rounded-lg active:scale-95 transition-all"
+                          className="text-red-600 hover:text-red-900 transition-colors p-1 rounded hover:bg-red-50"
                           title="O‘chirish"
                         >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>O‘chirish</span>
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </td>

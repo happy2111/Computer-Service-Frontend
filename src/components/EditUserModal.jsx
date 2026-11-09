@@ -1,19 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api/simpleApi.js";
-import {
-  X,
-  User,
-  Mail,
-  Phone,
-  Shield,
-  Briefcase,
-  Lock,
-  Eye,
-  EyeOff,
-  Loader2,
-  CheckCircle2,
-  AlertCircle
-} from "lucide-react";
+import { X, Eye, EyeOff } from "lucide-react";
 
 export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) {
   const [form, setForm] = useState({
@@ -70,7 +57,6 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
     setError("");
     setSuccess("");
 
-    // Client-side validations
     if (!form.name.trim()) {
       setError("Ismni kiritish majburiy");
       return;
@@ -127,243 +113,153 @@ export default function EditUserModal({ isOpen, onClose, user, onUserUpdated }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-3 py-3">
       <div
-        className="fixed inset-0 bg-neutral-900/60 backdrop-blur-xs transition-opacity"
-        onClick={loading ? undefined : onClose}
-      />
+        className="bg-white z-20 rounded-lg shadow-lg p-4 sm:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        style={{ boxSizing: "border-box" }}
+      >
+        <button
+          className="bg-red-400 duration-100 hover:bg-red-500 active:bg-red-500 text-white font-bold p-2 my-3 rounded"
+          onClick={onClose}
+          type="button"
+        >
+          <X className="w-5 h-5 " />
+        </button>
 
-      {/* Modal Dialog Card */}
-      <div className="relative z-10 bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] flex flex-col border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/70">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-semibold text-base shadow-xs">
-              {user.avatar && !user.avatar.endsWith("empty-profile.jpg") ? (
-                <img
-                  src={`https://api.applepark.uz${user.avatar}`}
-                  alt=""
-                  className="w-10 h-10 rounded-xl object-cover"
-                />
-              ) : (
-                (user.name?.charAt(0) || "U").toUpperCase()
-              )}
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 leading-tight">
-                Foydalanuvchini tahrirlash
-              </h3>
-              <p className="text-xs text-gray-500">
-                {user.email || user.phone || "Foydalanuvchi ma'lumotlari"}
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-lg transition-colors focus:outline-none"
-            title="Yopish"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-          {/* Notification Banners */}
-          {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl">
-              <AlertCircle className="w-5 h-5 shrink-0 text-red-500" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {success && (
-            <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-xl">
-              <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
-              <span>{success}</span>
-            </div>
-          )}
-
-          {/* Name Field */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1.5">
-              Ism va familiya <span className="text-red-500">*</span>
+            <label className="block text-neutral-900 text-sm font-bold mb-1">
+              Ism va familiya
             </label>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                <User className="w-4 h-4" />
-              </span>
+            <input
+              type="text"
+              name="name"
+              className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Ism va familiya"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-neutral-900 text-sm font-bold mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="user@applepark.uz"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-neutral-900 text-sm font-bold mb-1">
+                Telefon raqami
+              </label>
               <input
                 type="text"
-                name="name"
-                value={form.name}
+                name="phone"
+                className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={form.phone}
                 onChange={handleChange}
-                placeholder="Masalan: Jamshid Karimov"
-                required
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                placeholder="+998901234567"
               />
             </div>
           </div>
 
-          {/* Email & Phone Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1.5">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Mail className="w-4 h-4" />
-                </span>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="user@applepark.uz"
-                  required
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1.5">
-                Telefon raqami
-              </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Phone className="w-4 h-4" />
-                </span>
-                <input
-                  type="text"
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  placeholder="+998901234567"
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Role & Position Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1.5">
+              <label className="block text-neutral-900 text-sm font-bold mb-1">
                 Roli
               </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                  <Shield className="w-4 h-4" />
-                </span>
-                <select
-                  name="role"
-                  value={form.role}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all cursor-pointer"
-                >
-                  <option value="client">Mijoz (Client)</option>
-                  <option value="master">Javobgar shaxs (Master)</option>
-                  <option value="admin">Administrator (Admin)</option>
-                  <option value="personal">Shaxsiy (Personal)</option>
-                  <option value="user">Foydalanuvchi (User)</option>
-                </select>
-              </div>
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+              >
+                <option value="client">Mijoz</option>
+                <option value="master">Javobgar shaxs</option>
+                <option value="admin">Admin</option>
+                <option value="personal">Shaxsiy</option>
+                <option value="user">Foydalanuvchi</option>
+              </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1.5">
-                Lavozim
+              <label className="block text-neutral-900 text-sm font-bold mb-1">
+                Lavozimi
               </label>
-              <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Briefcase className="w-4 h-4" />
-                </span>
-                <input
-                  type="text"
-                  name="position"
-                  value={form.position}
-                  onChange={handleChange}
-                  placeholder="Masalan: Katta usta"
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50/50 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                />
-              </div>
+              <input
+                type="text"
+                name="position"
+                className="w-full border border-blue-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={form.position}
+                onChange={handleChange}
+                placeholder="Lavozimi"
+              />
             </div>
           </div>
 
-          {/* Password Section with Eye Toggle */}
-          <div className="pt-2">
-            <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-2xl space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2 text-blue-900 font-semibold text-xs uppercase tracking-wider">
-                  <Lock className="w-4 h-4 text-blue-600" />
-                  <span>Parolni yangilash</span>
-                </div>
-                <span className="text-[11px] text-blue-500 font-medium">Ixtiyoriy</span>
-              </div>
-
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  placeholder="Yangi parol (kamida 6 ta belgi)"
-                  autoComplete="new-password"
-                  className="w-full pl-4 pr-11 py-2.5 bg-white border border-blue-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                />
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-100/50 transition-colors focus:outline-none"
-                  title={showPassword ? "Parolni yashirish" : "Parolni ko'rsatish"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-blue-600" />
-                  ) : (
-                    <Eye className="w-4 h-4 text-gray-500" />
-                  )}
-                </button>
-              </div>
-
-              <p className="text-[11px] text-gray-500 leading-relaxed">
-                Agar parolni o'zgartirmoqchi bo'lmasangiz, bu maydonni bo'sh qoldiring.
-              </p>
+          <div>
+            <label className="block text-neutral-900 text-sm font-bold mb-1">
+              Yangi parol
+            </label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="w-full border border-blue-300 px-3 py-2 rounded pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Yangi parol (bo'sh qoldirilsa o'zgarmaydi)"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-600 focus:outline-none"
+                title={showPassword ? "Parolni yashirish" : "Parolni ko'rsatish"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
 
-          {/* Footer Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-gray-100">
+          {error && <div className="text-red-600 text-sm font-medium">{error}</div>}
+          {success && <div className="text-green-600 text-sm font-medium">{success}</div>}
+
+          <div className="flex justify-end space-x-2 mt-6">
             <button
-              type="button"
+              className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded"
               onClick={onClose}
+              type="button"
               disabled={loading}
-              className="px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 rounded-xl transition-all disabled:opacity-50"
             >
-              Bekor qilish
+              Yopish
             </button>
             <button
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-95 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Saqlanmoqda...</span>
-                </>
-              ) : (
-                <span>Saqlash</span>
-              )}
+              {loading ? "Saqlanmoqda..." : "Saqlash"}
             </button>
           </div>
         </form>
       </div>
+
+      <div
+        className="absolute inset-0 z-10 bg-neutral-700/70"
+        onClick={onClose}
+      ></div>
     </div>
   );
 }
