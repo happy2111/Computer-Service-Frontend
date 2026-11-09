@@ -396,7 +396,7 @@ const ServicesContent = React.memo(({
                 <div
                   id={request.orderNumber}
                   key={request._id}
-                  className={`relative border rounded-xl p-3 sm:p-5 md:p-6 hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg} ${isExpanded ? 'shadow-lg' : ''}`}
+                  className={`relative border rounded-xl p-3 sm:p-5 ${isExpanded ? 'md:p-5 shadow-lg' : 'md:py-2.5 md:px-4'} hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg}`}
                   onClick={() => {
                     if (isExpanded) {
                       setExpandedId("");
@@ -407,24 +407,25 @@ const ServicesContent = React.memo(({
                     }
                   }}
                 >
-                  <div className={`flex flex-col md:flex-row md:items-center justify-between gap-3 transition-all duration-300 ${isExpanded ? 'mb-4' : 'mb-0'}`}>
-                    <div className="flex flex-col items-start gap-1">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center px-2 py-1 rounded bg-blue-100 text-blue-800 font-bold text-sm">
+                  <div className={`flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-3 transition-all duration-300 ${isExpanded ? 'mb-4' : 'mb-0'}`}>
+                    <div className="flex flex-col md:flex-row md:items-center items-start gap-1 md:gap-2.5 min-w-0">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs md:text-xs shrink-0">
                           #{request.orderNumber}
                         </span>
-                        <h3 className="text-lg font-semibold text-gray-900 flex flex-wrap items-center gap-1.5">
+                        <h3 className="text-base md:text-sm font-semibold text-gray-900 flex items-center gap-1.5">
                           <span>{request.deviceModel}</span>
-                          <span className="text-gray-500 text-sm font-normal">({request.deviceType})</span>
+                          <span className="text-gray-500 text-xs font-normal">({request.deviceType})</span>
                         </h3>
                       </div>
-                      <span className="flex items-center gap-1 text-blue-700 font-bold text-sm">
+                      <span className="hidden md:inline text-gray-300">•</span>
+                      <span className="flex items-center gap-1 text-blue-700 font-semibold text-sm md:text-xs">
                         <span>{request.userName}</span>
                       </span>
                     </div>
 
                     {/* Quick Badges in Header */}
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap md:flex-nowrap items-center gap-1.5 md:gap-2 shrink-0">
                       {/* Status badge */}
                       <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${getStatusBadge(request.status)}`}>
                         {request.status === 'pending' ? 'Kutilmoqda' :
