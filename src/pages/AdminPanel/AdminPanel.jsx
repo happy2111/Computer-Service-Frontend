@@ -140,7 +140,7 @@ const AdminPanel = () => {
     if (!window.confirm('Вы уверены, что хотите удалить этого пользователя?')) return;
     try {
       await api.delete(`/user/${userId}`);
-      setUsers(users.filter(user => user.id !== userId));
+      setUsers(users.filter(user => (user._id || user.id) !== userId));
       showNotification('Пользователь успешно удален');
     } catch (error) {
       showNotification('Ошибка удаления пользователя', 'error');
