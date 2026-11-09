@@ -20,13 +20,14 @@ import {
   CreditCard,
   Clock,
   ChevronDown,
-  Copy
+  Copy,
+  Users,
+  List
 } from 'lucide-react';
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import PrintableCard from "../../components/PrintableCard";
-import CreaterQRCode from "../../components/CreaterQRCode";
 import SortOrderSelect from "../../components/SortOrderSelect";
 import pickedUp from "../../assets/food-delivery.png";
 import EditServiceModal from "../../components/EditServiceModal";
@@ -66,6 +67,9 @@ const ServicesContent = React.memo(({
   // PAYMENT MODAL & FILTERS --------------------------------
   const [searchParams] = useSearchParams();
   const [paymentFilter, setPaymentFilter] = useState(() => searchParams.get('payment') || 'all');
+  const [masterFilter, setMasterFilter] = useState('all');
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'grouped'
+  const [collapsedMasters, setCollapsedMasters] = useState({});
   const [selectedPaymentService, setSelectedPaymentService] = useState(null);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [paymentDefaultAction, setPaymentDefaultAction] = useState('normal');
@@ -213,10 +217,31 @@ const ServicesContent = React.memo(({
     };
   }, [filteredServiceRequests]);
 
-  // Filter requests by paymentStatus as well
+  // Unique masters list for filter
+  const uniqueMasters = useMemo(() => {
+    const set = new Set();
+    (filteredServiceRequests || []).forEach((r) => {
+      const name = r.masterName ? r.masterName.trim() : "";
+      if (name && name !== "Belgilanmagan" && name !== "Unknown Master") {
+        set.add(name);
+      }
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [filteredServiceRequests]);
+
+  // Filter requests by paymentStatus and masterFilter as well
   const displayedRequests = useMemo(() => {
     let list = filteredServiceRequests || [];
     const now = new Date();
+
+    if (masterFilter === "unassigned") {
+      list = list.filter((r) => {
+        const name = r.masterName ? r.masterName.trim() : "";
+        return !name || name === "Belgilanmagan" || name === "Unknown Master";
+      });
+    } else if (masterFilter !== "all") {
+      list = list.filter((r) => r.masterName && r.masterName.trim() === masterFilter);
+    }
 
     if (paymentFilter === "debt") {
       list = list.filter((r) => r.paymentStatus === "debt");
@@ -230,15 +255,635 @@ const ServicesContent = React.memo(({
       list = list.filter((r) => !r.paymentStatus || r.paymentStatus === "unpaid");
     }
     return list;
-  }, [filteredServiceRequests, paymentFilter]);
+  }, [filteredServiceRequests, masterFilter, paymentFilter]);
+
+  const STATUS_PRIORITY = {
+    "pending": 1,
+    "in-progress": 2,
+    "completed": 3,
+    "unrepairable": 4,
+  };
+
+  const groupedByMaster = useMemo(() => {
+    if (viewMode !== "grouped") return [];
+
+    const map = new Map();
+
+    displayedRequests.forEach((request) => {
+      const rawMaster = request.masterName ? request.masterName.trim() : "";
+      const isUnassigned = !rawMaster || rawMaster === "Belgilanmagan" || rawMaster === "Unknown Master";
+      const masterKey = isUnassigned ? "__unassigned__" : rawMaster;
+      const displayName = isUnassigned ? "Belgilanmagan (Ustasi yo‘q)" : rawMaster;
+
+      if (!map.has(masterKey)) {
+        map.set(masterKey, {
+          key: masterKey,
+          masterName: displayName,
+          isUnassigned,
+          items: [],
+          pendingCount: 0,
+          inProgressCount: 0,
+          completedCount: 0,
+          unrepairableCount: 0,
+        });
+      }
+
+      const grp = map.get(masterKey);
+      grp.items.push(request);
+      if (request.status === "pending") grp.pendingCount++;
+      else if (request.status === "in-progress") grp.inProgressCount++;
+      else if (request.status === "completed") grp.completedCount++;
+      else if (request.status === "unrepairable") grp.unrepairableCount++;
+    });
+
+    const groups = Array.from(map.values());
+
+    // Sort items within each master: status priority (pending -> in-progress -> completed -> unrepairable), then createdAt desc
+    groups.forEach((grp) => {
+      grp.items.sort((a, b) => {
+        const pA = STATUS_PRIORITY[a.status] || 99;
+        const pB = STATUS_PRIORITY[b.status] || 99;
+        if (pA !== pB) return pA - pB;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    });
+
+    // Sort groups: active masters first, unassigned at the bottom
+    groups.sort((a, b) => {
+      if (a.isUnassigned) return 1;
+      if (b.isUnassigned) return -1;
+      const activeA = a.pendingCount + a.inProgressCount;
+      const activeB = b.pendingCount + b.inProgressCount;
+      if (activeB !== activeA) {
+        return activeB - activeA;
+      }
+      return a.masterName.localeCompare(b.masterName);
+    });
+
+    return groups;
+  }, [displayedRequests, viewMode]);
+
+  const toggleMasterCollapse = (masterKey) => {
+    setCollapsedMasters((prev) => ({
+      ...prev,
+      [masterKey]: !prev[masterKey],
+    }));
+  };
+
+  const renderCard = (request) => {
+    const isExpanded = expandedId === request._id || (expandedId === null && hash === `#${request.orderNumber}`);
+    const totalCost = Number(request.cost) || 0;
+    const paidAmount = Number(request.paidAmount) || 0;
+    const debtRemain = Math.max(0, totalCost - paidAmount);
+    const isOverdue = request.paymentStatus === "debt" && request.debtDueDate && new Date(request.debtDueDate) < new Date();
+
+    // Rang tanlash
+    let cardBg = '';
+    switch (request.status) {
+      case 'pending':
+        cardBg = 'bg-yellow-50 border-yellow-200';
+        break;
+      case 'in-progress':
+        cardBg = 'bg-blue-50 border-blue-200';
+        break;
+      case 'completed':
+        cardBg = 'bg-green-50 border-green-200';
+        break;
+      case 'unrepairable':
+        cardBg = 'bg-red-50 border-red-200';
+        break;
+      default:
+        cardBg = 'bg-gray-50 border-gray-200';
+    }
+
+    if (isOverdue) {
+      cardBg += ' ring-2 ring-red-500/80';
+    }
+
+    return (
+      <div
+        id={request.orderNumber}
+        key={request._id}
+        className={`relative border rounded-xl p-3 sm:p-5 ${isExpanded ? 'md:p-5 shadow-lg' : 'md:py-2.5 md:px-4'} hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg}`}
+        onClick={() => {
+          if (isExpanded) {
+            setExpandedId("");
+            navigate({ hash: "" }, { replace: true });
+          } else {
+            setExpandedId(request._id);
+            navigate({ hash: `${request.orderNumber}` }, { replace: true });
+          }
+        }}
+      >
+        <div className={`flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-3 transition-all duration-300 ${isExpanded ? 'mb-4' : 'mb-0'}`}>
+          <div className="flex flex-col md:flex-row md:items-center items-start gap-1 md:gap-2.5 min-w-0">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs md:text-xs shrink-0">
+                #{request.orderNumber}
+              </span>
+              <h3 className="text-base md:text-sm font-semibold text-gray-900 flex items-center gap-1.5">
+                <span>{request.deviceModel}</span>
+                <span className="text-gray-500 text-xs font-normal">({request.deviceType})</span>
+              </h3>
+            </div>
+            <span className="hidden md:inline text-gray-300">•</span>
+            <span className="flex items-center gap-1 text-blue-700 font-semibold text-sm md:text-xs">
+              <span>{request.userName}</span>
+            </span>
+          </div>
+
+          {/* Quick Badges in Header */}
+          <div className="flex flex-wrap md:flex-nowrap items-center gap-1.5 md:gap-2 shrink-0">
+            {/* Status badge */}
+            <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${getStatusBadge(request.status)}`}>
+              {request.status === 'pending' ? 'Kutilmoqda' :
+               request.status === 'in-progress' ? 'Jarayonda' :
+               request.status === 'completed' ? 'Bajarildi' : 'Tamirlab Bo\'lmaydi'}
+            </span>
+
+            {/* Payment badge */}
+            {request.paymentStatus === 'paid' && (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPaymentService(request);
+                  setPaymentDefaultAction('normal');
+                  setPaymentModalOpen(true);
+                }}
+                title="To'lov holatini ko'rish"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-300 hover:scale-105 transition-transform"
+              >
+                <Check className="w-3.5 h-3.5 text-green-700" />
+                To‘langan
+              </span>
+            )}
+
+            {request.paymentStatus === 'debt' && (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPaymentService(request);
+                  setPaymentDefaultAction('debt');
+                  setPaymentModalOpen(true);
+                }}
+                title="Qarz ma'lumotlarini ko'rish / to'lash"
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-transform hover:scale-105 ${
+                  isOverdue
+                    ? "bg-red-600 text-white shadow-sm"
+                    : "bg-red-100 text-red-800 border border-red-300"
+                }`}
+              >
+                <AlertTriangle className="w-3.5 h-3.5" />
+                Nasiya: {debtRemain.toLocaleString("ru-RU")} so‘m
+                {request.debtDueDate && (
+                  <span className="opacity-90 font-normal">
+                    ({isOverdue ? "Muddati o‘tgan!" : new Date(request.debtDueDate).toLocaleDateString("ru-RU")})
+                  </span>
+                )}
+              </span>
+            )}
+
+            {request.paymentStatus === 'partial' && (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPaymentService(request);
+                  setPaymentDefaultAction('normal');
+                  setPaymentModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800 border border-yellow-300 hover:scale-105 transition-transform"
+              >
+                <Clock className="w-3.5 h-3.5 text-yellow-700" />
+                Qisman: {paidAmount.toLocaleString("ru-RU")} so‘m
+              </span>
+            )}
+
+            {(!request.paymentStatus || request.paymentStatus === 'unpaid') && (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedPaymentService(request);
+                  setPaymentDefaultAction('normal');
+                  setPaymentModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300 hover:scale-105 transition-transform"
+              >
+                <Clock className="w-3.5 h-3.5 text-gray-500" />
+                To‘lanmagan
+              </span>
+            )}
+
+            {/* Picked up badge */}
+            {request.packedUp && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                <Check className="w-3.5 h-3.5 text-blue-600" />
+                Olib ketilgan
+              </span>
+            )}
+
+            {/* Smooth Chevron Indicator */}
+            <div className="flex items-center gap-1 ml-auto md:ml-1 pl-1 text-gray-400">
+              <ChevronDown
+                className={`w-5 h-5 transition-transform duration-300 ease-in-out ${
+                  isExpanded ? "rotate-180 text-blue-600" : "text-gray-400 hover:text-gray-600"
+                }`}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Smooth Collapsible Content Container */}
+        <div
+          className={`grid transition-all duration-300 ease-in-out ${
+            isExpanded
+              ? "grid-rows-[1fr] opacity-100"
+              : "grid-rows-[0fr] opacity-0 pointer-events-none"
+          }`}
+        >
+          <div className="overflow-hidden min-h-0">
+            <div className="pt-3 border-t border-gray-200/60">
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                {request?.images?.map((image, index) => (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowFileSwiper(true);
+                      setSwiperData(request.images);
+                    }}
+                    key={`img-${index}`}
+                    className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-85 active:scale-95 border border-gray-200 cursor-pointer shadow-xs"
+                  >
+                    <img
+                      className="object-cover w-full h-full"
+                      loading="lazy"
+                      src={`${import.meta.env.VITE_STATIC_BASE_URL}${image}`}
+                      alt="device image"
+                    />
+                  </div>
+                ))}
+                {request?.videos?.map((video, index) => (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowFileSwiper(true);
+                      setSwiperData(request.videos);
+                    }}
+                    key={`vid-${index}`}
+                    className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-85 active:scale-95 border border-gray-200 cursor-pointer shadow-xs"
+                  >
+                    <video className="w-full h-full object-cover" muted>
+                      <source
+                        src={`${import.meta.env.VITE_STATIC_BASE_URL}${video}`}
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
+                ))}
+
+                {/* Rasm/video yuklash maydoni */}
+                {Boolean(request?.images?.length || request?.videos?.length) ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUploadModal(true);
+                      setUploadData({
+                        userId: request.userId,
+                        deviceId: request._id
+                      });
+                    }}
+                    title="Yana rasm yoki video qo‘shish"
+                    className="h-20 w-20 rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-500 hover:bg-orange-50/50 active:scale-95 flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-all cursor-pointer"
+                  >
+                    <Upload className="w-5 h-5 mb-1 text-orange-500" />
+                    <span className="text-[11px] font-semibold">+ Yuklash</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowUploadModal(true);
+                      setUploadData({
+                        userId: request.userId,
+                        deviceId: request._id
+                      });
+                    }}
+                    className="px-3.5 py-2 rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-500 hover:bg-orange-50/60 active:scale-98 flex items-center gap-2.5 text-gray-600 hover:text-orange-600 transition-all cursor-pointer"
+                  >
+                    <div className="p-1.5 bg-orange-100 rounded-lg text-orange-600">
+                      <Upload className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-semibold text-gray-900 hover:text-orange-600">Rasm yoki video yuklash</p>
+                      <p className="text-[11px] text-gray-400">Hozircha biriktirilmagan</p>
+                    </div>
+                  </button>
+                )}
+              </div>
+
+              {/* Ma'lumotlar ro'yxati (Key-Value) */}
+              <div className="space-y-2.5 my-3 text-sm">
+                {/* 1. Muammo (Stacked Layout - uzun matnlar uchun) */}
+                <div className="bg-gray-50/80 rounded-lg p-2.5 border border-gray-100">
+                  <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mb-1">
+                    <AlertCircle className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                    <span>Muammo ta'rifi:</span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-semibold text-gray-900 pl-5">
+                    {request.issueDescription || "Ko'rsatilmagan"}
+                  </p>
+                </div>
+
+                {/* 2. Asosiy parametrlar (Aniq tekislangan Key-Value) */}
+                <div className="space-y-1 bg-white/80 rounded-xl px-3 sm:px-4 py-2 border border-gray-100/90">
+                  {/* IMEI */}
+                  <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                    <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                      <Hash className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span>IMEI:</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs sm:text-sm font-semibold text-gray-800 tracking-wide select-all">
+                        {request.imei || "Yo'q"}
+                      </span>
+                      {request.imei && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard?.writeText(request.imei);
+                            alert("IMEI nusxalandi: " + request.imei);
+                          }}
+                          title="IMEIni nusxalash"
+                          className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Javobgar usta */}
+                  <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                    <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                      <UserCog className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span>Javobgar:</span>
+                    </div>
+                    <span className="text-xs sm:text-sm font-semibold text-gray-900">
+                      {request.masterName || "Belgilanmagan"}
+                    </span>
+                  </div>
+
+                  {/* Xizmat narxi */}
+                  <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                    <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                      <DollarSign className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span>Xizmat narxi:</span>
+                    </div>
+                    <div className="text-xs sm:text-sm font-bold text-gray-900 text-right sm:text-left">
+                      {totalCost ? `${totalCost.toLocaleString("ru-RU")} so'm` : "Ko'rsatilmagan"}
+                      {request.costOr ? (
+                        <span className="text-xs font-normal text-gray-500 ml-1.5 block sm:inline">
+                          (yoki {Number(request.costOr).toLocaleString("ru-RU")} so'm)
+                        </span>
+                      ) : ""}
+                    </div>
+                  </div>
+
+                  {/* Telefon */}
+                  <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
+                    <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                      <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span>Telefon:</span>
+                    </div>
+                    <a
+                      href={`tel:${request.phone}`}
+                      onClick={e => e.stopPropagation()}
+                      className="text-xs sm:text-sm font-semibold text-blue-600 hover:underline"
+                    >
+                      {request.phone || "—"}
+                    </a>
+                  </div>
+
+                  {/* Yaratilgan sana */}
+                  <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5">
+                    <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
+                      <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                      <span>Yaratilgan:</span>
+                    </div>
+                    <span className="text-xs sm:text-sm text-gray-600 font-medium">
+                      {formatDate(request.createdAt)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Qo'shimcha ma'lumotlar (agar mavjud bo'lsa - Stacked layout) */}
+                {request.additionalInfo && (
+                  <div className="bg-gray-50/80 rounded-lg p-2.5 border border-gray-100">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mb-1">
+                      <Info className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                      <span>Qo‘shimcha ma'lumotlar:</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-700 pl-5 whitespace-pre-wrap">
+                      {request.additionalInfo}
+                    </p>
+                  </div>
+                )}
+
+                {/* Nasiya (Qarz) bloki */}
+                {request.paymentStatus === "debt" && (
+                  <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-red-50/90 border border-red-200 rounded-lg text-sm">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                      <span className="text-red-700 text-xs sm:text-sm">
+                        Qarz: <strong className="font-bold text-red-950">{debtRemain.toLocaleString("ru-RU")} so‘m</strong>
+                      </span>
+                      {request.debtDueDate && (
+                        <span className="text-xs text-red-600 font-medium">
+                          ({new Date(request.debtDueDate).toLocaleDateString("ru-RU")} gacha)
+                        </span>
+                      )}
+                      {paidAmount > 0 && (
+                        <span className="text-xs text-gray-500">
+                          • Avans: {paidAmount.toLocaleString("ru-RU")} so‘m
+                        </span>
+                      )}
+                      {request.paymentComment && (
+                        <span className="text-xs text-gray-500 italic">
+                          • "{request.paymentComment}"
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedPaymentService(request);
+                        setPaymentDefaultAction('debt');
+                        setPaymentModalOpen(true);
+                      }}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-semibold shadow-xs transition-colors"
+                    >
+                      <Edit className="w-3.5 h-3.5" /> Qarzni o‘zgartirish
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2 mt-4 pt-3 border-t border-gray-200/60">
+                {/* Asosiy amallar to'plami (2 ustun mobilda, 4 ustun kompyuterda) */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {/* 1. Holat (Status select) */}
+                  <div className="relative" onClick={e => e.stopPropagation()}>
+                    <select
+                      value={request.status}
+                      onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
+                      className="w-full h-10 appearance-none pl-8 pr-7 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white text-xs sm:text-sm font-medium rounded-lg cursor-pointer transition-all shadow-xs focus:ring-2 focus:ring-blue-300 focus:outline-none truncate"
+                      title="Xizmat holatini o‘zgartirish"
+                    >
+                      <option value="pending" className="bg-white text-gray-900 font-normal">Kutilmoqda</option>
+                      <option value="in-progress" className="bg-white text-gray-900 font-normal">Jarayonda</option>
+                      <option value="completed" className="bg-white text-gray-900 font-normal">Bajarildi</option>
+                      <option value="unrepairable" className="bg-white text-gray-900 font-normal">Tamirlab bo‘lmaydi</option>
+                    </select>
+                    <RefreshCcwDot className="w-4 h-4 text-white absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <ChevronDown className="w-3.5 h-3.5 text-white/80 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+
+                  {/* 2. Chop etish */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowPrintModal(true);
+                      setPrintData(request);
+                    }}
+                    className="h-10 flex items-center justify-center gap-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-medium rounded-lg shadow-xs transition-all"
+                  >
+                    <Printer className="h-4 w-4 flex-shrink-0" />
+                    <span>Chop etish</span>
+                  </button>
+
+                  {/* 3. Olib ketilgan */}
+                  <button
+                    type="button"
+                    onClick={e => handlePackedUpClick(e, request)}
+                    className={`h-10 flex items-center justify-center gap-1.5 px-3 border text-xs sm:text-sm font-medium rounded-lg active:scale-98 transition-all ${
+                      request.packedUp
+                        ? "bg-blue-50 border-blue-300 text-blue-700 font-semibold"
+                        : "bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                    }`}
+                  >
+                    <img
+                      className="w-4 h-4 flex-shrink-0"
+                      src={pickedUp}
+                      alt="picked up"
+                      loading="lazy"
+                    />
+                    <span className="truncate">Olib ketilgan</span>
+                    {request.packedUp && <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />}
+                  </button>
+
+                  {/* 4. Qo‘ng‘iroq qilish */}
+                  <button
+                    type="button"
+                    onClick={e => {
+                      e.stopPropagation();
+                      window.open(`tel:${request.phone}`);
+                    }}
+                    className="h-10 flex items-center justify-center gap-1.5 px-3 border border-gray-300 hover:bg-gray-50 bg-white text-gray-700 text-xs sm:text-sm font-medium rounded-lg active:scale-98 transition-all truncate"
+                  >
+                    <PhoneForwarded className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                    <span className="truncate">Qo‘ng‘iroq</span>
+                  </button>
+                </div>
+
+                {/* Agar nasiya (qarz) bo'lsa: Qarzni yopish alohida keng tugma */}
+                {request.paymentStatus === "debt" && (
+                  <button
+                    type="button"
+                    onClick={e => handleQuickPay(e, request)}
+                    className="w-full h-10 flex items-center justify-center gap-2 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-lg shadow-xs transition-all"
+                  >
+                    <Check className="h-4 w-4" />
+                    <span>Qarzni yopish ({debtRemain.toLocaleString("ru-RU")} so‘m)</span>
+                  </button>
+                )}
+
+                {/* Pastki yordamchi qator: Tahrirlash va O'chirish */}
+                <div className="flex items-center justify-end pt-1 text-xs gap-1.5">
+                  <button
+                    type="button"
+                    title="Tahrirlash"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-lg active:scale-95 transition-all"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setEditingService(request);
+                    }}
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                    <span>Tahrirlash</span>
+                  </button>
+                  <button
+                    type="button"
+                    title="O‘chirish"
+                    onClick={e => {
+                      e.stopPropagation();
+                      deleteServiceRequest(request._id, request.userId);
+                    }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/80 rounded-lg active:scale-95 transition-all"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>O‘chirish</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-xs sm:shadow-sm">
       <div className="p-3 sm:p-6 border-b border-gray-100 sm:border-gray-200">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          {/* Sarlavha va Mobile Refresh */}
-          <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          {/* Sarlavha, View Mode switcher va Mobile Refresh */}
+          <div className="flex items-center justify-between gap-2 flex-wrap">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900">Xizmat so‘rovlari</h2>
+
+            {/* View Mode Switcher */}
+            <div className="inline-flex items-center p-1 bg-gray-100 rounded-lg text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all ${
+                  viewMode === "list"
+                    ? "bg-white text-blue-600 font-semibold shadow-xs"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+                title="Ketma-ket oddiy ro‘yxat"
+              >
+                <List className="w-3.5 h-3.5" />
+                <span>Ro‘yxat</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("grouped")}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all ${
+                  viewMode === "grouped"
+                    ? "bg-white text-blue-600 font-semibold shadow-xs"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+                title="Ustalar bo‘yicha guruhlangan ro‘yxat"
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>Ustalar bo‘yicha</span>
+              </button>
+            </div>
+
             <div className="flex items-center gap-2 md:hidden">
               <button
                 onClick={fetchServiceRequests}
@@ -251,10 +896,10 @@ const ServicesContent = React.memo(({
           </div>
 
           {/* Boshqaruv elementlari: Qidiruv, Filterlar, Saralash */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-2.5 w-full md:w-auto">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-2.5 w-full lg:w-auto">
             {/* Qidiruv + Mobile Saralash */}
             <div className="flex items-center gap-2 w-full md:w-auto">
-              <div className="relative flex-1 md:w-56">
+              <div className="relative flex-1 md:w-48">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
@@ -272,8 +917,8 @@ const ServicesContent = React.memo(({
               </div>
             </div>
 
-            {/* Filterlar: Mobil qurilmalarda 2 ustun, kompyuterda inline */}
-            <div className="grid grid-cols-2 md:flex md:items-center gap-2 w-full md:w-auto">
+            {/* Filterlar: Holat, To'lov, Usta */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:flex md:items-center gap-2 w-full md:w-auto">
               {/* Ta'mirlash holati filter */}
               <select
                 value={statusFilter}
@@ -301,15 +946,33 @@ const ServicesContent = React.memo(({
                 <option value="paid">To‘lov: To‘langan</option>
                 <option value="unpaid">To‘lov: To‘lanmagan</option>
               </select>
+
+              {/* Usta bo'yicha filter */}
+              <select
+                value={masterFilter}
+                onChange={(e) => setMasterFilter(e.target.value)}
+                className="px-2.5 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm font-medium bg-white text-gray-700 w-full md:w-auto truncate"
+                title="Javobgar usta bo‘yicha filtrlash"
+              >
+                <option value="all">Usta: Barchasi</option>
+                {uniqueMasters.map((m) => (
+                  <option key={m} value={m}>
+                    Usta: {m}
+                  </option>
+                ))}
+                <option value="unassigned">Usta: Belgilanmagan</option>
+              </select>
             </div>
 
-            {/* Desktop Saralash */}
-            <div className="hidden md:block">
-              <SortOrderSelect
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-              />
-            </div>
+            {/* Desktop Saralash (oddiy ro'yxatda) */}
+            {viewMode === "list" && (
+              <div className="hidden md:block">
+                <SortOrderSelect
+                  sortOrder={sortOrder}
+                  setSortOrder={setSortOrder}
+                />
+              </div>
+            )}
 
             {/* Desktop Yangilash tugmasi (faqat ixcham icon) */}
             <button
@@ -320,10 +983,10 @@ const ServicesContent = React.memo(({
               <RefreshCw className="h-4 w-4" />
             </button>
 
-            {/* Desktop Qo'shish tugmasi (mobilda pastki fixed + tugmasi bor) */}
+            {/* Desktop Qo'shish tugmasi */}
             <button
               onClick={() => setShowAddServiceModal(true)}
-              className="hidden md:inline-flex items-center px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold shadow-xs transition-colors"
+              className="hidden md:inline-flex items-center px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold shadow-xs transition-colors shrink-0"
             >
               <Plus className="h-4 w-4 mr-1.5" />
               Qo‘shish
@@ -360,528 +1023,105 @@ const ServicesContent = React.memo(({
         <LoadingSpinner />
       ) : (
         <div className="p-2 sm:p-5 md:p-6">
-          <div className="space-y-2.5 sm:space-y-4">
-            {getSortedRequests(displayedRequests, sortOrder).map((request) => {
-              const isExpanded = expandedId === request._id || (expandedId === null && hash === `#${request.orderNumber}`);
-              const totalCost = Number(request.cost) || 0;
-              const paidAmount = Number(request.paidAmount) || 0;
-              const debtRemain = Math.max(0, totalCost - paidAmount);
-              const isOverdue = request.paymentStatus === "debt" && request.debtDueDate && new Date(request.debtDueDate) < new Date();
+          {displayedRequests.length === 0 ? (
+            <div className="text-center py-12 text-gray-500 text-sm">
+              Hech qanday xizmat so‘rovi topilmadi
+            </div>
+          ) : viewMode === "grouped" ? (
+            <div className="space-y-6">
+              {groupedByMaster.map((group) => {
+                const isCollapsed = Boolean(collapsedMasters[group.key]);
+                const activeCount = group.pendingCount + group.inProgressCount;
 
-              // Цвет фона карточки в зависимости от статуса
-              let cardBg = '';
-              switch (request.status) {
-                case 'pending':
-                  cardBg = 'bg-yellow-50 border-yellow-200';
-                  break;
-                case 'in-progress':
-                  cardBg = 'bg-blue-50 border-blue-200';
-                  break;
-                case 'completed':
-                  cardBg = 'bg-green-50 border-green-200';
-                  break;
-                case 'unrepairable':
-                  cardBg = 'bg-red-50 border-red-200';
-                  break;
-                default:
-                  cardBg = 'bg-gray-50 border-gray-200';
-              }
-
-              // Если долг просрочен, подсвечиваем рамку
-              if (isOverdue) {
-                cardBg += ' ring-2 ring-red-500/80';
-              }
-
-              return (
-                <div
-                  id={request.orderNumber}
-                  key={request._id}
-                  className={`relative border rounded-xl p-3 sm:p-5 ${isExpanded ? 'md:p-5 shadow-lg' : 'md:py-2.5 md:px-4'} hover:bg-opacity-80 active:bg-gray-200 transition-all duration-200 cursor-pointer ${cardBg}`}
-                  onClick={() => {
-                    if (isExpanded) {
-                      setExpandedId("");
-                      navigate({ hash: "" }, { replace: true });
-                    } else {
-                      setExpandedId(request._id);
-                      navigate({ hash: `${request.orderNumber}` }, { replace: true });
-                    }
-                  }}
-                >
-                  <div className={`flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-3 transition-all duration-300 ${isExpanded ? 'mb-4' : 'mb-0'}`}>
-                    <div className="flex flex-col md:flex-row md:items-center items-start gap-1 md:gap-2.5 min-w-0">
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold text-xs md:text-xs shrink-0">
-                          #{request.orderNumber}
-                        </span>
-                        <h3 className="text-base md:text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-                          <span>{request.deviceModel}</span>
-                          <span className="text-gray-500 text-xs font-normal">({request.deviceType})</span>
-                        </h3>
-                      </div>
-                      <span className="hidden md:inline text-gray-300">•</span>
-                      <span className="flex items-center gap-1 text-blue-700 font-semibold text-sm md:text-xs">
-                        <span>{request.userName}</span>
-                      </span>
-                    </div>
-
-                    {/* Quick Badges in Header */}
-                    <div className="flex flex-wrap md:flex-nowrap items-center gap-1.5 md:gap-2 shrink-0">
-                      {/* Status badge */}
-                      <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${getStatusBadge(request.status)}`}>
-                        {request.status === 'pending' ? 'Kutilmoqda' :
-                         request.status === 'in-progress' ? 'Jarayonda' :
-                         request.status === 'completed' ? 'Bajarildi' : 'Tamirlab Bo\'lmaydi'}
-                      </span>
-
-                      {/* Payment badge */}
-                      {request.paymentStatus === 'paid' && (
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPaymentService(request);
-                            setPaymentDefaultAction('normal');
-                            setPaymentModalOpen(true);
-                          }}
-                          title="To'lov holatini ko'rish"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-300 hover:scale-105 transition-transform"
-                        >
-                          <Check className="w-3.5 h-3.5 text-green-700" />
-                          To‘langan
-                        </span>
-                      )}
-
-                      {request.paymentStatus === 'debt' && (
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPaymentService(request);
-                            setPaymentDefaultAction('debt');
-                            setPaymentModalOpen(true);
-                          }}
-                          title="Qarz ma'lumotlarini ko'rish / to'lash"
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold transition-transform hover:scale-105 ${
-                            isOverdue
-                              ? "bg-red-600 text-white shadow-sm"
-                              : "bg-red-100 text-red-800 border border-red-300"
+                return (
+                  <div key={group.key} className="space-y-3">
+                    {/* Master Header Card */}
+                    <div
+                      onClick={() => toggleMasterCollapse(group.key)}
+                      className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 sm:px-4 sm:py-3 rounded-xl border transition-all cursor-pointer select-none ${
+                        group.isUnassigned
+                          ? "bg-amber-50/80 border-amber-200/90 hover:bg-amber-100/70"
+                          : "bg-slate-50 border-slate-200 hover:bg-slate-100/80 shadow-xs"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                            group.isUnassigned
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-blue-100 text-blue-700"
                           }`}
                         >
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          Nasiya: {debtRemain.toLocaleString("ru-RU")} so‘m
-                          {request.debtDueDate && (
-                            <span className="opacity-90 font-normal">
-                              ({isOverdue ? "Muddati o‘tgan!" : new Date(request.debtDueDate).toLocaleDateString("ru-RU")})
+                          {group.isUnassigned ? <AlertTriangle className="w-5 h-5" /> : <UserCog className="w-5 h-5" />}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-bold text-gray-900 text-sm sm:text-base truncate">
+                              {group.masterName}
+                            </h3>
+                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-200 text-gray-800 shrink-0">
+                              {group.items.length} ta qurilma
                             </span>
-                          )}
-                        </span>
-                      )}
+                            {activeCount > 0 && (
+                              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 shrink-0 border border-amber-200">
+                                {activeCount} ta qoldiqda
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            Ustaga biriktirilgan qurilmalar holati
+                          </p>
+                        </div>
+                      </div>
 
-                      {request.paymentStatus === 'partial' && (
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPaymentService(request);
-                            setPaymentDefaultAction('normal');
-                            setPaymentModalOpen(true);
-                          }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800 border border-yellow-300 hover:scale-105 transition-transform"
-                        >
-                          <Clock className="w-3.5 h-3.5 text-yellow-700" />
-                          Qisman: {paidAmount.toLocaleString("ru-RU")} so‘m
-                        </span>
-                      )}
-
-                      {(!request.paymentStatus || request.paymentStatus === 'unpaid') && (
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedPaymentService(request);
-                            setPaymentDefaultAction('normal');
-                            setPaymentModalOpen(true);
-                          }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-300 hover:scale-105 transition-transform"
-                        >
-                          <Clock className="w-3.5 h-3.5 text-gray-500" />
-                          To‘lanmagan
-                        </span>
-                      )}
-
-                      {/* Picked up badge */}
-                      {request.packedUp && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-                          <Check className="w-3.5 h-3.5 text-blue-600" />
-                          Olib ketilgan
-                        </span>
-                      )}
-
-                      {/* Smooth Chevron Indicator */}
-                      <div className="flex items-center gap-1 ml-auto md:ml-1 pl-1 text-gray-400">
+                      {/* Status counters */}
+                      <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
+                        {group.pendingCount > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            <Clock className="w-3 h-3" />
+                            {group.pendingCount} kutilmoqda
+                          </span>
+                        )}
+                        {group.inProgressCount > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                            <RefreshCcwDot className="w-3 h-3" />
+                            {group.inProgressCount} jarayonda
+                          </span>
+                        )}
+                        {group.completedCount > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                            <Check className="w-3 h-3" />
+                            {group.completedCount} tayyor
+                          </span>
+                        )}
+                        {group.unrepairableCount > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800 border border-red-200">
+                            {group.unrepairableCount} tuzalmaydi
+                          </span>
+                        )}
                         <ChevronDown
-                          className={`w-5 h-5 transition-transform duration-300 ease-in-out ${
-                            isExpanded ? "rotate-180 text-blue-600" : "text-gray-400 hover:text-gray-600"
+                          className={`w-4 h-4 text-gray-400 ml-1 transition-transform duration-200 ${
+                            isCollapsed ? "-rotate-90" : "rotate-0"
                           }`}
                         />
                       </div>
                     </div>
-                  </div>
 
-                  {/* Smooth Collapsible Content Container */}
-                  <div
-                    className={`grid transition-all duration-300 ease-in-out ${
-                      isExpanded
-                        ? "grid-rows-[1fr] opacity-100"
-                        : "grid-rows-[0fr] opacity-0 pointer-events-none"
-                    }`}
-                  >
-                    <div className="overflow-hidden min-h-0">
-                      <div className="pt-3 border-t border-gray-200/60">
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
-                          {request?.images?.map((image, index) => (
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowFileSwiper(true);
-                                setSwiperData(request.images);
-                              }}
-                              key={`img-${index}`}
-                              className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-85 active:scale-95 border border-gray-200 cursor-pointer shadow-xs"
-                            >
-                              <img
-                                className="object-cover w-full h-full"
-                                loading="lazy"
-                                src={`${import.meta.env.VITE_STATIC_BASE_URL}${image}`}
-                                alt="device image"
-                              />
-                            </div>
-                          ))}
-                          {request?.videos?.map((video, index) => (
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowFileSwiper(true);
-                                setSwiperData(request.videos);
-                              }}
-                              key={`vid-${index}`}
-                              className="h-20 w-20 rounded-xl overflow-hidden hover:opacity-85 active:scale-95 border border-gray-200 cursor-pointer shadow-xs"
-                            >
-                              <video className="w-full h-full object-cover" muted>
-                                <source
-                                  src={`${import.meta.env.VITE_STATIC_BASE_URL}${video}`}
-                                  type="video/mp4"
-                                />
-                              </video>
-                            </div>
-                          ))}
-
-                          {/* Rasm/video yuklash maydoni */}
-                          {Boolean(request?.images?.length || request?.videos?.length) ? (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowUploadModal(true);
-                                setUploadData({
-                                  userId: request.userId,
-                                  deviceId: request._id
-                                });
-                              }}
-                              title="Yana rasm yoki video qo‘shish"
-                              className="h-20 w-20 rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-500 hover:bg-orange-50/50 active:scale-95 flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-all cursor-pointer"
-                            >
-                              <Upload className="w-5 h-5 mb-1 text-orange-500" />
-                              <span className="text-[11px] font-semibold">+ Yuklash</span>
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowUploadModal(true);
-                                setUploadData({
-                                  userId: request.userId,
-                                  deviceId: request._id
-                                });
-                              }}
-                              className="px-3.5 py-2 rounded-xl border-2 border-dashed border-gray-300 hover:border-orange-500 hover:bg-orange-50/60 active:scale-98 flex items-center gap-2.5 text-gray-600 hover:text-orange-600 transition-all cursor-pointer"
-                            >
-                              <div className="p-1.5 bg-orange-100 rounded-lg text-orange-600">
-                                <Upload className="w-4 h-4" />
-                              </div>
-                              <div className="text-left">
-                                <p className="text-xs font-semibold text-gray-900 hover:text-orange-600">Rasm yoki video yuklash</p>
-                                <p className="text-[11px] text-gray-400">Hozircha biriktirilmagan</p>
-                              </div>
-                            </button>
-                          )}
-                        </div>
-
-                        <div className={"max-md:hidden absolute right-1 top-1"}>
-                          <CreaterQRCode link={`https://applepark.uz/admin/services#${request.orderNumber}`} />
-                        </div>
-
-                      {/* Ma'lumotlar ro'yxati (Key-Value) */}
-                      <div className="space-y-2.5 my-3 text-sm">
-                        {/* 1. Muammo (Stacked Layout - uzun matnlar uchun) */}
-                        <div className="bg-gray-50/80 rounded-lg p-2.5 border border-gray-100">
-                          <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mb-1">
-                            <AlertCircle className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                            <span>Muammo ta'rifi:</span>
-                          </div>
-                          <p className="text-xs sm:text-sm font-semibold text-gray-900 pl-5">
-                            {request.issueDescription || "Ko'rsatilmagan"}
-                          </p>
-                        </div>
-
-                        {/* 2. Asosiy parametrlar (Aniq tekislangan Key-Value) */}
-                        <div className="space-y-1 bg-white/80 rounded-xl px-3 sm:px-4 py-2 border border-gray-100/90">
-                          {/* IMEI */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
-                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
-                              <Hash className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                              <span>IMEI:</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs sm:text-sm font-semibold text-gray-800 tracking-wide select-all">
-                                {request.imei || "Yo'q"}
-                              </span>
-                              {request.imei && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigator.clipboard?.writeText(request.imei);
-                                    alert("IMEI nusxalandi: " + request.imei);
-                                  }}
-                                  title="IMEIni nusxalash"
-                                  className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded transition"
-                                >
-                                  <Copy className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Javobgar usta */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
-                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
-                              <UserCog className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                              <span>Javobgar:</span>
-                            </div>
-                            <span className="text-xs sm:text-sm font-semibold text-gray-900">
-                              {request.masterName || "Belgilanmagan"}
-                            </span>
-                          </div>
-
-                          {/* Xizmat narxi */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
-                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
-                              <DollarSign className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                              <span>Xizmat narxi:</span>
-                            </div>
-                            <div className="text-xs sm:text-sm font-bold text-gray-900 text-right sm:text-left">
-                              {totalCost ? `${totalCost.toLocaleString("ru-RU")} so'm` : "Ko'rsatilmagan"}
-                              {request.costOr ? (
-                                <span className="text-xs font-normal text-gray-500 ml-1.5 block sm:inline">
-                                  (yoki {Number(request.costOr).toLocaleString("ru-RU")} so'm)
-                                </span>
-                              ) : ""}
-                            </div>
-                          </div>
-
-                          {/* Telefon */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5 border-b border-gray-100">
-                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
-                              <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                              <span>Telefon:</span>
-                            </div>
-                            <a
-                              href={`tel:${request.phone}`}
-                              onClick={e => e.stopPropagation()}
-                              className="text-xs sm:text-sm font-semibold text-blue-600 hover:underline"
-                            >
-                              {request.phone || "—"}
-                            </a>
-                          </div>
-
-                          {/* Yaratilgan sana */}
-                          <div className="flex items-center justify-between sm:justify-start gap-2 py-1.5">
-                            <div className="flex items-center gap-1.5 w-28 sm:w-36 flex-shrink-0 text-gray-500 font-normal text-xs sm:text-sm">
-                              <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                              <span>Yaratilgan:</span>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-600 font-medium">
-                              {formatDate(request.createdAt)}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Qo'shimcha ma'lumotlar (agar mavjud bo'lsa - Stacked layout) */}
-                        {request.additionalInfo && (
-                          <div className="bg-gray-50/80 rounded-lg p-2.5 border border-gray-100">
-                            <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium mb-1">
-                              <Info className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                              <span>Qo‘shimcha ma'lumotlar:</span>
-                            </div>
-                            <p className="text-xs sm:text-sm text-gray-700 pl-5 whitespace-pre-wrap">
-                              {request.additionalInfo}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Nasiya (Qarz) bloki */}
-                        {request.paymentStatus === "debt" && (
-                          <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-red-50/90 border border-red-200 rounded-lg text-sm">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
-                              <span className="text-red-700 text-xs sm:text-sm">
-                                Qarz: <strong className="font-bold text-red-950">{debtRemain.toLocaleString("ru-RU")} so‘m</strong>
-                              </span>
-                              {request.debtDueDate && (
-                                <span className="text-xs text-red-600 font-medium">
-                                  ({new Date(request.debtDueDate).toLocaleDateString("ru-RU")} gacha)
-                                </span>
-                              )}
-                              {paidAmount > 0 && (
-                                <span className="text-xs text-gray-500">
-                                  • Avans: {paidAmount.toLocaleString("ru-RU")} so‘m
-                                </span>
-                              )}
-                              {request.paymentComment && (
-                                <span className="text-xs text-gray-500 italic">
-                                  • "{request.paymentComment}"
-                                </span>
-                              )}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedPaymentService(request);
-                                setPaymentDefaultAction('debt');
-                                setPaymentModalOpen(true);
-                              }}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-white hover:bg-red-50 text-red-700 border border-red-200 rounded-md text-xs font-semibold shadow-xs transition-colors"
-                            >
-                              <Edit className="w-3.5 h-3.5" /> Qarzni o‘zgartirish
-                            </button>
-                          </div>
-                        )}
+                    {/* Master items */}
+                    {!isCollapsed && (
+                      <div className="space-y-2.5 sm:space-y-3 pl-0 sm:pl-3 border-l-0 sm:border-l-2 sm:border-gray-200">
+                        {group.items.map(renderCard)}
                       </div>
-
-                      <div className="space-y-2 mt-4 pt-3 border-t border-gray-200/60">
-                        {/* Asosiy amallar to'plami (2 ustun mobilda, 4 ustun kompyuterda) */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                          {/* 1. Holat (Status select) */}
-                          <div className="relative" onClick={e => e.stopPropagation()}>
-                            <select
-                              value={request.status}
-                              onChange={e => updateServiceRequestStatus(request._id, e.target.value, request.userId)}
-                              className="w-full h-10 appearance-none pl-8 pr-7 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white text-xs sm:text-sm font-medium rounded-lg cursor-pointer transition-all shadow-xs focus:ring-2 focus:ring-blue-300 focus:outline-none truncate"
-                              title="Xizmat holatini o‘zgartirish"
-                            >
-                              <option value="pending" className="bg-white text-gray-900 font-normal">Kutilmoqda</option>
-                              <option value="in-progress" className="bg-white text-gray-900 font-normal">Jarayonda</option>
-                              <option value="completed" className="bg-white text-gray-900 font-normal">Bajarildi</option>
-                              <option value="unrepairable" className="bg-white text-gray-900 font-normal">Tamirlab bo‘lmaydi</option>
-                            </select>
-                            <RefreshCcwDot className="w-4 h-4 text-white absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                            <ChevronDown className="w-3.5 h-3.5 text-white/80 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-                          </div>
-
-                          {/* 2. Chop etish */}
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowPrintModal(true);
-                              setPrintData(request);
-                            }}
-                            className="h-10 flex items-center justify-center gap-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-medium rounded-lg shadow-xs transition-all"
-                          >
-                            <Printer className="h-4 w-4 flex-shrink-0" />
-                            <span>Chop etish</span>
-                          </button>
-
-                          {/* 3. Olib ketilgan */}
-                          <button
-                            type="button"
-                            onClick={e => handlePackedUpClick(e, request)}
-                            className={`h-10 flex items-center justify-center gap-1.5 px-3 border text-xs sm:text-sm font-medium rounded-lg active:scale-98 transition-all ${
-                              request.packedUp
-                                ? "bg-blue-50 border-blue-300 text-blue-700 font-semibold"
-                                : "bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
-                            }`}
-                          >
-                            <img
-                              className="w-4 h-4 flex-shrink-0"
-                              src={pickedUp}
-                              alt="picked up"
-                              loading="lazy"
-                            />
-                            <span className="truncate">Olib ketilgan</span>
-                            {request.packedUp && <Check className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />}
-                          </button>
-
-                          {/* 4. Qo‘ng‘iroq qilish */}
-                          <button
-                            type="button"
-                            onClick={e => {
-                              e.stopPropagation();
-                              window.open(`tel:${request.phone}`);
-                            }}
-                            className="h-10 flex items-center justify-center gap-1.5 px-3 border border-gray-300 hover:bg-gray-50 bg-white text-gray-700 text-xs sm:text-sm font-medium rounded-lg active:scale-98 transition-all truncate"
-                          >
-                            <PhoneForwarded className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                            <span className="truncate">Qo‘ng‘iroq</span>
-                          </button>
-                        </div>
-
-                        {/* Agar nasiya (qarz) bo'lsa: Qarzni yopish alohida keng tugma */}
-                        {request.paymentStatus === "debt" && (
-                          <button
-                            type="button"
-                            onClick={e => handleQuickPay(e, request)}
-                            className="w-full h-10 flex items-center justify-center gap-2 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-bold rounded-lg shadow-xs transition-all"
-                          >
-                            <Check className="h-4 w-4" />
-                            <span>Qarzni yopish ({debtRemain.toLocaleString("ru-RU")} so‘m)</span>
-                          </button>
-                        )}
-
-                        {/* Pastki yordamchi qator: Tahrirlash va O'chirish */}
-                        <div className="flex items-center justify-end pt-1 text-xs gap-1.5">
-                          <button
-                            type="button"
-                            title="Tahrirlash"
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 rounded-lg active:scale-95 transition-all"
-                            onClick={e => {
-                              e.stopPropagation();
-                              setEditingService(request);
-                            }}
-                          >
-                            <Edit className="h-3.5 w-3.5" />
-                            <span>Tahrirlash</span>
-                          </button>
-                          <button
-                            type="button"
-                            title="O‘chirish"
-                            onClick={e => {
-                              e.stopPropagation();
-                              deleteServiceRequest(request._id, request.userId);
-                            }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/80 rounded-lg active:scale-95 transition-all"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                            <span>O‘chirish</span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
-                </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-2.5 sm:space-y-4">
+              {getSortedRequests(displayedRequests, sortOrder).map(renderCard)}
+            </div>
+          )}
           {printData && (
             <PrintableCard
               ref={componentRef}
