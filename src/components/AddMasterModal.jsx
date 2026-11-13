@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { AlertCircle, Check } from "lucide-react";
 import api from "../api/simpleApi.js";
 
 export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
@@ -9,6 +10,13 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setError("");
+      setSuccess("");
+    }
+  }, [isOpen]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,7 +36,29 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
       setForm({ name: "", phone: "" });
       if (onMasterCreated) onMasterCreated(data);
     } catch (err) {
-      setError(err.message);
+      const serverMsg = err.response?.data?.msg || err.response?.data?.message;
+      let errorText = "Xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.";
+
+      if (serverMsg && typeof serverMsg === "string") {
+        const lower = serverMsg.toLowerCase();
+        if (
+          lower.includes("телефоном уже существует") ||
+          lower.includes("telefon raqam") ||
+          (lower.includes("telefon") && lower.includes("mavjud"))
+        ) {
+          errorText = "Bu telefon raqamli foydalanuvchi allaqachon mavjud!";
+        } else if (
+          lower.includes("обязательны") ||
+          lower.includes("kiritilishi shart")
+        ) {
+          errorText = "Ism va telefon raqami kiritilishi shart!";
+        } else {
+          errorText = serverMsg;
+        }
+      } else if (err.message && !err.message.includes("status code")) {
+        errorText = err.message;
+      }
+      setError(errorText);
     } finally {
       setLoading(false);
     }
@@ -65,8 +95,18 @@ export default function AddMasterModal({ isOpen, onClose, onMasterCreated }) {
               placeholder="+998901234567"
             />
           </div>
-          {error && <div className="text-red-600 text-sm">{error}</div>}
-          {success && <div className="text-green-600 text-sm">{success}</div>}
+          {error && (
+            <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm font-medium">
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+          {success && (
+            <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm font-medium">
+              <Check className="w-5 h-5 text-green-500 shrink-0" />
+              <span>{success}</span>
+            </div>
+          )}
           <div className="flex justify-end space-x-2 mt-6">
             <button
               className="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded"
